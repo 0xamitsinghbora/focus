@@ -5,30 +5,49 @@ export interface FocusSessionAudioControls {
   playAudio: () => void
   pauseAudio: () => void
   audioPlaying: boolean
+  userPaused: boolean
   startAmbient: () => void
   playChime: (type: 'start' | 'break' | 'complete') => void
 }
 
 export function useFocusSessionAudio(): FocusSessionAudioControls {
-  const { play: rawPlayAudio, pause: rawPauseAudio, playing: audioPlaying } = useAudioEngine()
+  const engine = useAudioEngine() as any
+  const systemPlay = engine?.systemPlay
+  const systemPause = engine?.systemPause
+  const rawPlayAudio = engine?.play
+  const rawPauseAudio = engine?.pause
+  const audioPlaying = Boolean(engine?.playing)
+  const userPaused = Boolean(engine?.userPaused)
 
   const playAudio = useCallback(() => {
     try {
-      rawPlayAudio()
+      if (typeof systemPlay === 'function') {
+        systemPlay()
+      } else if (typeof rawPlayAudio === 'function') {
+        rawPlayAudio()
+      }
     } catch {
       // ignore
     }
-  }, [rawPlayAudio])
+  }, [systemPlay, rawPlayAudio])
 
   const pauseAudio = useCallback(() => {
     try {
-      rawPauseAudio()
+      if (typeof systemPause === 'function') {
+        systemPause()
+      } else if (typeof rawPauseAudio === 'function') {
+        rawPauseAudio()
+      }
     } catch {
       // ignore
     }
-  }, [rawPauseAudio])
+  }, [systemPause, rawPauseAudio])
 
   const startAmbient = useCallback(() => {
+    // If user paused songs one time, remember it and don't play again and again until user manually plays them
+    if (userPaused) {
+      return
+    }
     if (!audioPlaying) {
       try {
         playAudio()
@@ -36,7 +55,7 @@ export function useFocusSessionAudio(): FocusSessionAudioControls {
         // ignore
       }
     }
-  }, [audioPlaying, playAudio])
+  }, [audioPlaying, playAudio, userPaused])
 
   const playChime = useCallback((type: 'start' | 'break' | 'complete') => {
     try {
@@ -50,6 +69,7 @@ export function useFocusSessionAudio(): FocusSessionAudioControls {
     playAudio,
     pauseAudio,
     audioPlaying,
+    userPaused,
     startAmbient,
     playChime
   }

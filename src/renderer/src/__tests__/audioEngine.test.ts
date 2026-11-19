@@ -362,4 +362,36 @@ describe('AudioEngine & Chime Context Lifecycle', () => {
     expect(audioEngine.customTracks.length).toBe(0)
     expect(audioEngine.noiseType).toBe('waves')
   })
+
+  it('remembers user pause/play state across manual actions and preserves it during system pause', () => {
+    localStorage.clear()
+    audioEngine.setUserPaused(false)
+    expect(audioEngine.isUserPaused).toBe(false)
+
+    // User manually pauses songs
+    audioEngine.pause({ userInitiated: true })
+    expect(audioEngine.isUserPaused).toBe(true)
+    expect(localStorage.getItem('focus-audio-user-paused')).toBe('true')
+
+    // System pause should NOT override userPaused
+    audioEngine.pause({ userInitiated: false })
+    expect(audioEngine.isUserPaused).toBe(true)
+
+    // User manually plays songs
+    audioEngine.play({ userInitiated: true })
+    expect(audioEngine.isUserPaused).toBe(false)
+    expect(localStorage.getItem('focus-audio-user-paused')).toBe('false')
+
+    // User toggle from playing -> pauses and remembers
+    audioEngine.toggle({ userInitiated: true })
+    expect(audioEngine.isUserPaused).toBe(true)
+    expect(audioEngine.isPlaying).toBe(false)
+
+    // User toggle from paused -> plays and remembers
+    audioEngine.toggle({ userInitiated: true })
+    expect(audioEngine.isUserPaused).toBe(false)
+    expect(audioEngine.isPlaying).toBe(true)
+
+    audioEngine.pause()
+  })
 })

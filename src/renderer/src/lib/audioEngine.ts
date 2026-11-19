@@ -1178,8 +1178,35 @@ async function clearAllCustomAudioTracksFromStorage(): Promise<void> {
   }
 }
 
+const STORAGE_KEY_USER_PAUSED = 'focus-audio-user-paused'
+
+export function loadUserPausedPreference(): boolean {
+  if (typeof localStorage !== 'undefined') {
+    try {
+      const val = localStorage.getItem(STORAGE_KEY_USER_PAUSED)
+      if (val !== null) {
+        return val === 'true'
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  return false
+}
+
+export function saveUserPausedPreference(userPaused: boolean): void {
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.setItem(STORAGE_KEY_USER_PAUSED, String(userPaused))
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
 interface AudioEngineSnapshot {
   playing: boolean
+  userPaused: boolean
   volume: number
   noiseType: NoiseType
   spatialAudio: boolean
@@ -1263,6 +1290,7 @@ class AmbientAudioEngine {
   private masterGain: GainNode | null = null
   private parts: Cleanup[] = []
   private _playing = false
+  private _userPaused = loadUserPausedPreference()
   private _volume = 0.8
   private _noiseType: NoiseType = 'cocoon'
   private _spatialAudio = true
@@ -1280,6 +1308,7 @@ class AmbientAudioEngine {
   private isListeningToWindow = false
   private snapshot: AudioEngineSnapshot = {
     playing: false,
+    userPaused: loadUserPausedPreference(),
     volume: 0.8,
     noiseType: 'cocoon',
     spatialAudio: true,
@@ -1382,6 +1411,7 @@ class AmbientAudioEngine {
   private updateSnapshot(): void {
     this.snapshot = {
       playing: this._playing,
+      userPaused: this._userPaused,
       volume: this._volume,
       noiseType: this._noiseType,
       spatialAudio: this._spatialAudio,
@@ -1823,7 +1853,23 @@ class AmbientAudioEngine {
     this.suspendContextIfIdle()
   }
 
-  play(): void {
+  public get isUserPaused(): boolean {
+    return this._userPaused
+  }
+
+  public setUserPaused(paused: boolean): void {
+    this._userPaused = paused
+    saveUserPausedPreference(paused)
+    this.updateSnapshot()
+    this.notify()
+  }
+
+  play(options?: { userInitiated?: boolean }): void {
+    if (options?.userInitiated) {
+      this._userPaused = false
+      saveUserPausedPreference(false)
+      this.updateSnapshot()
+    }
     if (this._playing) return
     this._playing = true
     this.attachWindowListeners()
@@ -1831,18 +1877,29 @@ class AmbientAudioEngine {
     this.notify()
   }
 
-  pause(): void {
-    if (!this._playing) return
+  pause(options?: { userInitiated?: boolean }): void {
+    if (options?.userInitiated) {
+      this._userPaused = true
+      saveUserPausedPreference(true)
+      this.updateSnapshot()
+    }
+    if (!this._playing) {
+      if (options?.userInitiated) {
+        this.notify()
+      }
+      return
+    }
     this._playing = false
     this.stopAll()
     this.notify()
   }
 
-  toggle(): void {
+  toggle(options?: { userInitiated?: boolean }): void {
+    const isUser = options?.userInitiated ?? true
     if (this._playing) {
-      this.pause()
+      this.pause({ userInitiated: isUser })
     } else {
-      this.play()
+      this.play({ userInitiated: isUser })
     }
   }
 
@@ -1933,6 +1990,14 @@ prewarmNoiseGenerators()
 export function resetAudioEngineForTesting(): void {
   audioEngine.destroy()
   audioEngine.clearCustomAudio()
+  audioEngine.setUserPaused(false)
+  if (typeof localStorage !== 'undefined') {
+    try {
+      localStorage.removeItem(STORAGE_KEY_USER_PAUSED)
+    } catch {
+      /* ignore */
+    }
+  }
   sharedAudioCtx = null
   sharedLimiter = null
   activeChimesCount = 0
@@ -1971,9 +2036,12 @@ export function formatNoiseType(type: NoiseType): string {
 }
 
 export interface UseAudioEngineReturn extends AudioEngineSnapshot {
-  play: () => void
-  pause: () => void
-  toggle: () => void
+  play: (options?: { userInitiated?: boolean }) => void
+  pause: (options?: { userInitiated?: boolean }) => void
+  toggle: (options?: { userInitiated?: boolean }) => void
+  systemPlay: () => void
+  systemPause: () => void
+  setUserPaused: (paused: boolean) => void
   setVolume: (v: number) => void
   setNoiseType: (t: NoiseType) => void
   setSpatialAudio: (enabled: boolean) => void
@@ -1986,9 +2054,15 @@ export interface UseAudioEngineReturn extends AudioEngineSnapshot {
 }
 
 const stableAudioEngineActions = {
-  play: () => audioEngine.play(),
-  pause: () => audioEngine.pause(),
-  toggle: () => audioEngine.toggle(),
+  play: (options?: { userInitiated?: boolean }) =>
+    audioEngine.play({ userInitiated: options?.userInitiated ?? true }),
+  pause: (options?: { userInitiated?: boolean }) =>
+    audioEngine.pause({ userInitiated: options?.userInitiated ?? true }),
+  toggle: (options?: { userInitiated?: boolean }) =>
+    audioEngine.toggle({ userInitiated: options?.userInitiated ?? true }),
+  systemPlay: () => audioEngine.play({ userInitiated: false }),
+  systemPause: () => audioEngine.pause({ userInitiated: false }),
+  setUserPaused: (paused: boolean) => audioEngine.setUserPaused(paused),
   setVolume: (v: number) => audioEngine.setVolume(v),
   setNoiseType: (t: NoiseType) => audioEngine.setNoiseType(t),
   setSpatialAudio: (enabled: boolean) => audioEngine.setSpatialAudio(enabled),
@@ -2009,6 +2083,9 @@ export function useAudioEngine(): UseAudioEngineReturn {
     play: stableAudioEngineActions.play,
     pause: stableAudioEngineActions.pause,
     toggle: stableAudioEngineActions.toggle,
+    systemPlay: stableAudioEngineActions.systemPlay,
+    systemPause: stableAudioEngineActions.systemPause,
+    setUserPaused: stableAudioEngineActions.setUserPaused,
     setVolume: stableAudioEngineActions.setVolume,
     setNoiseType: stableAudioEngineActions.setNoiseType,
     setSpatialAudio: stableAudioEngineActions.setSpatialAudio,

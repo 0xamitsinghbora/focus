@@ -32,9 +32,12 @@ export function FocusSessionProvider({
   defaultIntervalMinutes
 }: FocusSessionProviderProps): React.JSX.Element {
   const toast = useToast()
-  const { startAmbient, playChime, playAudio, pauseAudio, audioPlaying } = useFocusSessionAudio()
+  const { startAmbient, playChime, playAudio, pauseAudio, audioPlaying, userPaused } =
+    useFocusSessionAudio()
   const audioPlayingRef = useRef(audioPlaying)
   audioPlayingRef.current = audioPlaying
+  const userPausedRef = useRef(userPaused)
+  userPausedRef.current = userPaused
   const wasAudioPlayingOnPauseRef = useRef(false)
 
   const isAudioActive = useCallback((): boolean => {
@@ -691,7 +694,7 @@ export function FocusSessionProvider({
         useFocusSessionStore.setState({ startedAt: new Date(now).toISOString() })
       }
       hasNotedOnPauseRef.current = false
-      if (wasAudioPlayingOnPauseRef.current) {
+      if (wasAudioPlayingOnPauseRef.current && !userPausedRef.current) {
         playAudio()
         wasAudioPlayingOnPauseRef.current = false
       }
@@ -803,7 +806,9 @@ export function FocusSessionProvider({
       }
 
       toast.success(
-        `Focus timer started for ${formatMinutes(targetMins)}. Ambient engine engaged.`,
+        userPausedRef.current
+          ? `Focus timer started for ${formatMinutes(targetMins)}.`
+          : `Focus timer started for ${formatMinutes(targetMins)}. Ambient engine engaged.`,
         goal ? `Focusing: ${goal.title}` : 'Focusing'
       )
     },

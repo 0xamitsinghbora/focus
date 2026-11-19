@@ -6,10 +6,21 @@ import { useTaskbarBadge, useFocusSessionAudio, useFocusSessionTimerEngine } fro
 const mockPlay = vi.fn()
 const mockPause = vi.fn()
 const mockPlayFocusChime = vi.fn()
+let mockUserPaused = false
+
 vi.mock('../../../lib/audioEngine', () => ({
   playFocusChime: (...args: unknown[]) => mockPlayFocusChime(...args),
+  audioEngine: {
+    get isUserPaused() {
+      return mockUserPaused
+    },
+    setUserPaused(p: boolean) {
+      mockUserPaused = p
+    }
+  },
   useAudioEngine: () => ({
     playing: false,
+    userPaused: mockUserPaused,
     play: mockPlay,
     pause: mockPause
   })
@@ -91,10 +102,21 @@ describe('useFocusSessionAudio', () => {
     expect(mockPlayFocusChime).toHaveBeenCalledWith('complete')
   })
 
-  it('starts ambient audio if not already playing', () => {
+  it('starts ambient audio if not already playing and user has not paused', () => {
+    mockUserPaused = false
+    mockPlay.mockClear()
     const { result } = renderHook(() => useFocusSessionAudio())
     result.current.startAmbient()
     expect(mockPlay).toHaveBeenCalled()
+  })
+
+  it('does NOT start ambient audio if user paused songs', () => {
+    mockUserPaused = true
+    mockPlay.mockClear()
+    const { result } = renderHook(() => useFocusSessionAudio())
+    result.current.startAmbient()
+    expect(mockPlay).not.toHaveBeenCalled()
+    mockUserPaused = false
   })
 
   it('controls play and pause on ambient audio', () => {

@@ -16,32 +16,57 @@ import { DailyGoal } from '../../../../shared/types'
 const mockPlayAudio = vi.fn()
 const mockPauseAudio = vi.fn()
 let mockAudioPlaying = false
+let mockUserPaused = false
+let mockAudioVersion = 0
 const audioListeners = new Set<() => void>()
 const notifyAudio = (): void => {
+  mockAudioVersion++
   audioListeners.forEach((l) => l())
 }
 
 vi.mock('../../lib/audioEngine', () => ({
   playFocusChime: vi.fn(),
+  audioEngine: {
+    get isUserPaused() {
+      return mockUserPaused
+    },
+    setUserPaused: (p: boolean) => {
+      mockUserPaused = p
+      notifyAudio()
+    }
+  },
   useAudioEngine: () => {
-    const playing = React.useSyncExternalStore(
+    React.useSyncExternalStore(
       (cb) => {
         audioListeners.add(cb)
         return () => {
           audioListeners.delete(cb)
         }
       },
-      () => mockAudioPlaying
+      () => mockAudioVersion
     )
     return {
-      playing,
+      playing: mockAudioPlaying,
+      userPaused: mockUserPaused,
+      systemPlay: () => {
+        mockAudioPlaying = true
+        notifyAudio()
+        mockPlayAudio()
+      },
+      systemPause: () => {
+        mockAudioPlaying = false
+        notifyAudio()
+        mockPauseAudio()
+      },
       play: () => {
         mockAudioPlaying = true
+        mockUserPaused = false
         notifyAudio()
         mockPlayAudio()
       },
       pause: () => {
         mockAudioPlaying = false
+        mockUserPaused = true
         notifyAudio()
         mockPauseAudio()
       }
@@ -73,6 +98,8 @@ describe('FocusSessionContext', () => {
   beforeEach(() => {
     delete (window as any).api
     mockAudioPlaying = false
+    mockUserPaused = false
+    mockAudioVersion = 0
     audioListeners.clear()
     vi.clearAllMocks()
   })
@@ -207,6 +234,57 @@ describe('FocusSessionContext', () => {
     })
     expect(result.current.isPaused).toBe(false)
     expect(mockPlayAudio).not.toHaveBeenCalled()
+  })
+
+  it('remembers user pause and does not auto-play ambient music on subsequent session start until user manually plays', async () => {
+    const { result } = renderHook(() => useFocusSession(), { wrapper })
+
+    // 1. Start initial focus session: ambient starts playing
+    await act(async () => {
+      await result.current.startFocus(mockGoal, 20)
+    })
+    expect(mockPlayAudio).toHaveBeenCalled()
+    expect(mockAudioPlaying).toBe(true)
+
+    // 2. User manually pauses songs
+    act(() => {
+      mockAudioPlaying = false
+      mockUserPaused = true
+      notifyAudio()
+    })
+    mockPlayAudio.mockClear()
+
+    // 3. User starts another focus session (e.g. task switch, next session)
+    const secondGoal: DailyGoal = {
+      ...mockGoal,
+      id: 'g-focus-2',
+      title: 'Next Task'
+    }
+    await act(async () => {
+      await result.current.startFocus(secondGoal, 20)
+    })
+
+    // Ambient audio MUST NOT auto-play again and again!
+    expect(mockPlayAudio).not.toHaveBeenCalled()
+    expect(mockAudioPlaying).toBe(false)
+
+    // 4. Now user manually plays songs again
+    act(() => {
+      mockAudioPlaying = false
+      mockUserPaused = false
+      notifyAudio()
+    })
+
+    // 5. User starts a third session: ambient audio plays as user unpaused it
+    const thirdGoal: DailyGoal = {
+      ...mockGoal,
+      id: 'g-focus-3',
+      title: 'Third Task'
+    }
+    await act(async () => {
+      await result.current.startFocus(thirdGoal, 20)
+    })
+    expect(mockPlayAudio).toHaveBeenCalled()
   })
 
   it('during pause, notes time of green task and starts red timer of pause', async () => {
