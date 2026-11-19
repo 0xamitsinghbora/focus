@@ -798,17 +798,26 @@ describe('DriveSync — OAuth Loopback Server & Port Fallback', () => {
   it('falls back to next available port when port 3456 is already in use (EADDRINUSE)', async () => {
     // Occupy port 3456 with a dummy server
     const dummyServer = http.createServer((_req, res) => res.end('occupied'))
-    await new Promise<void>((resolve) => dummyServer.listen(3456, resolve))
+    try {
+      await new Promise<void>((resolve, reject) => {
+        dummyServer.once('error', reject)
+        dummyServer.listen(3456, () => resolve())
+      })
+    } catch {
+      // If 3456 cannot be bound on this system, skip test gracefully
+      return
+    }
 
+    const syncManager = new DriveSyncManager(dm, scheduler)
     try {
       vi.spyOn(configModule, 'isGoogleOAuthConfigured').mockReturnValue(true)
+      vi.spyOn(syncManager, 'syncNow').mockResolvedValue({ success: true })
       const openExternalSpy = vi.spyOn(shell, 'openExternal').mockResolvedValue()
       const getTokenSpy = vi.spyOn(auth.OAuth2.prototype, 'getToken').mockResolvedValue({
         tokens: { refresh_token: 'test-fallback-refresh-token' },
         res: null as any
       } as any)
 
-      const syncManager = new DriveSyncManager(dm, scheduler)
       const connectPromise = syncManager.connect()
 
       await vi.waitFor(() => {
@@ -851,6 +860,7 @@ describe('DriveSync — OAuth Loopback Server & Port Fallback', () => {
       expect(settings.driveSyncEnabled).toBe(true)
       expect(decryptToken(settings.driveRefreshToken!)).toBe('test-fallback-refresh-token')
     } finally {
+      syncManager.destroy()
       await new Promise<void>((resolve) => dummyServer.close(() => resolve()))
     }
   })
@@ -860,32 +870,36 @@ describe('DriveSync — OAuth Loopback Server & Port Fallback', () => {
     const openExternalSpy = vi.spyOn(shell, 'openExternal').mockResolvedValue()
 
     const syncManager = new DriveSyncManager(dm, scheduler)
-    const connectPromise = syncManager.connect()
+    try {
+      const connectPromise = syncManager.connect()
 
-    await vi.waitFor(() => {
-      expect(openExternalSpy).toHaveBeenCalled()
-    })
+      await vi.waitFor(() => {
+        expect(openExternalSpy).toHaveBeenCalled()
+      })
 
-    const authUrl = openExternalSpy.mock.calls[0][0] as string
-    const parsedUrl = new URL(authUrl)
-    const redirectUri = parsedUrl.searchParams.get('redirect_uri')
+      const authUrl = openExternalSpy.mock.calls[0][0] as string
+      const parsedUrl = new URL(authUrl)
+      const redirectUri = parsedUrl.searchParams.get('redirect_uri')
 
-    // Send request with an invalid/mismatched state
-    const callbackRes = await fetch(`${redirectUri}?code=valid-code&state=invalid-tampered-state`)
-    expect(callbackRes.status).toBe(403)
+      // Send request with an invalid/mismatched state
+      const callbackRes = await fetch(`${redirectUri}?code=valid-code&state=invalid-tampered-state`)
+      expect(callbackRes.status).toBe(403)
 
-    const connectResult = await connectPromise
-    expect(connectResult.success).toBe(false)
-    expect(connectResult.error).toBe('CSRF state mismatch')
+      const connectResult = await connectPromise
+      expect(connectResult.success).toBe(false)
+      expect(connectResult.error).toBe('CSRF state mismatch')
+    } finally {
+      syncManager.destroy()
+    }
   })
 
   it('returns timeout error after 3 minutes', async () => {
     vi.useFakeTimers()
+    const syncManager = new DriveSyncManager(dm, scheduler)
     try {
       vi.spyOn(configModule, 'isGoogleOAuthConfigured').mockReturnValue(true)
       vi.spyOn(shell, 'openExternal').mockResolvedValue()
 
-      const syncManager = new DriveSyncManager(dm, scheduler)
       const connectPromise = syncManager.connect()
 
       // Advance timers by 3 minutes
@@ -895,6 +909,7 @@ describe('DriveSync — OAuth Loopback Server & Port Fallback', () => {
       expect(connectResult.success).toBe(false)
       expect(connectResult.error).toContain('Timeout')
     } finally {
+      syncManager.destroy()
       vi.useRealTimers()
     }
   })
