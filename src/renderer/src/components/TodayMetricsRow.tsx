@@ -59,7 +59,17 @@ function DailyTargetCard({
           </span>
           {isComplete && (
             <div className="flex items-center justify-center h-6 w-6 rounded-full bg-emerald-500/15">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-emerald-600 dark:text-emerald-400">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="text-emerald-600 dark:text-emerald-400"
+              >
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </div>
@@ -143,7 +153,9 @@ export const TodayMetricsRow = memo(function TodayMetricsRow({
         <MetricCard
           label="Current Streak"
           value={
-            currentStreak > 0 ? `${currentStreak} ${currentStreak === 1 ? 'day' : 'days'}` : '0 days'
+            currentStreak > 0
+              ? `${currentStreak} ${currentStreak === 1 ? 'day' : 'days'}`
+              : '0 days'
           }
           accent={currentStreak > 0}
           hint={streakHint}

@@ -114,7 +114,9 @@ export class GoalsIpcController {
           groupTag,
           groupColor,
           sortOrder,
-          status
+          status,
+          learningTrackId,
+          learningStage
         } = payload
         const goal = await goalsRepo.addGoal(
           date,
@@ -128,7 +130,9 @@ export class GoalsIpcController {
           groupTag,
           groupColor,
           sortOrder,
-          status
+          status,
+          learningTrackId,
+          learningStage
         )
         syncAfterWrite({ goalDates: [date] })
         return goal

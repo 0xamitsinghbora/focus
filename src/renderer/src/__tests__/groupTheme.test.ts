@@ -226,4 +226,18 @@ describe('groupTheme Library', () => {
 
     delete (window as any).api
   })
+
+  it('supports R-Y-G learning themes for Day 1 (Red), Day 7 (Yellow), Day 30 (Green)', () => {
+    const redTheme = getGroupTheme('learning-red')
+    expect(redTheme.hex).toBe('#ef4444')
+    expect(redTheme.name).toBe('Day 1 Revision')
+
+    const yellowTheme = getGroupTheme('learning-yellow')
+    expect(yellowTheme.hex).toBe('#f59e0b')
+    expect(yellowTheme.name).toBe('Day 7 Revision')
+
+    const greenTheme = getGroupTheme('learning-green')
+    expect(greenTheme.hex).toBe('#10b981')
+    expect(greenTheme.name).toBe('Day 30 Revision')
+  })
 })

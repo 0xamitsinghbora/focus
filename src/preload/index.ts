@@ -61,10 +61,17 @@ export const api: FocusAPI = {
       ipcRenderer.invoke(IpcChannels.RenameGroup, { oldTag, newTag, newColor })
   },
 
+  learning: {
+    getTracks: (status) => ipcRenderer.invoke(IpcChannels.LearningGetTracks, status),
+    resetStage: (trackId, stage, newDate) =>
+      ipcRenderer.invoke(IpcChannels.LearningResetStage, { trackId, stage, newDate })
+  },
+
   session: {
     updateTimer: (payload) => ipcRenderer.send(IpcChannels.UpdateSessionTimer, payload),
     getState: () => ipcRenderer.invoke(IpcChannels.GetSessionState),
-    quickAction: (action, payload) => ipcRenderer.send(IpcChannels.SessionQuickAction, action, payload),
+    quickAction: (action, payload) =>
+      ipcRenderer.send(IpcChannels.SessionQuickAction, action, payload),
     notifyZeroReached: (autoPause = true) =>
       ipcRenderer.send(IpcChannels.SessionZeroReached, autoPause),
     onTogglePause: (callback) => {
@@ -75,8 +82,11 @@ export const api: FocusAPI = {
       }
     },
     onQuickAction: (callback) => {
-      const handler = (_: IpcRendererEvent, action: SessionQuickActionType, payload?: string): void =>
-        callback(action, payload)
+      const handler = (
+        _: IpcRendererEvent,
+        action: SessionQuickActionType,
+        payload?: string
+      ): void => callback(action, payload)
       ipcRenderer.on(IpcChannels.SessionQuickAction, handler)
       return () => {
         ipcRenderer.removeListener(IpcChannels.SessionQuickAction, handler)
@@ -140,8 +150,7 @@ export const api: FocusAPI = {
     snapTaskbar: () => ipcRenderer.send(IpcChannels.WidgetSnapTaskbar),
     setIgnoreMouseEvents: (ignore: boolean) =>
       ipcRenderer.send(IpcChannels.WidgetSetIgnoreMouseEvents, ignore),
-    setExpanded: (expanded: boolean) =>
-      ipcRenderer.send(IpcChannels.WidgetSetExpanded, expanded),
+    setExpanded: (expanded: boolean) => ipcRenderer.send(IpcChannels.WidgetSetExpanded, expanded),
     onPositionUpdated: createSubscriber<{ x: number; y: number }>(IpcChannels.WidgetPositionUpdated)
   },
 

@@ -2,7 +2,7 @@ import React from 'react'
 import { DailyGoal, localDateStr } from '../../../../shared/types'
 import { AddTaskCard } from '../AddTaskCard'
 import { cn, formatDeadlineBadge, isDeadlineOverdue } from '../../lib/utils'
-import { getGroupTheme, getPreferredGroupColor } from '../../lib/groupTheme'
+import { getGroupTheme, getPreferredGroupColor, getLearningStageTheme } from '../../lib/groupTheme'
 import type { ColumnId } from './types'
 import { useGoalsContext } from './GoalsContext'
 
@@ -64,16 +64,19 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
   // If user carries an overdue task forward to today, the red status clears immediately
   const isCarriedToToday = Boolean(
     goal.carriedFromDate &&
-      goal.date === todayDateStr &&
-      goal.deadline &&
-      goal.deadline.slice(0, 10) <= goal.carriedFromDate
+    goal.date === todayDateStr &&
+    goal.deadline &&
+    goal.deadline.slice(0, 10) <= goal.carriedFromDate
   )
   const isOverdue =
     !isCarriedToToday && isDeadlineOverdue(goal.deadline, goal.status === 'done', dayCutoffHour)
   const isOverduePlanned = isOverdue && (col === 'planned' || goal.status === 'planned')
-  const theme = goal.groupTag
-    ? getGroupTheme(goal.groupColor || getPreferredGroupColor(goal.groupTag))
-    : null
+  const learningStage = goal.learningStage
+  const theme = learningStage
+    ? getLearningStageTheme(learningStage)
+    : goal.groupTag
+      ? getGroupTheme(goal.groupColor || getPreferredGroupColor(goal.groupTag))
+      : null
 
   // Re-render immediately once an exact deadline time passes
   const [, setDeadlineTick] = React.useState(0)
@@ -90,9 +93,12 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
       return
     }
 
-    const timer = setTimeout(() => {
-      setDeadlineTick((t) => t + 1)
-    }, Math.min(diff + 50, 2147483647))
+    const timer = setTimeout(
+      () => {
+        setDeadlineTick((t) => t + 1)
+      },
+      Math.min(diff + 50, 2147483647)
+    )
 
     return () => clearTimeout(timer)
   }, [goal.deadline, goal.status])
@@ -230,9 +236,17 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
           <div className="h-2.5 w-2.5 rounded-full bg-sky-500 -mr-0.5 shadow-sm" />
         </div>
       )}
-      {/* Indicator bar on left edge (red for overdue in planned, or theme group color) */}
+      {/* Indicator bar on left edge (red for overdue in planned, prominent R-Y-G bar for learning revision, or theme group color) */}
       {isOverduePlanned ? (
         <div className="absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full bg-apple-red shadow-[0_0_8px_rgba(239,68,68,0.6)]" />
+      ) : learningStage && theme ? (
+        <div
+          className={cn(
+            'absolute left-0 top-2 bottom-2 w-1.5 rounded-r-full shadow-xs',
+            theme.barBg
+          )}
+          title={`Spaced Revision Stage ${learningStage}`}
+        />
       ) : theme ? (
         <div className={cn('absolute left-0 top-2 bottom-2 w-1 rounded-r-full', theme.barBg)} />
       ) : null}
@@ -321,8 +335,51 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
 
           {/* Tags & Metadata Badges */}
           <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px]">
+            {/* Learning Spaced Repetition Revision Badge */}
+            {learningStage && theme && (
+              <span
+                className={cn(
+                  'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-semibold text-[10.5px] border shadow-2xs',
+                  theme.badgeBg,
+                  theme.badgeText,
+                  theme.badgeBorder
+                )}
+                title={`Spaced Revision: ${
+                  learningStage === 1
+                    ? '1st Day (Urgent Decay Window)'
+                    : learningStage === 2
+                      ? '7th Day (Intermediate Stabilization)'
+                      : '30th Day (Long-Term Mastery)'
+                }`}
+              >
+                <span className={cn('h-1.5 w-1.5 rounded-full shrink-0', theme.dotClass)} />
+                <span>
+                  {learningStage === 1
+                    ? 'Day 1 Revise'
+                    : learningStage === 2
+                      ? 'Day 7 Revise'
+                      : 'Day 30 Revise'}
+                </span>
+                <span className="font-mono text-[9px] opacity-80 tracking-tighter ml-0.5 font-bold">
+                  {learningStage === 1 ? '●○○' : learningStage === 2 ? '●●○' : '●●●'}
+                </span>
+              </span>
+            )}
+
+            {/* Initial #learning track badge before first revision */}
+            {!learningStage && goal.groupTag?.toLowerCase() === 'learning' && (
+              <span
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[10.5px] border shadow-2xs bg-rose-500/10 text-rose-700 dark:text-rose-300 border-rose-500/30"
+                title="Learning track: Complete this session to schedule Day 1, Day 7, and Day 30 revisions"
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500 shrink-0" />
+                <span>#learning</span>
+                <span className="text-[9.5px] opacity-75 font-mono">1/7/30d</span>
+              </span>
+            )}
+
             {/* Group Tag badge (only shown in flat list view, hidden when grouped since group header already shows tag name) */}
-            {!groupByTag && goal.groupTag && theme && (
+            {!groupByTag && !learningStage && goal.groupTag && theme && (
               <span
                 className={cn(
                   'inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[10.5px] border shadow-2xs',

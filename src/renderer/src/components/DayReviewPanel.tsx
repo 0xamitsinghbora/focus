@@ -280,7 +280,10 @@ export function DayReviewPanel({
                   <div className="flex items-center gap-2.5 shrink-0">
                     {goal.completedAt && (
                       <span className="text-[11.5px] font-mono tabular-nums text-muted-foreground">
-                        {new Date(goal.completedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {new Date(goal.completedAt).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </span>
                     )}
                     {onReopenGoal && (

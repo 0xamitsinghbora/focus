@@ -637,7 +637,9 @@ describe('TaskbarWidget Component (Focus Taskbar Deskband)', () => {
 
     // Tooltip shows paused timer and notes focus remaining time
     expect(
-      screen.getAllByLabelText(/Focus Paused \(counts as break\): 00:00 · Noted focus time \(20:00 left\)/i).length
+      screen.getAllByLabelText(
+        /Focus Paused \(counts as break\): 00:00 · Noted focus time \(20:00 left\)/i
+      ).length
     ).toBeGreaterThan(0)
   })
 
@@ -830,7 +832,9 @@ describe('TaskbarWidget Component (Focus Taskbar Deskband)', () => {
 
     // Tooltip notes the focus remaining seconds
     expect(
-      screen.getAllByLabelText(/Focus Paused \(counts as break\): 00:15 · Noted focus time \(15:00 left\)/i).length
+      screen.getAllByLabelText(
+        /Focus Paused \(counts as break\): 00:15 · Noted focus time \(15:00 left\)/i
+      ).length
     ).toBeGreaterThan(0)
   })
 

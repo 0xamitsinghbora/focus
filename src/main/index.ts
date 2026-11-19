@@ -22,7 +22,8 @@ import {
   GoalsIpcController,
   SystemIpcController,
   SessionIpcController,
-  SettingsIpcController
+  SettingsIpcController,
+  LearningIpcController
 } from './ipc'
 import { GlobalShortcutManager } from './services/GlobalShortcutManager'
 import { DriveOAuthServer } from './driveOAuthServer'
@@ -357,6 +358,12 @@ if (!gotTheLock) {
       isQuitting: () => isQuitting
     })
     settingsController.register()
+
+    const learningController = new LearningIpcController({
+      learningService: dataManager.learningService,
+      security
+    })
+    learningController.register()
 
     if (process.platform === 'win32') {
       const taskbarIconPath = app.isPackaged ? process.execPath : path.resolve(iconIco)

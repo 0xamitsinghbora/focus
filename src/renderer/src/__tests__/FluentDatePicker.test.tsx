@@ -159,9 +159,7 @@ describe('FluentDatePicker Component', () => {
 
   it('supports V, M, Y, D keyboard shortcuts to switch view modes', () => {
     const onSelect = vi.fn()
-    const { container } = render(
-      <FluentDatePicker value="2026-10-15" onSelect={onSelect} />
-    )
+    const { container } = render(<FluentDatePicker value="2026-10-15" onSelect={onSelect} />)
     const region = container.querySelector('[role="region"]')!
 
     // Initially in Day view (shows October 2026)

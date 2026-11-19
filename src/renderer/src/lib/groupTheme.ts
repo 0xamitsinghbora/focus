@@ -15,6 +15,9 @@ export type GroupColorId =
   | 'copper'
   | 'slate'
   | 'zinc'
+  | 'learning-red'
+  | 'learning-yellow'
+  | 'learning-green'
 
 export interface GroupTheme {
   id: GroupColorId
@@ -242,8 +245,61 @@ export const GROUP_THEMES: GroupTheme[] = [
   }
 ]
 
+export const LEARNING_RED_THEME: GroupTheme = {
+  id: 'learning-red',
+  name: 'Day 1 Revision',
+  hex: '#ef4444',
+  dotClass: 'bg-rose-500',
+  badgeBg: 'bg-rose-500/10 dark:bg-rose-500/20',
+  badgeText: 'text-rose-700 dark:text-rose-300',
+  badgeBorder: 'border-rose-500/30 dark:border-rose-400/30',
+  headerBg: 'bg-rose-500/5 dark:bg-rose-500/10',
+  headerBorder: 'border-rose-500/30 dark:border-rose-400/30',
+  barBg: 'bg-rose-500',
+  ringClass: 'ring-rose-500/30 border-rose-500/40'
+}
+
+export const LEARNING_YELLOW_THEME: GroupTheme = {
+  id: 'learning-yellow',
+  name: 'Day 7 Revision',
+  hex: '#f59e0b',
+  dotClass: 'bg-amber-500',
+  badgeBg: 'bg-amber-500/10 dark:bg-amber-500/20',
+  badgeText: 'text-amber-700 dark:text-amber-300',
+  badgeBorder: 'border-amber-500/30 dark:border-amber-400/30',
+  headerBg: 'bg-amber-500/5 dark:bg-amber-500/10',
+  headerBorder: 'border-amber-500/30 dark:border-amber-400/30',
+  barBg: 'bg-amber-500',
+  ringClass: 'ring-amber-500/30 border-amber-500/40'
+}
+
+export const LEARNING_GREEN_THEME: GroupTheme = {
+  id: 'learning-green',
+  name: 'Day 30 Revision',
+  hex: '#10b981',
+  dotClass: 'bg-emerald-500',
+  badgeBg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
+  badgeText: 'text-emerald-700 dark:text-emerald-300',
+  badgeBorder: 'border-emerald-500/30 dark:border-emerald-400/30',
+  headerBg: 'bg-emerald-500/5 dark:bg-emerald-500/10',
+  headerBorder: 'border-emerald-500/30 dark:border-emerald-400/30',
+  barBg: 'bg-emerald-500',
+  ringClass: 'ring-emerald-500/30 border-emerald-500/40'
+}
+
+export function getLearningStageTheme(stage?: number): GroupTheme {
+  if (stage === 1) return LEARNING_RED_THEME
+  if (stage === 2) return LEARNING_YELLOW_THEME
+  if (stage === 3) return LEARNING_GREEN_THEME
+  return LEARNING_RED_THEME
+}
+
 export function getGroupTheme(colorKey?: string): GroupTheme {
   if (!colorKey) return GROUP_THEMES[0]
+  if (colorKey === 'learning-red' || colorKey === 'red') return LEARNING_RED_THEME
+  if (colorKey === 'learning-yellow' || colorKey === 'yellow') return LEARNING_YELLOW_THEME
+  if (colorKey === 'learning-green' || colorKey === 'green') return LEARNING_GREEN_THEME
+
   const match = GROUP_THEMES.find(
     (t) => t.id === colorKey || t.hex.toLowerCase() === colorKey.toLowerCase()
   )
@@ -508,6 +564,10 @@ export function getPreferredGroupColor(
   const saved = getSavedGroupColors()
   const cleanTag = groupTag.trim().toLowerCase()
   const existing = saved[cleanTag] as GroupColorId | undefined
+
+  if (cleanTag === 'learning') {
+    return 'learning-red'
+  }
 
   // If already saved with a valid theme, use it
   if (existing && GROUP_THEMES.some((t) => t.id === existing)) {

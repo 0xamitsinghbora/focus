@@ -11,24 +11,12 @@ describe('OnboardingModal Component', () => {
   })
 
   it('does not render when isOpen is false', () => {
-    render(
-      <OnboardingModal
-        isOpen={false}
-        onClose={mockOnClose}
-        onComplete={mockOnComplete}
-      />
-    )
+    render(<OnboardingModal isOpen={false} onClose={mockOnClose} onComplete={mockOnComplete} />)
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
   it('renders Step 1 (The Daily Planner) with column explanations and goal input', () => {
-    render(
-      <OnboardingModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onComplete={mockOnComplete}
-      />
-    )
+    render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
 
     expect(screen.getByRole('dialog')).toBeDefined()
     expect(screen.getByRole('heading', { name: /The Daily Planner/i })).toBeDefined()
@@ -40,13 +28,7 @@ describe('OnboardingModal Component', () => {
   })
 
   it('navigates through steps 1, 2, and 3 with Back and Continue', () => {
-    render(
-      <OnboardingModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onComplete={mockOnComplete}
-      />
-    )
+    render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
 
     // Type a primary goal
     const goalInput = screen.getByPlaceholderText(/e\.g\. Finish database migration/i)
@@ -79,13 +61,7 @@ describe('OnboardingModal Component', () => {
   })
 
   it('completes onboarding setup and invokes onComplete with user selections and initial goal', async () => {
-    render(
-      <OnboardingModal
-        isOpen={true}
-        onClose={mockOnClose}
-        onComplete={mockOnComplete}
-      />
-    )
+    render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
 
     // Step 1: Type goal
     const goalInput = screen.getByPlaceholderText(/e\.g\. Finish database migration/i)
@@ -132,4 +108,3 @@ describe('OnboardingModal Component', () => {
     })
   })
 })
-

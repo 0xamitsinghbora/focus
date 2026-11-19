@@ -224,13 +224,6 @@ describe('useFocusSessionTimerEngine', () => {
 
     expect(result.current.secondsRemaining).toBe(-5)
     expect(secondsRemainingRef.current).toBe(-5)
-    expect(broadcastTaskbarTimer).toHaveBeenCalledWith(
-      true,
-      false,
-      false,
-      -1,
-      10,
-      null
-    )
+    expect(broadcastTaskbarTimer).toHaveBeenCalledWith(true, false, false, -1, 10, null)
   })
 })

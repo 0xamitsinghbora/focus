@@ -83,7 +83,7 @@ describe('ReminderIpcController', () => {
 
     // Custom minutes (10)
     listeners[IpcChannels.RemindSnooze](mockEvent, 10)
-    expect(mockSecurity.assertSenderIsMainWindowOrPrompt).toHaveBeenCalledWith(mockEvent)
+    expect(mockSecurity.assertSenderIsAppWindow).toHaveBeenCalledWith(mockEvent)
     expect(mockScheduler.snooze).toHaveBeenCalledWith(10)
     expect(mockHidePrompt).toHaveBeenCalled()
 
@@ -100,9 +100,29 @@ describe('ReminderIpcController', () => {
     const mockEvent = { sender: {} }
 
     listeners[IpcChannels.RemindSubmit](mockEvent)
-    expect(mockSecurity.assertSenderIsMainWindowOrPrompt).toHaveBeenCalledWith(mockEvent)
+    expect(mockSecurity.assertSenderIsAppWindow).toHaveBeenCalledWith(mockEvent)
     expect(mockScheduler.resetBlockAndTimer).toHaveBeenCalled()
     expect(mockHidePrompt).toHaveBeenCalled()
+  })
+
+  it('falls back to assertSenderIsMainWindowOrPrompt if assertSenderIsAppWindow is not provided', () => {
+    const fallbackSecurity = {
+      assertSenderIsMainWindowOrPrompt: vi.fn()
+    }
+    const fallbackController = new ReminderIpcController({
+      scheduler: mockScheduler,
+      hidePromptWindow: mockHidePrompt,
+      security: fallbackSecurity as any
+    })
+    fallbackController.register()
+
+    const mockEvent = { sender: {} }
+    listeners[IpcChannels.RemindSubmit](mockEvent)
+    expect(fallbackSecurity.assertSenderIsMainWindowOrPrompt).toHaveBeenCalledWith(mockEvent)
+
+    listeners[IpcChannels.RemindSnooze](mockEvent, 5)
+    expect(fallbackSecurity.assertSenderIsMainWindowOrPrompt).toHaveBeenCalledWith(mockEvent)
+    fallbackController.unregister()
   })
 
   it('unregisters listeners and handlers cleanly', () => {

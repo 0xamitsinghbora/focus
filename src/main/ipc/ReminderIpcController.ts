@@ -9,7 +9,7 @@ export interface ReminderIpcDependencies {
   hidePromptWindow?: () => void
   showPromptWindow?: (options?: { focus?: boolean }) => void
   security: {
-    assertSenderIsMainWindowOrPrompt: (
+    assertSenderIsMainWindowOrPrompt?: (
       event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent
     ) => void
     assertSenderIsAppWindow: (event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent) => void
@@ -33,20 +33,30 @@ export class ReminderIpcController {
 
     this.unregister()
 
+    const assertAuthorizedApp = (
+      event: Electron.IpcMainInvokeEvent | Electron.IpcMainEvent
+    ): void => {
+      if (typeof security.assertSenderIsAppWindow === 'function') {
+        security.assertSenderIsAppWindow(event)
+      } else if (typeof security.assertSenderIsMainWindowOrPrompt === 'function') {
+        security.assertSenderIsMainWindowOrPrompt(event)
+      }
+    }
+
     this.snoozeHandler = (event, minutes?: number) => {
-      security.assertSenderIsMainWindowOrPrompt(event)
+      assertAuthorizedApp(event)
       scheduler.snooze(typeof minutes === 'number' && minutes > 0 ? minutes : 5)
       hidePrompt()
     }
 
     this.submitHandler = (event) => {
-      security.assertSenderIsMainWindowOrPrompt(event)
+      assertAuthorizedApp(event)
       scheduler.resetBlockAndTimer()
       hidePrompt()
     }
 
     this.showPromptHandler = (event) => {
-      security.assertSenderIsAppWindow(event)
+      assertAuthorizedApp(event)
       scheduler.notifyPromptTriggered()
       showPrompt({ focus: true })
     }
@@ -56,7 +66,7 @@ export class ReminderIpcController {
     ipcMain.on(IpcChannels.PromptShow, this.showPromptHandler)
 
     ipcMain.handle(IpcChannels.RemindGetStatus, (event): ReminderStatus => {
-      security.assertSenderIsAppWindow(event)
+      assertAuthorizedApp(event)
       return scheduler.getStatus()
     })
   }

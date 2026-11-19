@@ -2,7 +2,7 @@ import React, { useState, memo } from 'react'
 import { DailyGoal } from '../../../shared/types'
 import { Panel } from './DashboardLayout'
 import { cn, isDeadlineOverdue, formatDeadlineBadge } from '../lib/utils'
-import { getGroupTheme, getPreferredGroupColor } from '../lib/groupTheme'
+import { getGroupTheme, getPreferredGroupColor, getLearningStageTheme } from '../lib/groupTheme'
 
 interface DailyGoalsPanelProps {
   goals: DailyGoal[]
@@ -169,9 +169,12 @@ function DailyGoalsPanelComponent({
               </div>
             ) : (
               goals.map((goal) => {
-                const theme = goal.groupTag
-                  ? getGroupTheme(goal.groupColor || getPreferredGroupColor(goal.groupTag))
-                  : null
+                const learningStage = goal.learningStage
+                const theme = learningStage
+                  ? getLearningStageTheme(learningStage)
+                  : goal.groupTag
+                    ? getGroupTheme(goal.groupColor || getPreferredGroupColor(goal.groupTag))
+                    : null
                 const loggedMinutes = goalLoggedMinutesMap[goal.id] || 0
 
                 return (
@@ -180,8 +183,16 @@ function DailyGoalsPanelComponent({
                     role="article"
                     tabIndex={0}
                     aria-label={`Task: ${goal.title}`}
-                    className="group flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border transition-all text-xs shadow-apple-subtle apple-card-elevated border-border/60 bg-card hover:border-border/90 hover:shadow-apple-card"
+                    className="group relative flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl border transition-all text-xs shadow-apple-subtle apple-card-elevated border-border/60 bg-card hover:border-border/90 hover:shadow-apple-card"
                   >
+                    {learningStage && theme && (
+                      <div
+                        className={cn(
+                          'absolute left-0 top-2 bottom-2 w-1 rounded-r-full',
+                          theme.barBg
+                        )}
+                      />
+                    )}
                     <div className="flex items-center gap-2.5 min-w-0 flex-1">
                       <button
                         type="button"
@@ -194,11 +205,41 @@ function DailyGoalsPanelComponent({
                         aria-label={`Mark task "${goal.title}" complete`}
                       />
                       <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="truncate text-foreground font-medium text-[13px] tracking-[-0.01em]">
                             {goal.title}
                           </span>
-                          {goal.groupTag && theme && (
+                          {learningStage && theme ? (
+                            <span
+                              className={cn(
+                                'px-1.5 py-0.2 rounded border text-[10px] font-semibold shrink-0 shadow-2xs flex items-center gap-1',
+                                theme.badgeBg,
+                                theme.badgeText,
+                                theme.badgeBorder
+                              )}
+                              title={`Spaced Revision: ${
+                                learningStage === 1
+                                  ? '1st Day (Urgent Recall)'
+                                  : learningStage === 2
+                                    ? '7th Day (Reinforcement)'
+                                    : '30th Day (Mastery)'
+                              }`}
+                            >
+                              <span
+                                className={cn('h-1.5 w-1.5 rounded-full shrink-0', theme.dotClass)}
+                              />
+                              <span>
+                                {learningStage === 1
+                                  ? 'Day 1 Revise'
+                                  : learningStage === 2
+                                    ? 'Day 7 Revise'
+                                    : 'Day 30 Revise'}
+                              </span>
+                              <span className="font-mono text-[9px] opacity-80 font-bold">
+                                {learningStage === 1 ? '●○○' : learningStage === 2 ? '●●○' : '●●●'}
+                              </span>
+                            </span>
+                          ) : goal.groupTag && theme ? (
                             <span
                               className={cn(
                                 'px-1.5 py-0.2 rounded border text-[10px] font-semibold shrink-0 shadow-2xs',
@@ -209,7 +250,7 @@ function DailyGoalsPanelComponent({
                             >
                               {goal.groupTag}
                             </span>
-                          )}
+                          ) : null}
                         </div>
 
                         {/* Logged time */}
@@ -272,23 +313,63 @@ function DailyGoalsPanelComponent({
               </div>
             ) : (
               plannedGoals.map((goal) => {
+                const learningStage = goal.learningStage
+                const theme = learningStage
+                  ? getLearningStageTheme(learningStage)
+                  : goal.groupTag
+                    ? getGroupTheme(goal.groupColor || getPreferredGroupColor(goal.groupTag))
+                    : null
                 const loggedMinutes = goalLoggedMinutesMap[goal.id] || 0
                 const isOverdue = isDeadlineOverdue(goal.deadline, false)
                 return (
                   <div
                     key={goal.id}
                     className={cn(
-                      'group flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border transition-all text-xs shadow-apple-subtle',
+                      'group relative flex items-center justify-between gap-2 px-3 py-2.5 rounded-xl border transition-all text-xs shadow-apple-subtle',
                       isOverdue
                         ? 'border-apple-red/70 bg-apple-red/4 dark:bg-apple-red/8'
                         : 'border-border/70 bg-card hover:border-border'
                     )}
                   >
+                    {learningStage && theme && (
+                      <div
+                        className={cn(
+                          'absolute left-0 top-2 bottom-2 w-1 rounded-r-full',
+                          theme.barBg
+                        )}
+                      />
+                    )}
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <div className="min-w-0 flex-1">
-                        <span className="truncate text-foreground font-medium text-[12.5px] block">
-                          {goal.title}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="truncate text-foreground font-medium text-[12.5px]">
+                            {goal.title}
+                          </span>
+                          {learningStage && theme && (
+                            <span
+                              className={cn(
+                                'px-1.5 py-0.2 rounded border text-[9.5px] font-semibold shrink-0 shadow-2xs flex items-center gap-1',
+                                theme.badgeBg,
+                                theme.badgeText,
+                                theme.badgeBorder
+                              )}
+                            >
+                              <span
+                                className={cn('h-1.5 w-1.5 rounded-full shrink-0', theme.dotClass)}
+                              />
+                              <span>
+                                {learningStage === 1
+                                  ? 'Day 1 Revise'
+                                  : learningStage === 2
+                                    ? 'Day 7 Revise'
+                                    : 'Day 30 Revise'}
+                              </span>
+                              <span className="font-mono text-[8.5px] opacity-80 font-bold">
+                                {learningStage === 1 ? '●○○' : learningStage === 2 ? '●●○' : '●●●'}
+                              </span>
+                            </span>
+                          )}
+                        </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           {loggedMinutes > 0 && (
                             <span className="text-[10px] tabular-nums text-muted-foreground">
@@ -297,7 +378,10 @@ function DailyGoalsPanelComponent({
                           )}
                           {isOverdue && (
                             <span className="text-[10px] text-apple-red font-semibold">
-                              Overdue · {goal.deadline ? formatDeadlineBadge(goal.deadline) : `Due ${goal.date}`}
+                              Overdue ·{' '}
+                              {goal.deadline
+                                ? formatDeadlineBadge(goal.deadline)
+                                : `Due ${goal.date}`}
                             </span>
                           )}
                         </div>

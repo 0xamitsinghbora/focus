@@ -238,7 +238,11 @@ export function PromptTaskSelector({
           }}
           className="px-3.5 py-1.5 text-[12px] font-medium text-foreground bg-card hover:bg-secondary border border-border/80 hover:border-border transition-all rounded-xl shadow-apple-subtle hover:shadow-apple-card flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-40"
         >
-          <span>{typeof snoozeCount === 'number' && snoozeCount > 0 ? `Snooze (${snoozeCount}x)` : 'Snooze'}</span>
+          <span>
+            {typeof snoozeCount === 'number' && snoozeCount > 0
+              ? `Snooze (${snoozeCount}x)`
+              : 'Snooze'}
+          </span>
           <kbd className="px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground border border-border/70 text-[10px] font-mono leading-none">
             Esc
           </kbd>

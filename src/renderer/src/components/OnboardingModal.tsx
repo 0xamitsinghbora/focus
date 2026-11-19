@@ -142,7 +142,9 @@ export function OnboardingModal({
                     <span>🕒</span> Planned
                   </div>
                   <p className="text-[11px] text-muted-foreground leading-snug">
-                    Tasks queued for today. Add tasks anytime with <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">Ctrl+N</kbd>.
+                    Tasks queued for today. Add tasks anytime with{' '}
+                    <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">Ctrl+N</kbd>
+                    .
                   </p>
                 </div>
 
@@ -171,7 +173,8 @@ export function OnboardingModal({
                   htmlFor="onboarding-first-goal"
                   className="block text-[12px] font-semibold text-foreground"
                 >
-                  What is your primary focus or task for today? <span className="text-muted-foreground font-normal">(optional)</span>
+                  What is your primary focus or task for today?{' '}
+                  <span className="text-muted-foreground font-normal">(optional)</span>
                 </label>
                 <input
                   id="onboarding-first-goal"
@@ -188,7 +191,8 @@ export function OnboardingModal({
                   }}
                 />
                 <p className="text-[11px] text-muted-foreground">
-                  Entering a task here will automatically place it in your Planner as your active Anchor Task.
+                  Entering a task here will automatically place it in your Planner as your active
+                  Anchor Task.
                 </p>
               </div>
             </div>
@@ -286,7 +290,8 @@ export function OnboardingModal({
               <div className="flex items-center gap-3 p-3 rounded-xl border border-border/70 bg-surface/30 text-[12px] text-muted-foreground">
                 <span className="text-xl shrink-0">🎧</span>
                 <span>
-                  Includes built-in soundscapes (Ocean Waves, Rain, Stream) and a floating desktop widget that keeps your countdown visible.
+                  Includes built-in soundscapes (Ocean Waves, Rain, Stream) and a floating desktop
+                  widget that keeps your countdown visible.
                 </span>
               </div>
             </div>
@@ -311,7 +316,11 @@ export function OnboardingModal({
                       Focus Quality Self-Rating (1–5)
                     </div>
                     <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-                      At each prompt check-in, rate your focus quality (with hotkeys <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">Alt+1..5</kbd>). This catches desk daydreaming and builds clear trend data.
+                      At each prompt check-in, rate your focus quality (with hotkeys{' '}
+                      <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">
+                        Alt+1..5
+                      </kbd>
+                      ). This catches desk daydreaming and builds clear trend data.
                     </p>
                   </div>
                 </div>
@@ -326,7 +335,8 @@ export function OnboardingModal({
                       Escalating Break Nudges
                     </div>
                     <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-                      Prevents break drift. If you are idle or away past 2x your session interval, Focus gently surfaces quick 5-minute micro-focus jumpstarts.
+                      Prevents break drift. If you are idle or away past 2x your session interval,
+                      Focus gently surfaces quick 5-minute micro-focus jumpstarts.
                     </p>
                   </div>
                 </div>
@@ -341,7 +351,8 @@ export function OnboardingModal({
                       Morning Planning Ritual
                     </div>
                     <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-                      Every morning on first open, Focus guides you to carry forward unfinished tasks, set your daily target, and commit your day&apos;s anchor task.
+                      Every morning on first open, Focus guides you to carry forward unfinished
+                      tasks, set your daily target, and commit your day&apos;s anchor task.
                     </p>
                   </div>
                 </div>
@@ -405,4 +416,3 @@ export function OnboardingModal({
     </div>
   )
 }
-

@@ -473,11 +473,15 @@ export function AddTaskCard({
                     setActivePopover('due')
                   }
                   setTimeout(() => {
-                    const timeControl = popoverRef.current?.querySelector('[role="spinbutton"]') as HTMLElement | null
+                    const timeControl = popoverRef.current?.querySelector(
+                      '[role="spinbutton"]'
+                    ) as HTMLElement | null
                     if (timeControl) {
                       timeControl.focus()
                     } else {
-                      const firstFocusable = popoverRef.current?.querySelector('[tabindex="0"]') as HTMLElement | null
+                      const firstFocusable = popoverRef.current?.querySelector(
+                        '[tabindex="0"]'
+                      ) as HTMLElement | null
                       firstFocusable?.focus()
                     }
                   }, 30)
@@ -531,11 +535,15 @@ export function AddTaskCard({
                 if (e.key === 'ArrowRight' || (e.key === 'Tab' && !e.shiftKey)) {
                   e.preventDefault()
                   if (activePopover === 'due') {
-                    const timeControl = popoverRef.current?.querySelector('[role="spinbutton"]') as HTMLElement | null
+                    const timeControl = popoverRef.current?.querySelector(
+                      '[role="spinbutton"]'
+                    ) as HTMLElement | null
                     if (timeControl) {
                       timeControl.focus()
                     } else {
-                      const popoverContainer = popoverRef.current?.querySelector('[tabindex="0"]') as HTMLElement | null
+                      const popoverContainer = popoverRef.current?.querySelector(
+                        '[tabindex="0"]'
+                      ) as HTMLElement | null
                       popoverContainer?.focus()
                     }
                   } else {

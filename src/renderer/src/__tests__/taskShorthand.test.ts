@@ -64,4 +64,11 @@ describe('parseTaskShorthand', () => {
     expect(result.parsedDueDate).toBe('2026-11-15')
     expect(result.parsedDueTime).toBe('17:00')
   })
+
+  it('parses #learning tag with duration for spaced repetition', () => {
+    const result = parseTaskShorthand('Read distributed transactions chapter #learning ~45m')
+    expect(result.cleanTitle).toBe('Read distributed transactions chapter')
+    expect(result.parsedTag).toBe('learning')
+    expect(result.parsedMinutes).toBe(45)
+  })
 })

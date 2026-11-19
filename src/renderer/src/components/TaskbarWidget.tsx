@@ -542,14 +542,14 @@ export function TaskbarWidget(): React.JSX.Element {
 
   // Daily productive time for tooltip
   const todayMins = Math.max(0, Math.floor(todayProductiveMinutes))
-  const line2Value = dailyFocusTargetMinutes > 0
-    ? `${formatMinutes(todayMins)} / ${formatMinutes(dailyFocusTargetMinutes)}`
-    : formatMinutes(todayMins)
+  const line2Value =
+    dailyFocusTargetMinutes > 0
+      ? `${formatMinutes(todayMins)} / ${formatMinutes(dailyFocusTargetMinutes)}`
+      : formatMinutes(todayMins)
 
   // Daily target progress fraction
-  const dailyTargetPct = dailyFocusTargetMinutes > 0
-    ? Math.min(1, todayMins / dailyFocusTargetMinutes)
-    : 0
+  const dailyTargetPct =
+    dailyFocusTargetMinutes > 0 ? Math.min(1, todayMins / dailyFocusTargetMinutes) : 0
   const dailyTargetComplete = dailyTargetPct >= 1
 
   // Focus Ring progress calculation
@@ -790,31 +790,67 @@ export function TaskbarWidget(): React.JSX.Element {
             aria-label={actionTitle}
           >
             {session?.isAfk ? (
-              <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-rose-500 dark:text-rose-400 translate-x-[0.5px]">
+              <svg
+                width={iconSize}
+                height={iconSize}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-rose-500 dark:text-rose-400 translate-x-[0.5px]"
+              >
                 <polygon points="6 4 20 12 6 20" />
               </svg>
             ) : isPaused ? (
-              <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-rose-500 dark:text-rose-400 translate-x-[0.5px]">
+              <svg
+                width={iconSize}
+                height={iconSize}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-rose-500 dark:text-rose-400 translate-x-[0.5px]"
+              >
                 <polygon points="6 4 20 12 6 20" />
               </svg>
             ) : !hasInProgressTasks ? (
-              <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 translate-x-[0.5px] transition-colors">
+              <svg
+                width={iconSize}
+                height={iconSize}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-rose-500 dark:text-rose-400 hover:text-rose-600 dark:hover:text-rose-300 translate-x-[0.5px] transition-colors"
+              >
                 <polygon points="6 4 20 12 6 20" />
               </svg>
             ) : isDeepFocus ? (
               isOvertime || isBreak ? (
-                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-rose-500 dark:text-rose-400">
+                <svg
+                  width={iconSize}
+                  height={iconSize}
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="text-rose-500 dark:text-rose-400"
+                >
                   <rect x="5" y="4" width="4" height="16" rx="1.5" />
                   <rect x="15" y="4" width="4" height="16" rx="1.5" />
                 </svg>
               ) : (
-                <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-emerald-600 dark:text-emerald-400">
+                <svg
+                  width={iconSize}
+                  height={iconSize}
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="text-emerald-600 dark:text-emerald-400"
+                >
                   <rect x="5" y="4" width="4" height="16" rx="1.5" />
                   <rect x="15" y="4" width="4" height="16" rx="1.5" />
                 </svg>
               )
             ) : (
-              <svg width={iconSize} height={iconSize} viewBox="0 0 24 24" fill="currentColor" className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 translate-x-[0.5px] transition-colors">
+              <svg
+                width={iconSize}
+                height={iconSize}
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 translate-x-[0.5px] transition-colors"
+              >
                 <polygon points="6 4 20 12 6 20" />
               </svg>
             )}

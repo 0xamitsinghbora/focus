@@ -14,7 +14,9 @@ import {
   SyncTarget,
   HeatmapData,
   SessionQuickActionType,
-  BreakNudgePayload
+  BreakNudgePayload,
+  LearningTrack,
+  LearningStage
 } from './types'
 
 export interface FocusAPI {
@@ -84,6 +86,16 @@ export interface FocusAPI {
     ) => Promise<{ success: boolean }>
   }
 
+  // --- Learning & Spaced Repetition ---
+  learning: {
+    getTracks: (status?: 'active' | 'mastered') => Promise<LearningTrack[]>
+    resetStage: (
+      trackId: string,
+      stage: LearningStage,
+      newDate: string
+    ) => Promise<{ success: boolean }>
+  }
+
   // --- Timer & Session ---
   session: {
     updateTimer: (payload: SessionTimerPayload) => void
@@ -91,7 +103,9 @@ export interface FocusAPI {
     quickAction?: (action: SessionQuickActionType, payload?: string) => void
     notifyZeroReached?: (autoPause?: boolean) => void
     onTogglePause: (callback: () => void) => () => void
-    onQuickAction: (callback: (action: SessionQuickActionType, payload?: string) => void) => () => void
+    onQuickAction: (
+      callback: (action: SessionQuickActionType, payload?: string) => void
+    ) => () => void
     onSessionUpdate: (callback: (payload: SessionTimerPayload) => void) => () => void
   }
 

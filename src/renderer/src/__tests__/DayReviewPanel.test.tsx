@@ -270,16 +270,12 @@ describe('DayReviewPanel Component', () => {
       unclassifiedLogs: []
     }
 
-    render(
-      <DayReviewPanel
-        review={mockReview}
-        today="2026-10-28"
-        onReopenGoal={handleReopen}
-      />
-    )
+    render(<DayReviewPanel review={mockReview} today="2026-10-28" onReopenGoal={handleReopen} />)
 
     expect(screen.getByText('Finished sprint backlog task')).toBeDefined()
-    const reopenButton = screen.getByRole('button', { name: /Reopen task "Finished sprint backlog task" and move to today/i })
+    const reopenButton = screen.getByRole('button', {
+      name: /Reopen task "Finished sprint backlog task" and move to today/i
+    })
     expect(reopenButton).toBeDefined()
 
     await act(async () => {

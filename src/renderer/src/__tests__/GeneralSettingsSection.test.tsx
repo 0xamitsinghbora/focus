@@ -125,4 +125,3 @@ describe('GeneralSettingsSection Component - Daily Focus Target', () => {
     expect(screen.queryByLabelText(/Escalating Break Nudges/i)).toBeNull()
   })
 })
-

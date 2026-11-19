@@ -184,8 +184,7 @@ function App(): React.JSX.Element {
         const hasLogs = logs.length > 0
         const hasGoals = todayGoals.length > 0
         const hasHeatmap = heatmapData && Object.keys(heatmapData).length > 0
-        const isNewUser =
-          !settings?.hasCompletedOnboarding && !hasLogs && !hasGoals && !hasHeatmap
+        const isNewUser = !settings?.hasCompletedOnboarding && !hasLogs && !hasGoals && !hasHeatmap
 
         if (isNewUser) {
           // Open Planner tab and show Onboarding setup guide

@@ -132,12 +132,12 @@ export function shouldIncomingOverwrite<T extends { deletedAt?: string; restored
   // - If the active update timestamp appears newer due to forward clock skew on the modifying machine,
   //   the tombstone still wins if the divergence is within CLOCK_SKEW_TOLERANCE_MS (60 seconds).
   if (incoming.deletedAt && !existing.deletedAt) {
-    if (incomingTime >= existingTime || (existingTime - incomingTime) <= CLOCK_SKEW_TOLERANCE_MS) {
+    if (incomingTime >= existingTime || existingTime - incomingTime <= CLOCK_SKEW_TOLERANCE_MS) {
       return true
     }
   }
   if (!incoming.deletedAt && existing.deletedAt) {
-    if (existingTime >= incomingTime || (incomingTime - existingTime) <= CLOCK_SKEW_TOLERANCE_MS) {
+    if (existingTime >= incomingTime || incomingTime - existingTime <= CLOCK_SKEW_TOLERANCE_MS) {
       return false
     }
   }

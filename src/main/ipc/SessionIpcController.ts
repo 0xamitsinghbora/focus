@@ -74,8 +74,10 @@ export class SessionIpcController {
               if (
                 !mainWin.isDestroyed() &&
                 mainWin.webContents &&
-                !(typeof mainWin.webContents.isDestroyed === 'function' &&
-                  mainWin.webContents.isDestroyed())
+                !(
+                  typeof mainWin.webContents.isDestroyed === 'function' &&
+                  mainWin.webContents.isDestroyed()
+                )
               ) {
                 try {
                   mainWin.webContents.send(IpcChannels.UpdateSessionTimer, payload)
@@ -106,8 +108,10 @@ export class SessionIpcController {
                 if (
                   !promptWin.isDestroyed() &&
                   promptWin.webContents &&
-                  !(typeof promptWin.webContents.isDestroyed === 'function' &&
-                    promptWin.webContents.isDestroyed())
+                  !(
+                    typeof promptWin.webContents.isDestroyed === 'function' &&
+                    promptWin.webContents.isDestroyed()
+                  )
                 ) {
                   try {
                     promptWin.webContents.send(IpcChannels.UpdateSessionTimer, payload)

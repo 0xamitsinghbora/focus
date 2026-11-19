@@ -382,8 +382,7 @@ export class RecurringGoalsRepository {
           const [sYear, sMonth, sDay] = recurringGoal.startsOn.split('-').map(Number)
           const startDayOfWeek = new Date(sYear, sMonth - 1, sDay).getDay()
           const daysSinceScheduled = (currentDayOfWeek - startDayOfWeek + 7) % 7
-          scheduledDate =
-            daysSinceScheduled === 0 ? date : shiftDate(date, -daysSinceScheduled)
+          scheduledDate = daysSinceScheduled === 0 ? date : shiftDate(date, -daysSinceScheduled)
           if (scheduledDate < recurringGoal.startsOn) {
             continue
           }

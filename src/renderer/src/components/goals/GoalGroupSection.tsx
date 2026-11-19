@@ -310,6 +310,19 @@ export function GoalGroupSection({
                   {group.goals.length}
                 </span>
 
+                {/* Spaced Repetition R-Y-G Indicator on #learning tag */}
+                {group.tag.toLowerCase() === 'learning' && (
+                  <span
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9.5px] font-semibold bg-surface/80 border border-border/70 text-muted-foreground shadow-2xs shrink-0 select-none ml-0.5"
+                    title="Spaced Repetition: 1st day (Red), 7th day (Yellow), 30th day (Green)"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                    <span className="font-mono text-[9px] opacity-80">1·7·30d</span>
+                  </span>
+                )}
+
                 <button
                   type="button"
                   onClick={(e) => {

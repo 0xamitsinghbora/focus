@@ -1967,9 +1967,7 @@ describe('FocusSessionContext', () => {
       }),
       {
         wrapper: ({ children }: { children: ReactNode }) => (
-          <FocusSessionProvider availableGoals={[existingGoal]}>
-            {children}
-          </FocusSessionProvider>
+          <FocusSessionProvider availableGoals={[existingGoal]}>{children}</FocusSessionProvider>
         )
       }
     )

@@ -11,13 +11,13 @@ export interface FocusSessionAudioControls {
 }
 
 export function useFocusSessionAudio(): FocusSessionAudioControls {
-  const engine = useAudioEngine() as any
-  const systemPlay = engine?.systemPlay
-  const systemPause = engine?.systemPause
-  const rawPlayAudio = engine?.play
-  const rawPauseAudio = engine?.pause
-  const audioPlaying = Boolean(engine?.playing)
-  const userPaused = Boolean(engine?.userPaused)
+  const engine = useAudioEngine()
+  const systemPlay = engine.systemPlay
+  const systemPause = engine.systemPause
+  const rawPlayAudio = engine.play
+  const rawPauseAudio = engine.pause
+  const audioPlaying = Boolean(engine.playing)
+  const userPaused = Boolean(engine.userPaused)
 
   const playAudio = useCallback(() => {
     try {

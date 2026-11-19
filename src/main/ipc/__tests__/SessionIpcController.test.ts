@@ -208,7 +208,10 @@ describe('SessionIpcController', () => {
 
     // Should not call send immediately because window is loading
     expect(loadingWin.webContents.send).not.toHaveBeenCalled()
-    expect(loadingWin.webContents.once).toHaveBeenCalledWith('did-finish-load', expect.any(Function))
+    expect(loadingWin.webContents.once).toHaveBeenCalledWith(
+      'did-finish-load',
+      expect.any(Function)
+    )
 
     // Simulate window finished loading
     ;(finishLoadCb as any)?.()

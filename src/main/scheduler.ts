@@ -117,12 +117,18 @@ export class ReminderScheduler {
     // Break nudge tracking: detect transitions into/out of break state.
     // Active intentional break countdowns ("Take Break") must NOT trigger break nudges.
     const isIntentionalBreakActive = Boolean(
-      payload.isBreak && payload.isActive && !payload.isPaused && !payload.isAfk && payload.secondsRemaining > 0
+      payload.isBreak &&
+      payload.isActive &&
+      !payload.isPaused &&
+      !payload.isAfk &&
+      payload.secondsRemaining > 0
     )
     const isOnBreak =
       payload.isAfk ||
       (!isIntentionalBreakActive &&
-        (!payload.isActive || payload.isPaused || (payload.isBreak && payload.secondsRemaining <= 0)))
+        (!payload.isActive ||
+          payload.isPaused ||
+          (payload.isBreak && payload.secondsRemaining <= 0)))
     if (isOnBreak) {
       if (this.breakNudgeStartEpoch === 0) {
         this.breakNudgeStartEpoch =

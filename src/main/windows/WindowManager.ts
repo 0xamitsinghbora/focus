@@ -41,7 +41,8 @@ import { logger } from '../logger'
 export interface WindowManagerOptions {
   getShowWidget: () => boolean
   onWidgetVisibilityChange: (visible: boolean) => void
-  getInProgressGoals?: () => Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
+  getInProgressGoals?: () =>
+    Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
 }
 
 /**

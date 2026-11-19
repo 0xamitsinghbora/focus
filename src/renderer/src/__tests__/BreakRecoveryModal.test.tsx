@@ -106,4 +106,3 @@ describe('BreakRecoveryModal Component', () => {
     ).toBeDefined()
   })
 })
-

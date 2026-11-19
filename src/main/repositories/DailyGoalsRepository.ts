@@ -122,13 +122,15 @@ export class DailyGoalsRepository {
           id, date, effectiveDate, title, status, targetMinutes, deadline,
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
-          note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt
+          note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
+          learningTrackId, learningStage
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
-          @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt
+          @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
+          @learningTrackId, @learningStage
         )
       `),
       upsertDailyGoal: this.db.prepare(`
@@ -136,13 +138,15 @@ export class DailyGoalsRepository {
           id, date, effectiveDate, title, status, targetMinutes, deadline,
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
-          note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt
+          note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
+          learningTrackId, learningStage
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
-          @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt
+          @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
+          @learningTrackId, @learningStage
         )
         ON CONFLICT(id) DO UPDATE SET
           date = excluded.date,
@@ -165,7 +169,9 @@ export class DailyGoalsRepository {
           sortOrder = excluded.sortOrder,
           restoredAt = excluded.restoredAt,
           updatedAt = excluded.updatedAt,
-          deletedAt = excluded.deletedAt
+          deletedAt = excluded.deletedAt,
+          learningTrackId = excluded.learningTrackId,
+          learningStage = excluded.learningStage
       `),
       updateDailyGoal: this.db.prepare(`
         UPDATE daily_goals SET
@@ -189,7 +195,9 @@ export class DailyGoalsRepository {
           sortOrder = @sortOrder,
           restoredAt = @restoredAt,
           updatedAt = @updatedAt,
-          deletedAt = @deletedAt
+          deletedAt = @deletedAt,
+          learningTrackId = @learningTrackId,
+          learningStage = @learningStage
         WHERE id = @id
       `),
       deleteDailyGoal: this.db.prepare(`
@@ -281,7 +289,9 @@ export class DailyGoalsRepository {
       sortOrder: r.sortOrder ?? undefined,
       updatedAt: r.updatedAt ?? undefined,
       deletedAt: r.deletedAt ?? undefined,
-      restoredAt: r.restoredAt ?? undefined
+      restoredAt: r.restoredAt ?? undefined,
+      learningTrackId: r.learningTrackId ?? undefined,
+      learningStage: (r.learningStage as 1 | 2 | 3) ?? undefined
     }
   }
 
@@ -322,7 +332,9 @@ export class DailyGoalsRepository {
       sortOrder: goal.sortOrder ?? null,
       updatedAt: goal.updatedAt ?? new Date().toISOString(),
       deletedAt: goal.deletedAt && goal.deletedAt.trim() !== '' ? goal.deletedAt : null,
-      restoredAt: goal.restoredAt ?? null
+      restoredAt: goal.restoredAt ?? null,
+      learningTrackId: goal.learningTrackId ?? null,
+      learningStage: goal.learningStage ?? null
     }
   }
 
@@ -471,7 +483,9 @@ export class DailyGoalsRepository {
     groupTag?: string,
     groupColor?: string,
     sortOrder?: number,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    learningTrackId?: string,
+    learningStage?: 1 | 2 | 3
   ): Promise<DailyGoal> {
     assertValidDate(date)
     const trimmedTitle = title.trim()
@@ -510,7 +524,9 @@ export class DailyGoalsRepository {
       groupTag: groupTag?.trim() || undefined,
       groupColor: resolvedColor,
       sortOrder: nextSort,
-      updatedAt: now
+      updatedAt: now,
+      learningTrackId: learningTrackId?.trim() || undefined,
+      learningStage
     }
     goal.effectiveDate = this.computeEffectiveDate(goal)
 
@@ -583,7 +599,10 @@ export class DailyGoalsRepository {
             ? Math.round(existing.targetMinutes)
             : undefined,
       completedAt,
-      updatedAt: now
+      updatedAt: now,
+      learningTrackId:
+        goal.learningTrackId !== undefined ? goal.learningTrackId : existing?.learningTrackId,
+      learningStage: goal.learningStage !== undefined ? goal.learningStage : existing?.learningStage
     }
     updatedGoal.effectiveDate = this.computeEffectiveDate(updatedGoal)
 
@@ -661,7 +680,11 @@ export class DailyGoalsRepository {
                 ? Math.round(existing.targetMinutes)
                 : undefined,
           completedAt,
-          updatedAt: now
+          updatedAt: now,
+          learningTrackId:
+            goal.learningTrackId !== undefined ? goal.learningTrackId : existing?.learningTrackId,
+          learningStage:
+            goal.learningStage !== undefined ? goal.learningStage : existing?.learningStage
         }
         updated.effectiveDate = this.computeEffectiveDate(updated)
 
@@ -796,7 +819,9 @@ export class DailyGoalsRepository {
           groupTag: orig.groupTag,
           groupColor: orig.groupColor,
           sortOrder: currentMaxSort,
-          updatedAt: now
+          updatedAt: now,
+          learningTrackId: orig.learningTrackId,
+          learningStage: orig.learningStage
         }
         this.stmts.insertDailyGoal.run(this.goalParams(newGoal))
         this.stmts.markCarriedDailyGoal.run(toDate, now, now, orig.id)

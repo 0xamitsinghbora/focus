@@ -50,7 +50,9 @@ describe('TrayGenerator', () => {
     expect(lastCall.some((item) => item.label === 'Settings')).toBe(true)
     expect(lastCall.some((item) => item.label === 'Quit focus')).toBe(true)
     // Widget options removed from tray menu
-    expect(lastCall.some((item) => item.label === 'Show Widget' || item.label === 'Hide Widget')).toBe(false)
+    expect(
+      lastCall.some((item) => item.label === 'Show Widget' || item.label === 'Hide Widget')
+    ).toBe(false)
     expect(lastCall.some((item) => item.label === 'Reset Widget')).toBe(false)
   })
 
@@ -91,7 +93,9 @@ describe('TrayGenerator', () => {
     expect(add5m).toBeDefined()
     expect(takeBreak).toBeDefined()
     // Pause option, Mark Task Done, and status label removed
-    expect(lastCall.some((item) => item.label === 'Pause Session' || item.label === 'Resume Session')).toBe(false)
+    expect(
+      lastCall.some((item) => item.label === 'Pause Session' || item.label === 'Resume Session')
+    ).toBe(false)
     expect(lastCall.some((item) => item.label === 'Mark Task Done')).toBe(false)
     expect(lastCall.some((item) => item.label === '⚡ Deep Work (20m)')).toBe(false)
 

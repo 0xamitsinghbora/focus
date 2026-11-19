@@ -257,6 +257,22 @@ describe('Integration Test: IPC Authorization Matrix across Application Windows'
         ipcRenderer.invoke(IpcChannels.PatchSettings, { theme: 'light' })
       ).rejects.toThrow('Unauthorized IPC sender')
     })
+
+    it('SUCCESS: can send RemindSubmit to reset block and timer when resuming from AFK', () => {
+      const resetSpy = vi.spyOn(scheduler, 'resetBlockAndTimer')
+      expect(() => {
+        ipcRenderer.send(IpcChannels.RemindSubmit)
+      }).not.toThrow()
+      expect(resetSpy).toHaveBeenCalled()
+    })
+
+    it('SUCCESS: can send RemindSnooze to snooze prompt', () => {
+      const snoozeSpy = vi.spyOn(scheduler, 'snooze')
+      expect(() => {
+        ipcRenderer.send(IpcChannels.RemindSnooze, 10)
+      }).not.toThrow()
+      expect(snoozeSpy).toHaveBeenCalledWith(10)
+    })
   })
 
   describe('Prompt Window (Intervention Dialog Role)', () => {
@@ -338,6 +354,16 @@ describe('Integration Test: IPC Authorization Matrix across Application Windows'
       await expect(ipcRenderer.invoke(IpcChannels.GetSettings)).rejects.toThrow(
         'Unauthorized IPC sender'
       )
+    })
+
+    it('SECURITY REJECTION: cannot send RemindSubmit or RemindSnooze', () => {
+      expect(() => {
+        ipcRenderer.send(IpcChannels.RemindSubmit)
+      }).toThrow('Unauthorized IPC sender')
+
+      expect(() => {
+        ipcRenderer.send(IpcChannels.RemindSnooze, 5)
+      }).toThrow('Unauthorized IPC sender')
     })
   })
 })

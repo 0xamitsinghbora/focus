@@ -365,4 +365,67 @@ describe('GoalCard Accessibility & Context Integration', () => {
     expect(card.className).not.toContain('ring-apple-green/40')
     expect(screen.queryByText('Focusing')).toBeNull()
   })
+
+  it('renders Day 1 (Red), Day 7 (Yellow), and Day 30 (Green) spaced repetition badges and R-Y-G indicator bars', () => {
+    // Stage 1 (Red)
+    const stage1Goal: DailyGoal = {
+      id: 'learning-1',
+      title: 'Revise: Distributed Consensus',
+      date: '2026-11-21',
+      status: 'planned',
+      groupTag: 'learning',
+      groupColor: 'learning-red',
+      learningStage: 1,
+      createdAt: '2026-11-21T09:00:00.000Z'
+    }
+    const { unmount: unmount1 } = renderGoalCard(stage1Goal, 'planned')
+    expect(screen.getByText('Day 1 Revise')).toBeDefined()
+    expect(screen.getByText('●○○')).toBeDefined()
+    unmount1()
+
+    // Stage 2 (Yellow)
+    const stage2Goal: DailyGoal = {
+      id: 'learning-2',
+      title: 'Revise: Distributed Consensus',
+      date: '2026-11-27',
+      status: 'planned',
+      groupTag: 'learning',
+      groupColor: 'learning-yellow',
+      learningStage: 2,
+      createdAt: '2026-11-27T09:00:00.000Z'
+    }
+    const { unmount: unmount2 } = renderGoalCard(stage2Goal, 'planned')
+    expect(screen.getByText('Day 7 Revise')).toBeDefined()
+    expect(screen.getByText('●●○')).toBeDefined()
+    unmount2()
+
+    // Stage 3 (Green)
+    const stage3Goal: DailyGoal = {
+      id: 'learning-3',
+      title: 'Revise: Distributed Consensus',
+      date: '2026-12-20',
+      status: 'planned',
+      groupTag: 'learning',
+      groupColor: 'learning-green',
+      learningStage: 3,
+      createdAt: '2026-12-20T09:00:00.000Z'
+    }
+    const { unmount: unmount3 } = renderGoalCard(stage3Goal, 'planned')
+    expect(screen.getByText('Day 30 Revise')).toBeDefined()
+    expect(screen.getByText('●●●')).toBeDefined()
+    unmount3()
+
+    // Initial #learning task
+    const initialGoal: DailyGoal = {
+      id: 'learning-initial',
+      title: 'Learn Distributed Consensus #learning',
+      date: '2026-11-20',
+      status: 'planned',
+      groupTag: 'learning',
+      createdAt: '2026-11-20T09:00:00.000Z'
+    }
+    renderGoalCard(initialGoal, 'planned')
+    expect(screen.getByText('#learning')).toBeDefined()
+    expect(screen.getByText('1/7/30d')).toBeDefined()
+  })
 })

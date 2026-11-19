@@ -34,9 +34,11 @@ import {
   DailyGoalsRepository,
   InboxRepository,
   RecurringGoalsRepository,
-  TrashArchiveRepository
+  TrashArchiveRepository,
+  LearningRepository
 } from './repositories'
 import { AnalyticsService } from './services/AnalyticsService'
+import { LearningService } from './services/LearningService'
 
 export interface PurgedRecord {
   id: string
@@ -54,6 +56,8 @@ export class DataManager {
   public logsRepo!: LogsRepository
   public goalsRepo!: GoalsRepository
   public analyticsService!: AnalyticsService
+  public learningRepo!: LearningRepository
+  public learningService!: LearningService
 
   public get dailyGoalsRepo(): DailyGoalsRepository {
     return this.goalsRepo.daily
@@ -90,7 +94,14 @@ export class DataManager {
   >()
   private backupTimer: NodeJS.Timeout | null = null
 
-  constructor() {
+  constructor(customDbPath?: string) {
+    if (customDbPath) {
+      this.dataPath = path.dirname(customDbPath)
+      fssync.mkdirSync(this.dataPath, { recursive: true })
+      this.initDatabaseWithRecovery(customDbPath)
+      return
+    }
+
     this.dataPath = path.join(app.getPath('userData'), 'focus-logs')
     fssync.mkdirSync(this.dataPath, { recursive: true })
 
@@ -253,6 +264,9 @@ export class DataManager {
       this.logsRepo,
       this.settingsRepo
     )
+
+    this.learningRepo = new LearningRepository(this.db)
+    this.learningService = new LearningService(this.db, this.learningRepo, this.goalsRepo)
   }
 
   // --- Settings & Preferences Delegation ---
@@ -633,6 +647,9 @@ export class DataManager {
   }
 
   public async getGoals(date: string, includeDeleted = false): Promise<DailyGoal[]> {
+    if (this.learningService) {
+      await this.learningService.materializeRevisionsForDate(date)
+    }
     return this.goalsRepo.getGoals(date, includeDeleted)
   }
 
@@ -673,7 +690,9 @@ export class DataManager {
     groupTag?: string,
     groupColor?: string,
     sortOrder?: number,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    learningTrackId?: string,
+    learningStage?: 1 | 2 | 3
   ): Promise<DailyGoal> {
     const goal = await this.goalsRepo.addGoal(
       date,
@@ -687,9 +706,14 @@ export class DataManager {
       groupTag,
       groupColor,
       sortOrder,
-      status
+      status,
+      learningTrackId,
+      learningStage
     )
     this.dirtyGoalDates.add(date)
+    if (this.learningService) {
+      await this.learningService.onGoalUpdated(goal)
+    }
     return goal
   }
 
@@ -697,6 +721,9 @@ export class DataManager {
     const updated = await this.goalsRepo.updateGoal(date, goal)
     this.dirtyGoalDates.add(updated.date)
     this.analyticsService.invalidateGoalMinutesCache()
+    if (this.learningService) {
+      await this.learningService.onGoalUpdated(updated)
+    }
     return updated
   }
 
@@ -704,6 +731,9 @@ export class DataManager {
     const updated = await this.goalsRepo.updateGoals(goals)
     for (const g of updated) {
       this.dirtyGoalDates.add(g.date)
+      if (this.learningService) {
+        await this.learningService.onGoalUpdated(g)
+      }
     }
     this.analyticsService.invalidateGoalMinutesCache()
     return updated

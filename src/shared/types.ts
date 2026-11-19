@@ -71,6 +71,45 @@ export type DailyGoal = {
   updatedAt?: string
   deletedAt?: string
   restoredAt?: string
+  learningTrackId?: string
+  learningStage?: 1 | 2 | 3
+}
+
+export type LearningStage = 1 | 2 | 3
+export type LearningRevisionStatus = 'pending' | 'scheduled' | 'completed' | 'skipped'
+export type LearningTrackStatus = 'active' | 'mastered' | 'paused' | 'deleted'
+
+export type LearningTrack = {
+  id: string
+  title: string
+  originalGoalId?: string
+  originDate: string
+  targetMinutes?: number
+  currentStage: number // 1 (Day 1), 2 (Day 7), 3 (Day 30), 4 (Mastered)
+  status: LearningTrackStatus
+
+  // Stage 1 (1st Day)
+  day1Date: string
+  day1Status: LearningRevisionStatus
+  day1GoalId?: string
+  day1CompletedAt?: string
+
+  // Stage 2 (7th Day)
+  day7Date: string
+  day7Status: LearningRevisionStatus
+  day7GoalId?: string
+  day7CompletedAt?: string
+
+  // Stage 3 (30th Day)
+  day30Date: string
+  day30Status: LearningRevisionStatus
+  day30GoalId?: string
+  day30CompletedAt?: string
+
+  note?: string
+  createdAt: string
+  updatedAt?: string
+  deletedAt?: string
 }
 
 export type GoalInboxItem = {
@@ -230,7 +269,11 @@ export enum IpcChannels {
   ThemeUpdated = 'theme:updated',
   UninstallApp = 'app:uninstall',
   DeleteAllData = 'app:delete-all-data',
-  BreakNudge = 'scheduler:break-nudge'
+  BreakNudge = 'scheduler:break-nudge',
+  LearningGetTracks = 'learning:get-tracks',
+  LearningGetDue = 'learning:get-due',
+  LearningResetStage = 'learning:reset-stage',
+  LearningSkipStage = 'learning:skip-stage'
 }
 
 export type BreakNudgePayload = {
@@ -301,6 +344,8 @@ export type AddGoalPayload = {
   groupTag?: string
   groupColor?: string
   sortOrder?: number
+  learningTrackId?: string
+  learningStage?: 1 | 2 | 3
 }
 
 export type UpdateGoalPayload = {

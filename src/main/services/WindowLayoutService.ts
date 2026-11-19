@@ -78,14 +78,29 @@ export class WindowLayoutService {
     ) {
       try {
         if (typeof screen?.getDisplayMatching === 'function') {
-          const match = screen.getDisplayMatching({ x: validX, y: validY, width: validW, height: validH })
-          if (match && match.bounds && Number.isFinite(match.bounds.x) && Number.isFinite(match.bounds.width)) {
+          const match = screen.getDisplayMatching({
+            x: validX,
+            y: validY,
+            width: validW,
+            height: validH
+          })
+          if (
+            match &&
+            match.bounds &&
+            Number.isFinite(match.bounds.x) &&
+            Number.isFinite(match.bounds.width)
+          ) {
             return match
           }
         }
         if (typeof screen?.getDisplayNearestPoint === 'function') {
           const nearest = screen.getDisplayNearestPoint({ x: validX, y: validY })
-          if (nearest && nearest.bounds && Number.isFinite(nearest.bounds.x) && Number.isFinite(nearest.bounds.width)) {
+          if (
+            nearest &&
+            nearest.bounds &&
+            Number.isFinite(nearest.bounds.x) &&
+            Number.isFinite(nearest.bounds.width)
+          ) {
             return nearest
           }
         }
@@ -96,7 +111,12 @@ export class WindowLayoutService {
 
     try {
       const active = getActiveDisplay()
-      if (active && active.bounds && Number.isFinite(active.bounds.x) && Number.isFinite(active.bounds.width)) {
+      if (
+        active &&
+        active.bounds &&
+        Number.isFinite(active.bounds.x) &&
+        Number.isFinite(active.bounds.width)
+      ) {
         return active
       }
     } catch {
@@ -106,7 +126,12 @@ export class WindowLayoutService {
     try {
       if (typeof screen?.getPrimaryDisplay === 'function') {
         const primary = screen.getPrimaryDisplay()
-        if (primary && primary.bounds && Number.isFinite(primary.bounds.x) && Number.isFinite(primary.bounds.width)) {
+        if (
+          primary &&
+          primary.bounds &&
+          Number.isFinite(primary.bounds.x) &&
+          Number.isFinite(primary.bounds.width)
+        ) {
           return primary
         }
       }

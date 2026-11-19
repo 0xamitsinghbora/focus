@@ -470,7 +470,10 @@ export function PromptWindow(): React.JSX.Element {
           reminderStatus?.currentBlockStartedAt ||
           new Date(taskEndEpoch - intervalMins * 60 * 1000).toISOString()
         const endIso = new Date(taskEndEpoch).toISOString()
-        const durationMins = Math.max(1, Math.round((taskEndEpoch - new Date(startIso).getTime()) / 60000))
+        const durationMins = Math.max(
+          1,
+          Math.round((taskEndEpoch - new Date(startIso).getTime()) / 60000)
+        )
 
         const entry: LogEntry = {
           id: entryId,
@@ -528,7 +531,7 @@ export function PromptWindow(): React.JSX.Element {
 
     try {
       const now = Date.now()
-      const start = afkBreakStartEpochRef.current || (now - afkBreakSeconds * 1000)
+      const start = afkBreakStartEpochRef.current || now - afkBreakSeconds * 1000
       const elapsed = Math.max(0, Math.floor((now - start) / 1000))
       const totalBreakSec = 40 + elapsed
       const breakMinutes = Math.round(totalBreakSec / 60)

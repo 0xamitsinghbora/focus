@@ -50,6 +50,7 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(tables).toContain('group_colors')
     expect(tables).toContain('purged_records')
     expect(tables).toContain('sync_state')
+    expect(tables).toContain('learning_tracks')
 
     // Check key indexes exist
     const indexes = db
@@ -68,6 +69,8 @@ describe('dataMigrations / Database Schema Initialization', () => {
     // Check effectiveDate column exists on daily_goals
     const cols = db.pragma('table_info(daily_goals)') as { name: string }[]
     expect(cols.some((c) => c.name === 'effectiveDate')).toBe(true)
+    expect(cols.some((c) => c.name === 'learningTrackId')).toBe(true)
+    expect(cols.some((c) => c.name === 'learningStage')).toBe(true)
   })
 
   it('is idempotent when run multiple times', () => {

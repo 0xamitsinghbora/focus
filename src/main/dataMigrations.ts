@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3'
 
-export const CURRENT_SCHEMA_VERSION = 2
+export const CURRENT_SCHEMA_VERSION = 3
 
 export interface Migration {
   version: number
@@ -156,6 +156,61 @@ const MIGRATIONS: Migration[] = [
       if (!hasCol) {
         db.exec('ALTER TABLE logs ADD COLUMN focusQuality INTEGER;')
       }
+    }
+  },
+  {
+    version: 3,
+    description:
+      'Add learning_tracks table and learningTrackId/learningStage to daily_goals for #learning spaced repetition',
+    up: (db: Database.Database) => {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS learning_tracks (
+          id TEXT PRIMARY KEY NOT NULL,
+          title TEXT NOT NULL DEFAULT '',
+          originalGoalId TEXT REFERENCES daily_goals(id) ON DELETE SET NULL,
+          originDate TEXT NOT NULL DEFAULT '',
+          targetMinutes REAL,
+          currentStage INTEGER NOT NULL DEFAULT 1,
+          status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active', 'mastered', 'paused', 'deleted')),
+          day1Date TEXT NOT NULL DEFAULT '',
+          day1Status TEXT NOT NULL DEFAULT 'pending' CHECK(day1Status IN ('pending', 'scheduled', 'completed', 'skipped')),
+          day1GoalId TEXT REFERENCES daily_goals(id) ON DELETE SET NULL,
+          day1CompletedAt TEXT,
+          day7Date TEXT NOT NULL DEFAULT '',
+          day7Status TEXT NOT NULL DEFAULT 'pending' CHECK(day7Status IN ('pending', 'scheduled', 'completed', 'skipped')),
+          day7GoalId TEXT REFERENCES daily_goals(id) ON DELETE SET NULL,
+          day7CompletedAt TEXT,
+          day30Date TEXT NOT NULL DEFAULT '',
+          day30Status TEXT NOT NULL DEFAULT 'pending' CHECK(day30Status IN ('pending', 'scheduled', 'completed', 'skipped')),
+          day30GoalId TEXT REFERENCES daily_goals(id) ON DELETE SET NULL,
+          day30CompletedAt TEXT,
+          note TEXT,
+          createdAt TEXT NOT NULL DEFAULT '',
+          updatedAt TEXT,
+          deletedAt TEXT
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_learning_tracks_dates ON learning_tracks(day1Date, day7Date, day30Date);
+        CREATE INDEX IF NOT EXISTS idx_learning_tracks_status ON learning_tracks(status, deletedAt);
+        CREATE INDEX IF NOT EXISTS idx_learning_tracks_originGoalId ON learning_tracks(originalGoalId);
+      `)
+
+      const goalCols = db.prepare("PRAGMA table_info('daily_goals')").all() as { name: string }[]
+      const hasTrackId = goalCols.some((col) => col.name === 'learningTrackId')
+      if (!hasTrackId) {
+        db.exec(
+          'ALTER TABLE daily_goals ADD COLUMN learningTrackId TEXT REFERENCES learning_tracks(id) ON DELETE SET NULL;'
+        )
+      }
+      const hasStage = goalCols.some((col) => col.name === 'learningStage')
+      if (!hasStage) {
+        db.exec(
+          'ALTER TABLE daily_goals ADD COLUMN learningStage INTEGER CHECK(learningStage IN (1, 2, 3));'
+        )
+      }
+      db.exec(
+        'CREATE INDEX IF NOT EXISTS idx_daily_goals_learningTrackId ON daily_goals(learningTrackId);'
+      )
     }
   }
 ]

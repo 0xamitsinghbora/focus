@@ -36,7 +36,8 @@ let currentSessionPayload: SessionTimerPayload | null = null
 let widgetOptions: {
   getShowWidget?: () => boolean
   onVisibilityChange?: (visible: boolean) => void
-  getInProgressGoals?: () => Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
+  getInProgressGoals?: () =>
+    Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
 } = {}
 
 const visibilityListeners = new Set<(visible: boolean) => void>()
@@ -734,7 +735,8 @@ export function initWidgetWindow(
   options?: {
     getShowWidget?: () => boolean
     onVisibilityChange?: (visible: boolean) => void
-    getInProgressGoals?: () => Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
+    getInProgressGoals?: () =>
+      Promise<{ id: string; title: string }[]> | { id: string; title: string }[]
   }
 ): BrowserWindow | null {
   setWidgetMainWindow(mainWindow)

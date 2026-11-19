@@ -92,7 +92,9 @@ export function useGoalOperations({
       })
       if (addedGoal) {
         const deadlineDate = addedGoal.deadline
-          ? (addedGoal.deadline.includes('T') ? addedGoal.deadline.split('T')[0] : addedGoal.deadline)
+          ? addedGoal.deadline.includes('T')
+            ? addedGoal.deadline.split('T')[0]
+            : addedGoal.deadline
           : null
         if (addedGoal.status === 'in_progress' || !deadlineDate || deadlineDate <= today) {
           setTodayGoals((prev) => [...prev, addedGoal])
@@ -121,7 +123,9 @@ export function useGoalOperations({
         const saved = await window.api.goals.update(today, goal)
         if (saved) {
           const targetDeadline = saved.deadline
-            ? (saved.deadline.includes('T') ? saved.deadline.split('T')[0] : saved.deadline)
+            ? saved.deadline.includes('T')
+              ? saved.deadline.split('T')[0]
+              : saved.deadline
             : null
           setTodayGoals((prev) => {
             if (saved.status === 'planned' && targetDeadline && targetDeadline > today) {
@@ -404,10 +408,7 @@ export function useGoalOperations({
         return [...filtered, reopenedGoal]
       })
       await Promise.all([loadTodayData(), loadDayReview(selectedDayDateRef.current)])
-      toastRef.current.success(
-        `Task "${goal.title}" reopened and moved to today.`,
-        'Task Reopened'
-      )
+      toastRef.current.success(`Task "${goal.title}" reopened and moved to today.`, 'Task Reopened')
     } catch (e) {
       console.error('Failed to reopen goal:', e)
       toastRef.current.error('Could not reopen task.', 'Action Failed')

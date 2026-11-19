@@ -118,7 +118,10 @@ describe('WindowManager', () => {
     windowManager.broadcast('channel-loading', { ready: false })
 
     expect(mainSend).not.toHaveBeenCalled()
-    expect(loadingMainWin.webContents.once).toHaveBeenCalledWith('did-finish-load', expect.any(Function))
+    expect(loadingMainWin.webContents.once).toHaveBeenCalledWith(
+      'did-finish-load',
+      expect.any(Function)
+    )
 
     ;(finishLoadCb as any)?.()
 

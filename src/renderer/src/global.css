@@ -402,4 +402,3 @@ input[type='number'] {
   transform-origin: center;
   animation: soundWave var(--wave-speed, 1.2s) ease-in-out infinite alternate;
 }
-

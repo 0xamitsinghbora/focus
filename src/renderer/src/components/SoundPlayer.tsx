@@ -343,7 +343,9 @@ function SoundPresetPopover({
     >
       {/* Popover Header */}
       <div className="flex items-center px-1 pb-2 mb-2 border-b border-border/40">
-        <span className="text-[12px] font-semibold text-foreground tracking-tight">Soundscapes</span>
+        <span className="text-[12px] font-semibold text-foreground tracking-tight">
+          Soundscapes
+        </span>
       </div>
 
       {/* Category Filter Tabs */}
@@ -801,7 +803,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
         <div className="flex items-center gap-1 rounded-full border border-apple-green/40 bg-apple-green/10 p-0.5 pl-2.5 pr-1.5 text-apple-green shadow-apple-subtle transition-all duration-150">
           <button
             type="button"
-            onClick={toggle}
+            onClick={() => toggle()}
             className="flex items-center gap-1.5 hover:opacity-85 active:scale-95 transition-all cursor-pointer"
             title="Click to pause soundscape"
             aria-label="Pause soundscape"
@@ -857,7 +859,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
         <div className="flex items-center gap-0.5 rounded-full border border-border/80 bg-surface/90 text-muted-foreground p-0.5 shadow-2xs hover:border-border transition-all">
           <button
             type="button"
-            onClick={toggle}
+            onClick={() => toggle()}
             className="flex h-6 w-6 items-center justify-center rounded-full hover:bg-secondary text-foreground hover:text-apple-green transition-all active:scale-95 cursor-pointer"
             title="Play soundscape"
             aria-label="Play soundscape directly"
@@ -1274,10 +1276,8 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
 }
 
 const MODERN_WAVE_BARS = [
-  10, 16, 22, 14, 26, 32, 20, 12, 18, 28,
-  34, 24, 16, 22, 30, 36, 28, 20, 14, 24,
-  32, 38, 30, 22, 16, 28, 34, 26, 18, 12,
-  20, 30, 24, 16, 22, 18, 14, 8
+  10, 16, 22, 14, 26, 32, 20, 12, 18, 28, 34, 24, 16, 22, 30, 36, 28, 20, 14, 24, 32, 38, 30, 22,
+  16, 28, 34, 26, 18, 12, 20, 30, 24, 16, 22, 18, 14, 8
 ]
 
 /**
@@ -1577,7 +1577,13 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
             aria-label={playing ? 'Pause soundscape' : 'Play soundscape'}
           >
             {playing ? (
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
                 <rect x="6.5" y="4.5" width="3.5" height="15" rx="1.75" />
                 <rect x="14" y="4.5" width="3.5" height="15" rx="1.75" />
               </svg>
@@ -1613,7 +1619,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
 
         {/* RIGHT: Pure Aesthetic Sound Waves Visualizer (No cringe words, no green) */}
         <div
-          onClick={toggle}
+          onClick={() => toggle()}
           role="button"
           tabIndex={0}
           onKeyDown={(e) => {
@@ -1622,8 +1628,12 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
               toggle()
             }
           }}
-          title={playing ? 'Sound waves active · Click to pause' : 'Sound waves idle · Click to play'}
-          aria-label={playing ? 'Sound waves active. Click to pause' : 'Sound waves idle. Click to play'}
+          title={
+            playing ? 'Sound waves active · Click to pause' : 'Sound waves idle · Click to play'
+          }
+          aria-label={
+            playing ? 'Sound waves active. Click to pause' : 'Sound waves idle. Click to play'
+          }
           className="relative flex items-center justify-end h-11 sm:h-12 w-full md:w-auto md:max-w-[calc(50%-100px)] cursor-pointer group/wave select-none px-2 ml-auto"
         >
           <div className="flex items-center justify-center gap-[3px] sm:gap-[3.5px] h-9 sm:h-10 flex-1 overflow-hidden">

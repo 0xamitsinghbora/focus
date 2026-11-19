@@ -146,7 +146,9 @@ export class GoalsRepository {
     groupTag?: string,
     groupColor?: string,
     sortOrder?: number,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    learningTrackId?: string,
+    learningStage?: 1 | 2 | 3
   ): Promise<DailyGoal> {
     return this.daily.addGoal(
       date,
@@ -160,7 +162,9 @@ export class GoalsRepository {
       groupTag,
       groupColor,
       sortOrder,
-      status
+      status,
+      learningTrackId,
+      learningStage
     )
   }
 

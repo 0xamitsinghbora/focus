@@ -348,9 +348,12 @@ export function GeneralSettingsSection({
               <span className="text-base">🚀</span>
             </div>
             <div className="min-w-0">
-              <div className="text-[13.5px] font-semibold text-foreground">Welcome & Setup Tour</div>
+              <div className="text-[13.5px] font-semibold text-foreground">
+                Welcome & Setup Tour
+              </div>
               <div className="text-[12px] text-muted-foreground">
-                Reopen the interactive setup guide explaining the planner, focus sessions, and check-ins.
+                Reopen the interactive setup guide explaining the planner, focus sessions, and
+                check-ins.
               </div>
             </div>
           </div>
@@ -372,9 +375,12 @@ export function GeneralSettingsSection({
               <span className="text-base">🌅</span>
             </div>
             <div className="min-w-0">
-              <div className="text-[13.5px] font-semibold text-foreground">Morning Planning Ritual</div>
+              <div className="text-[13.5px] font-semibold text-foreground">
+                Morning Planning Ritual
+              </div>
               <div className="text-[12px] text-muted-foreground">
-                Re-adjust today&apos;s daily focus target, review carried goals, or set your anchor task.
+                Re-adjust today&apos;s daily focus target, review carried goals, or set your anchor
+                task.
               </div>
             </div>
           </div>

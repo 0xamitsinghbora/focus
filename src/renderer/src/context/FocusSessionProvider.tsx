@@ -1,5 +1,11 @@
 import React, { useEffect, useRef, useCallback, useMemo } from 'react'
-import { DailyGoal, localDateStr, LogEntry, DEFAULT_SORT_ORDER, ReminderStatus } from '../../../shared/types'
+import {
+  DailyGoal,
+  localDateStr,
+  LogEntry,
+  DEFAULT_SORT_ORDER,
+  ReminderStatus
+} from '../../../shared/types'
 import { formatMinutes } from '../lib/utils'
 import { useToast } from '../lib/useToast'
 import {
@@ -187,7 +193,8 @@ export function FocusSessionProvider({
             ? Math.max(
                 0,
                 Math.floor(
-                  (Date.now() - sessionStartEpochRef.current - accumulatedPausedMsRef.current) / 1000
+                  (Date.now() - sessionStartEpochRef.current - accumulatedPausedMsRef.current) /
+                    1000
                 )
               )
             : secondsElapsedRef.current
@@ -530,10 +537,7 @@ export function FocusSessionProvider({
           console.error('Failed to append break log:', err)
         }
       } else if (elapsed > 0 && elapsed < 60) {
-        toast.info(
-          `Focus on "${targetGoal.title}" under 1 minute discarded.`,
-          'Session Discarded'
-        )
+        toast.info(`Focus on "${targetGoal.title}" under 1 minute discarded.`, 'Session Discarded')
       }
     },
     [toast]
@@ -812,7 +816,15 @@ export function FocusSessionProvider({
         goal ? `Focusing: ${goal.title}` : 'Focusing'
       )
     },
-    [logActiveTaskElapsed, broadcastTaskbarTimer, playChime, resumeFocus, startAmbient, toast, logEmptyInProgressBreak]
+    [
+      logActiveTaskElapsed,
+      broadcastTaskbarTimer,
+      playChime,
+      resumeFocus,
+      startAmbient,
+      toast,
+      logEmptyInProgressBreak
+    ]
   )
 
   const startBreak = useCallback(
@@ -869,7 +881,15 @@ export function FocusSessionProvider({
       broadcastTaskbarTimer(true, false, true, sec, sec, null)
       toast.info(`Time for a quick recharge (${breakMinutes}m).`, 'Break Started')
     },
-    [logActiveTaskElapsed, broadcastTaskbarTimer, playChime, isAudioActive, pauseAudio, toast, logEmptyInProgressBreak]
+    [
+      logActiveTaskElapsed,
+      broadcastTaskbarTimer,
+      playChime,
+      isAudioActive,
+      pauseAudio,
+      toast,
+      logEmptyInProgressBreak
+    ]
   )
 
   const startAfkBreak = useCallback(
@@ -1602,9 +1622,7 @@ export function FocusSessionProvider({
           }
 
           // Check if user accidentally moved a task to completed and dragged/moved it back to in progress
-          const reopenedToInProgress = inProgressGoals.find(
-            (g) => prevMap.get(g.id) === 'done'
-          )
+          const reopenedToInProgress = inProgressGoals.find((g) => prevMap.get(g.id) === 'done')
           if (reopenedToInProgress) {
             previousTopGoalIdRef.current = inProgressGoals[0].id
             if (emptyInProgressStartEpochRef.current > 0) {

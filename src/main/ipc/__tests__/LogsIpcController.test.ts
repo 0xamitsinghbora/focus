@@ -116,7 +116,10 @@ describe('LogsIpcController', () => {
       isCheckIn: true
     }
     await handlers[IpcChannels.AppendLog](mockEvent, payload)
-    expect(mockDataManager.appendLog).toHaveBeenCalledWith('2026-10-30', expect.objectContaining({ id: 'entry-1' }))
+    expect(mockDataManager.appendLog).toHaveBeenCalledWith(
+      '2026-10-30',
+      expect.objectContaining({ id: 'entry-1' })
+    )
     expect(mockDataManager.appendLog).toHaveBeenCalledWith('2026-10-30', breakEntry)
     expect(mockScheduler.resetBlockAndTimer).toHaveBeenCalled()
   })

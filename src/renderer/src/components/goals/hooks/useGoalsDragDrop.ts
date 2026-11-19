@@ -728,7 +728,8 @@ export function useGoalsDragDrop({
             if (!targetGoal) return
 
             const targetCol = ht.col
-            const targetStatus = COLUMNS.find((c) => c.id === targetCol)?.status || targetGoal.status
+            const targetStatus =
+              COLUMNS.find((c) => c.id === targetCol)?.status || targetGoal.status
             const targetTag = ht.groupTag?.trim() || undefined
             const targetColor = targetTag
               ? ht.groupColor || targetGoal.groupColor || getPreferredGroupColor(targetTag)
@@ -775,7 +776,8 @@ export function useGoalsDragDrop({
 
           if (ht?.type === 'group') {
             const targetCol = ht.col
-            const targetStatus = COLUMNS.find((c) => c.id === targetCol)?.status || draggedGoal.status
+            const targetStatus =
+              COLUMNS.find((c) => c.id === targetCol)?.status || draggedGoal.status
             const targetTag = ht.isUntagged ? undefined : ht.groupTag.trim()
             const targetColor = targetTag
               ? ht.groupColor || getPreferredGroupColor(targetTag)
@@ -949,7 +951,10 @@ export function useGoalsDragDrop({
               completedAt: targetStatus === 'done' ? g.completedAt || now : undefined
             }))
 
-            const currentGoalsInTargetCol = getFullGoalsForColumn(targetCol, d.payload.sourceGoalIds)
+            const currentGoalsInTargetCol = getFullGoalsForColumn(
+              targetCol,
+              d.payload.sourceGoalIds
+            )
 
             let insertIndex = currentGoalsInTargetCol.length
             if (hgt.position === 'before') {

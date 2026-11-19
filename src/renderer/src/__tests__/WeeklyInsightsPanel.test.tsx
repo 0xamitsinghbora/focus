@@ -72,4 +72,3 @@ describe('WeeklyInsightsPanel Component', () => {
     expect(screen.getByText('Target Hit Rate')).toBeDefined()
   })
 })
-

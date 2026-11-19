@@ -1,7 +1,14 @@
 import fssync from 'fs'
 import path from 'path'
 import Database from 'better-sqlite3'
-import { LogEntry, AppSettings, DailyGoal, GoalInboxItem, RecurringGoal, localDateStr } from '../shared/types'
+import {
+  LogEntry,
+  AppSettings,
+  DailyGoal,
+  GoalInboxItem,
+  RecurringGoal,
+  localDateStr
+} from '../shared/types'
 import { logger } from './logger'
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/

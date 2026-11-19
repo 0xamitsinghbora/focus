@@ -139,4 +139,3 @@ describe('MorningRitualModal Component', () => {
     expect(mockOnClose).toHaveBeenCalled()
   })
 })
-

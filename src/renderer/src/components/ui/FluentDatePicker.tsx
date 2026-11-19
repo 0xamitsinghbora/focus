@@ -598,7 +598,9 @@ export function FluentDatePicker({
                 className={cn(
                   'flex h-9 items-center justify-center rounded-xl font-medium transition-all cursor-pointer',
                   isSelected && 'bg-apple-blue font-semibold text-white shadow-2xs scale-105',
-                  !isSelected && isViewing && 'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
+                  !isSelected &&
+                    isViewing &&
+                    'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
                   !isSelected && !isViewing && 'text-foreground hover:bg-secondary'
                 )}
               >
@@ -630,8 +632,13 @@ export function FluentDatePicker({
                 className={cn(
                   'flex h-9 items-center justify-center rounded-xl font-medium transition-all cursor-pointer',
                   isSelected && 'bg-apple-blue font-semibold text-white shadow-2xs scale-105',
-                  !isSelected && isViewing && 'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
-                  !isSelected && !isViewing && isCurrentDecade && 'text-foreground hover:bg-secondary',
+                  !isSelected &&
+                    isViewing &&
+                    'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
+                  !isSelected &&
+                    !isViewing &&
+                    isCurrentDecade &&
+                    'text-foreground hover:bg-secondary',
                   !isSelected &&
                     !isViewing &&
                     !isCurrentDecade &&

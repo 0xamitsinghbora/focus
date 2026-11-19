@@ -131,14 +131,7 @@ export function useFocusSessionTimerEngine({
 
         if (isSecChange) {
           lastBroadcastSecRef.current = elapsedSec
-          broadcastTaskbarTimer(
-            true,
-            false,
-            true,
-            elapsedSec,
-            0,
-            null
-          )
+          broadcastTaskbarTimer(true, false, true, elapsedSec, 0, null)
         }
         return
       }

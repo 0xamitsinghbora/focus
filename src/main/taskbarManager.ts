@@ -201,7 +201,12 @@ export class TaskbarManager {
       })
 
       // 6. Flash taskbar frame on reaching 0 seconds (completion alert)
-      if (payload.secondsRemaining <= 0 && !payload.isPaused && !payload.isAfk && !this.lastFlashedZero) {
+      if (
+        payload.secondsRemaining <= 0 &&
+        !payload.isPaused &&
+        !payload.isAfk &&
+        !this.lastFlashedZero
+      ) {
         this.lastFlashedZero = true
         win.flashFrame(true)
       } else if (payload.secondsRemaining > 0) {

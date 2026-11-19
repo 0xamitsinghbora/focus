@@ -177,10 +177,13 @@ export class DriveOAuthServer {
               resolve({ success: false, error: 'Failed to open browser: ' + err.message })
             })
 
-            timeoutTimer = setTimeout(() => {
-              cleanup()
-              resolve({ success: false, error: 'Timeout waiting for authentication' })
-            }, 3 * 60 * 1000)
+            timeoutTimer = setTimeout(
+              () => {
+                cleanup()
+                resolve({ success: false, error: 'Timeout waiting for authentication' })
+              },
+              3 * 60 * 1000
+            )
           })
         }
 
@@ -258,8 +261,7 @@ export class DriveOAuthServer {
                 renderOAuthCallbackHtml({
                   status: 'error',
                   title: 'Authentication failed',
-                  message:
-                    errorDesc || `Google authorization error: ${errorParam}`,
+                  message: errorDesc || `Google authorization error: ${errorParam}`,
                   hint:
                     errorParam === 'access_denied'
                       ? 'Access was denied or cancelled. If your Google Cloud project is in Testing mode, ensure your Google email is added to Test Users in Google Cloud Console.'

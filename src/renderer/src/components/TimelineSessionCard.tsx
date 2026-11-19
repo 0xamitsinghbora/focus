@@ -35,14 +35,10 @@ export const TimelineSessionCard = React.memo(function TimelineSessionCard({
 
   const clockSpanMinutes =
     log.startedAt && log.endedAt
-      ? Math.round(
-          (new Date(log.endedAt).getTime() - new Date(log.startedAt).getTime()) / 60000
-        )
+      ? Math.round((new Date(log.endedAt).getTime() - new Date(log.startedAt).getTime()) / 60000)
       : 0
   const idleDeductedMinutes =
-    displayMinutes && clockSpanMinutes > displayMinutes + 1
-      ? clockSpanMinutes - displayMinutes
-      : 0
+    displayMinutes && clockSpanMinutes > displayMinutes + 1 ? clockSpanMinutes - displayMinutes : 0
 
   const timeCurrent = getLogTime(log)
   const timePrev = !isFirst && prevLog ? getLogTime(prevLog) : null

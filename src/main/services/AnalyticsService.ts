@@ -278,7 +278,9 @@ export class AnalyticsService {
     )
     const averageFocusQuality =
       ratedLogs.length > 0
-        ? Math.round((ratedLogs.reduce((acc, l) => acc + (l.focusQuality || 0), 0) / ratedLogs.length) * 10) / 10
+        ? Math.round(
+            (ratedLogs.reduce((acc, l) => acc + (l.focusQuality || 0), 0) / ratedLogs.length) * 10
+          ) / 10
         : undefined
 
     return {

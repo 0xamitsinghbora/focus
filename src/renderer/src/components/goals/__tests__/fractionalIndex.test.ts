@@ -117,7 +117,7 @@ describe('Fractional Indexing Algorithm', () => {
     })
 
     it('safely detects precision underflow on repeated midpoint drags and triggers rebalance', () => {
-      let prev = 1000
+      const prev = 1000
       let next = 2000
       let midCount = 0
 

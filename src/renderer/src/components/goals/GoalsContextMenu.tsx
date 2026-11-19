@@ -419,114 +419,21 @@ export function GoalsContextMenu({
                 )}
               </div>
 
-          {/* Assign / Change Group */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setShowGroupAssignMenu((v) => !v)
-                setIsCreatingGroupInMenu(false)
-                setNewGroupInput('')
-              }}
-              className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
-            >
-              <div className="flex items-center gap-2">
-                <svg
-                  width="13"
-                  height="13"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
+              {/* Assign / Change Group */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowGroupAssignMenu((v) => !v)
+                    setIsCreatingGroupInMenu(false)
+                    setNewGroupInput('')
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
                 >
-                  <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
-                  <path d="M7 7h.01" />
-                </svg>
-                <span className="font-medium">Group Tag</span>
-              </div>
-              <span className="text-[11px] text-muted-foreground">
-                {showGroupAssignMenu ? '▾' : '›'}
-              </span>
-            </button>
-
-            {showGroupAssignMenu && (
-              <div
-                className="mt-1 mb-1 rounded-lg border border-border/80 bg-surface/95 backdrop-blur-md p-1.5 space-y-1 shadow-lg max-h-64 overflow-y-auto custom-scrollbar"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {contextMenu.goal.groupTag && (
-                  <button
-                    type="button"
-                    onClick={() => onAssignTaskGroup(contextMenu.goal, undefined)}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-[11.5px] text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                  >
+                  <div className="flex items-center gap-2">
                     <svg
-                      width="11"
-                      height="11"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                    >
-                      <line x1="18" y1="6" x2="6" y2="18" />
-                      <line x1="6" y1="6" x2="18" y2="18" />
-                    </svg>
-                    <span>Remove from group</span>
-                  </button>
-                )}
-                {existingGroups.map((g) => {
-                  const theme = getGroupTheme(g.color)
-                  const isCurrent = contextMenu.goal.groupTag?.toLowerCase() === g.tag.toLowerCase()
-                  return (
-                    <button
-                      key={g.tag}
-                      type="button"
-                      onClick={() => onAssignTaskGroup(contextMenu.goal, g.tag, g.color)}
-                      className={cn(
-                        'flex w-full items-center justify-between rounded-md px-2 py-1 text-[11.5px] transition-colors',
-                        isCurrent
-                          ? 'font-semibold text-foreground bg-secondary/80'
-                          : 'text-foreground/80 hover:bg-secondary'
-                      )}
-                    >
-                      <div className="flex items-center gap-2 truncate">
-                        <span className={cn('h-2 w-2 rounded-full shrink-0', theme.dotClass)} />
-                        <span className="truncate">{g.tag}</span>
-                      </div>
-                      {isCurrent && (
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          className="text-primary shrink-0"
-                        >
-                          <polyline points="20 6 9 17 4 12" />
-                        </svg>
-                      )}
-                    </button>
-                  )
-                })}
-
-                <div className="my-1 border-t border-border/50" />
-
-                {/* Add new group option */}
-                {!isCreatingGroupInMenu ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsCreatingGroupInMenu(true)
-                      setNewGroupInput('')
-                      const saved = getSavedGroupColors()
-                      setNewGroupColor(getRandomUnusedColor(Object.values(saved)))
-                    }}
-                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[11.5px] font-medium text-primary hover:bg-secondary transition-colors"
-                  >
-                    <svg
-                      width="12"
-                      height="12"
+                      width="13"
+                      height="13"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -535,191 +442,286 @@ export function GoalsContextMenu({
                       <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
                       <path d="M7 7h.01" />
                     </svg>
-                    <span>Add New Group</span>
-                  </button>
-                ) : (
-                  <div className="p-1.5 space-y-2 rounded-lg bg-secondary/60 border border-border/60">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className={cn(
-                          'h-2.5 w-2.5 rounded-full shrink-0',
-                          getGroupTheme(newGroupColor).dotClass
-                        )}
-                      />
-                      <input
-                        type="text"
-                        autoFocus
-                        value={newGroupInput}
-                        onChange={(e) => setNewGroupInput(e.target.value)}
-                        placeholder="New group name..."
-                        className="w-full bg-background border border-border/80 rounded-md px-2 py-1 text-[11.5px] text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary focus:border-primary"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault()
-                            const clean = newGroupInput.trim()
-                            if (clean) {
-                              saveGroupColor(clean, newGroupColor)
-                              onAssignTaskGroup(contextMenu.goal, clean, newGroupColor)
-                              setIsCreatingGroupInMenu(false)
-                            }
-                          } else if (e.key === 'Escape') {
-                            e.preventDefault()
-                            setIsCreatingGroupInMenu(false)
-                          }
-                        }}
-                      />
-                    </div>
+                    <span className="font-medium">Group Tag</span>
+                  </div>
+                  <span className="text-[11px] text-muted-foreground">
+                    {showGroupAssignMenu ? '▾' : '›'}
+                  </span>
+                </button>
 
-                    {/* Color picker swatches */}
-                    <div className="flex items-center gap-1 flex-wrap pt-0.5">
-                      {(() => {
-                        const usedColorsMap = getUsedGroupColorsMap(undefined, existingGroups)
-                        return GROUP_THEMES.map((t) => {
-                          const usedByGroup = usedColorsMap.get(t.id)
-                          const isUsed = Boolean(usedByGroup)
-                          return (
-                            <button
-                              key={t.id}
-                              type="button"
-                              disabled={isUsed}
-                              onClick={() => {
-                                if (!isUsed) setNewGroupColor(t.id)
-                              }}
-                              className={cn(
-                                'relative h-4 w-4 rounded-full flex items-center justify-center transition-transform',
-                                t.dotClass,
-                                isUsed
-                                  ? 'opacity-30 cursor-not-allowed'
-                                  : newGroupColor === t.id
-                                    ? 'ring-2 ring-primary ring-offset-1 ring-offset-background scale-110 cursor-pointer'
-                                    : 'opacity-75 hover:opacity-100 hover:scale-105 cursor-pointer'
-                              )}
-                              title={
-                                isUsed ? `${t.name} (Already used by "${usedByGroup}")` : t.name
-                              }
+                {showGroupAssignMenu && (
+                  <div
+                    className="mt-1 mb-1 rounded-lg border border-border/80 bg-surface/95 backdrop-blur-md p-1.5 space-y-1 shadow-lg max-h-64 overflow-y-auto custom-scrollbar"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {contextMenu.goal.groupTag && (
+                      <button
+                        type="button"
+                        onClick={() => onAssignTaskGroup(contextMenu.goal, undefined)}
+                        className="flex w-full items-center gap-2 rounded-md px-2 py-1 text-[11.5px] text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                      >
+                        <svg
+                          width="11"
+                          height="11"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <line x1="18" y1="6" x2="6" y2="18" />
+                          <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                        <span>Remove from group</span>
+                      </button>
+                    )}
+                    {existingGroups.map((g) => {
+                      const theme = getGroupTheme(g.color)
+                      const isCurrent =
+                        contextMenu.goal.groupTag?.toLowerCase() === g.tag.toLowerCase()
+                      return (
+                        <button
+                          key={g.tag}
+                          type="button"
+                          onClick={() => onAssignTaskGroup(contextMenu.goal, g.tag, g.color)}
+                          className={cn(
+                            'flex w-full items-center justify-between rounded-md px-2 py-1 text-[11.5px] transition-colors',
+                            isCurrent
+                              ? 'font-semibold text-foreground bg-secondary/80'
+                              : 'text-foreground/80 hover:bg-secondary'
+                          )}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className={cn('h-2 w-2 rounded-full shrink-0', theme.dotClass)} />
+                            <span className="truncate">{g.tag}</span>
+                          </div>
+                          {isCurrent && (
+                            <svg
+                              width="12"
+                              height="12"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              className="text-primary shrink-0"
                             >
-                              {isUsed && (
-                                <svg
-                                  className="h-2.5 w-2.5 text-foreground/90 stroke-[3] pointer-events-none drop-shadow-xs"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                >
-                                  <line x1="18" y1="6" x2="6" y2="18" />
-                                  <line x1="6" y1="6" x2="18" y2="18" />
-                                </svg>
-                              )}
-                            </button>
-                          )
-                        })
-                      })()}
-                    </div>
+                              <polyline points="20 6 9 17 4 12" />
+                            </svg>
+                          )}
+                        </button>
+                      )
+                    })}
 
-                    <div className="flex items-center justify-end gap-1.5 pt-0.5">
+                    <div className="my-1 border-t border-border/50" />
+
+                    {/* Add new group option */}
+                    {!isCreatingGroupInMenu ? (
                       <button
                         type="button"
-                        onClick={() => setIsCreatingGroupInMenu(false)}
-                        className="px-2 py-0.5 rounded text-[10.5px] text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        disabled={!newGroupInput.trim()}
                         onClick={() => {
-                          const clean = newGroupInput.trim()
-                          if (clean) {
-                            saveGroupColor(clean, newGroupColor)
-                            onAssignTaskGroup(contextMenu.goal, clean, newGroupColor)
-                            setIsCreatingGroupInMenu(false)
-                          }
+                          setIsCreatingGroupInMenu(true)
+                          setNewGroupInput('')
+                          const saved = getSavedGroupColors()
+                          setNewGroupColor(getRandomUnusedColor(Object.values(saved)))
                         }}
-                        className="px-2.5 py-1 rounded text-[10.5px] font-semibold bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-2xs"
+                        className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-[11.5px] font-medium text-primary hover:bg-secondary transition-colors"
                       >
-                        Create &amp; Assign
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z" />
+                          <path d="M7 7h.01" />
+                        </svg>
+                        <span>Add New Group</span>
                       </button>
-                    </div>
+                    ) : (
+                      <div className="p-1.5 space-y-2 rounded-lg bg-secondary/60 border border-border/60">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={cn(
+                              'h-2.5 w-2.5 rounded-full shrink-0',
+                              getGroupTheme(newGroupColor).dotClass
+                            )}
+                          />
+                          <input
+                            type="text"
+                            autoFocus
+                            value={newGroupInput}
+                            onChange={(e) => setNewGroupInput(e.target.value)}
+                            placeholder="New group name..."
+                            className="w-full bg-background border border-border/80 rounded-md px-2 py-1 text-[11.5px] text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary focus:border-primary"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const clean = newGroupInput.trim()
+                                if (clean) {
+                                  saveGroupColor(clean, newGroupColor)
+                                  onAssignTaskGroup(contextMenu.goal, clean, newGroupColor)
+                                  setIsCreatingGroupInMenu(false)
+                                }
+                              } else if (e.key === 'Escape') {
+                                e.preventDefault()
+                                setIsCreatingGroupInMenu(false)
+                              }
+                            }}
+                          />
+                        </div>
+
+                        {/* Color picker swatches */}
+                        <div className="flex items-center gap-1 flex-wrap pt-0.5">
+                          {(() => {
+                            const usedColorsMap = getUsedGroupColorsMap(undefined, existingGroups)
+                            return GROUP_THEMES.map((t) => {
+                              const usedByGroup = usedColorsMap.get(t.id)
+                              const isUsed = Boolean(usedByGroup)
+                              return (
+                                <button
+                                  key={t.id}
+                                  type="button"
+                                  disabled={isUsed}
+                                  onClick={() => {
+                                    if (!isUsed) setNewGroupColor(t.id)
+                                  }}
+                                  className={cn(
+                                    'relative h-4 w-4 rounded-full flex items-center justify-center transition-transform',
+                                    t.dotClass,
+                                    isUsed
+                                      ? 'opacity-30 cursor-not-allowed'
+                                      : newGroupColor === t.id
+                                        ? 'ring-2 ring-primary ring-offset-1 ring-offset-background scale-110 cursor-pointer'
+                                        : 'opacity-75 hover:opacity-100 hover:scale-105 cursor-pointer'
+                                  )}
+                                  title={
+                                    isUsed ? `${t.name} (Already used by "${usedByGroup}")` : t.name
+                                  }
+                                >
+                                  {isUsed && (
+                                    <svg
+                                      className="h-2.5 w-2.5 text-foreground/90 stroke-[3] pointer-events-none drop-shadow-xs"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                    >
+                                      <line x1="18" y1="6" x2="6" y2="18" />
+                                      <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                  )}
+                                </button>
+                              )
+                            })
+                          })()}
+                        </div>
+
+                        <div className="flex items-center justify-end gap-1.5 pt-0.5">
+                          <button
+                            type="button"
+                            onClick={() => setIsCreatingGroupInMenu(false)}
+                            className="px-2 py-0.5 rounded text-[10.5px] text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!newGroupInput.trim()}
+                            onClick={() => {
+                              const clean = newGroupInput.trim()
+                              if (clean) {
+                                saveGroupColor(clean, newGroupColor)
+                                onAssignTaskGroup(contextMenu.goal, clean, newGroupColor)
+                                setIsCreatingGroupInMenu(false)
+                              }
+                            }}
+                            className="px-2.5 py-1 rounded text-[10.5px] font-semibold bg-primary text-primary-foreground disabled:opacity-50 hover:bg-primary/90 transition-colors shadow-2xs"
+                          >
+                            Create &amp; Assign
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
 
-          <div className="my-1 border-t border-border/50" />
+              <div className="my-1 border-t border-border/50" />
 
-          {/* Quick status moves */}
-          {contextMenu.goal.status !== 'planned' && (
-            <button
-              type="button"
-              onClick={() => {
-                onMoveGoal(contextMenu.goal, 'planned')
-                setContextMenu(null)
-              }}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
-            >
-              <div className="h-2 w-2 rounded-full bg-apple-red" />
-              <span>Move to Planned</span>
-            </button>
-          )}
+              {/* Quick status moves */}
+              {contextMenu.goal.status !== 'planned' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onMoveGoal(contextMenu.goal, 'planned')
+                    setContextMenu(null)
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
+                >
+                  <div className="h-2 w-2 rounded-full bg-apple-red" />
+                  <span>Move to Planned</span>
+                </button>
+              )}
 
-          {contextMenu.goal.status !== 'in_progress' && (
-            <button
-              type="button"
-              onClick={() => {
-                onMoveGoal(contextMenu.goal, 'in_progress')
-                setContextMenu(null)
-              }}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
-            >
-              <div className="h-2 w-2 rounded-full bg-apple-amber" />
-              <span>Move to In Progress</span>
-            </button>
-          )}
+              {contextMenu.goal.status !== 'in_progress' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onMoveGoal(contextMenu.goal, 'in_progress')
+                    setContextMenu(null)
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
+                >
+                  <div className="h-2 w-2 rounded-full bg-apple-amber" />
+                  <span>Move to In Progress</span>
+                </button>
+              )}
 
-          {contextMenu.goal.status !== 'done' && (
-            <button
-              type="button"
-              onClick={() => {
-                onMoveGoal(contextMenu.goal, 'done')
-                setContextMenu(null)
-              }}
-              className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
-            >
-              <div className="h-2 w-2 rounded-full bg-apple-green" />
-              <span>Mark as Completed</span>
-            </button>
-          )}
+              {contextMenu.goal.status !== 'done' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onMoveGoal(contextMenu.goal, 'done')
+                    setContextMenu(null)
+                  }}
+                  className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
+                >
+                  <div className="h-2 w-2 rounded-full bg-apple-green" />
+                  <span>Mark as Completed</span>
+                </button>
+              )}
 
-          <div className="my-1 border-t border-border/50" />
+              <div className="my-1 border-t border-border/50" />
 
-          {/* Delete option */}
-          <button
-            type="button"
-            onClick={() => {
-              onDeleteGoal(contextMenu.goal)
-              setContextMenu(null)
-            }}
-            className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-apple-red hover:bg-apple-red/10 transition-colors"
-          >
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path d="M3 6h18" />
-              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-            </svg>
-            <span className="font-medium">Delete task</span>
-          </button>
-        </>
-      )
-    })())}
+              {/* Delete option */}
+              <button
+                type="button"
+                onClick={() => {
+                  onDeleteGoal(contextMenu.goal)
+                  setContextMenu(null)
+                }}
+                className="flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-apple-red hover:bg-apple-red/10 transition-colors"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path d="M3 6h18" />
+                  <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                  <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                </svg>
+                <span className="font-medium">Delete task</span>
+              </button>
+            </>
+          )
+        })()
+      )}
     </div>
   )
 }
