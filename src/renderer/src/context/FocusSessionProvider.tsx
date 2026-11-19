@@ -811,7 +811,7 @@ export function FocusSessionProvider({
   )
 
   const startBreak = useCallback(
-    async (breakMinutes = 5) => {
+    async (breakMinutes = 2) => {
       if (emptyInProgressStartEpochRef.current > 0) {
         await logEmptyInProgressBreak()
       }
@@ -1452,7 +1452,7 @@ export function FocusSessionProvider({
           if (state.isActive && state.isBreak) {
             restartSession(false).catch(() => {})
           } else {
-            startBreak(5)
+            startBreak(2)
           }
           break
         }

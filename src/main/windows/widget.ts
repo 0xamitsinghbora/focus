@@ -1173,7 +1173,7 @@ function registerWidgetIpcAndListeners(): void {
         }
       },
       {
-        label: isBreak ? 'Resume Focus' : '5 min break',
+        label: isBreak ? 'Resume Focus' : '2 min break',
         click: () => {
           const mainWin = getActiveMainWindow()
           if (mainWin && mainWin.webContents) {

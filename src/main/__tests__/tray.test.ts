@@ -86,7 +86,7 @@ describe('TrayGenerator', () => {
 
     const lastCall = buildFromTemplateSpy.mock.calls[buildFromTemplateSpy.mock.calls.length - 1][0]
     const add5m = lastCall.find((item) => item.label === '+5 min addon')
-    const takeBreak = lastCall.find((item) => item.label === '5 min break')
+    const takeBreak = lastCall.find((item) => item.label === '2 min break')
 
     expect(add5m).toBeDefined()
     expect(takeBreak).toBeDefined()

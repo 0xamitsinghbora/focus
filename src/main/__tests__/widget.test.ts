@@ -585,7 +585,7 @@ describe('Taskbar alignment detection without synchronous shell calls', () => {
       expect(win.getBounds().width).toBe(WINDOW_WIDTH) // 100
     })
 
-    it('builds context menu with +5 min addon, 5 min break, and Reset Widget without Switch to', () => {
+    it('builds context menu with +5 min addon, 2 min break, and Reset Widget without Switch to', () => {
       const buildSpy = vi.spyOn(Menu, 'buildFromTemplate')
       const win = initWidgetWindow(() => null, { getShowWidget: () => true })!
       expect(win).toBeDefined()
@@ -605,7 +605,7 @@ describe('Taskbar alignment detection without synchronous shell calls', () => {
       const lastCall = buildSpy.mock.calls[buildSpy.mock.calls.length - 1][0]
       const labels = lastCall.map((item) => item.label).filter(Boolean)
       expect(labels).toContain('+5 min addon')
-      expect(labels).toContain('5 min break')
+      expect(labels).toContain('2 min break')
       expect(labels).toContain('Reset Widget')
       expect(labels.some((l) => l?.includes('Switch to'))).toBe(false)
     })

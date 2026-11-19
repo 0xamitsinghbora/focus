@@ -154,7 +154,7 @@ export class TrayGenerator {
           }
         },
         {
-          label: this.currentSessionState.isBreak ? 'Resume Focus' : '5 min break',
+          label: this.currentSessionState.isBreak ? 'Resume Focus' : '2 min break',
           click: () => {
             win?.webContents.send(IpcChannels.SessionQuickAction, 'start-break')
           }
