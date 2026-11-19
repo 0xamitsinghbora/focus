@@ -1,0 +1,1424 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Focus — Calm, Minimal Daily Activity Logger</title>
+    <meta
+      name="description"
+      content="A calm, minimal desktop helper that sits quietly on your computer and helps you understand where your day goes. Gentle check-in popups, floating timer HUD, daily goals, ambient soundscapes, and 100% private local SQLite storage."
+    />
+    <meta
+      name="keywords"
+      content="focus, activity logger, time tracker, desktop helper, privacy, local first, electron, productivity, zen mode, ambient sounds"
+    />
+    <meta name="author" content="HealthOS" />
+
+    <!-- Open Graph / Discord -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://healthos.github.io/focus/" />
+    <meta property="og:title" content="Focus — Calm, Minimal Daily Activity Logger" />
+    <meta
+      property="og:description"
+      content="Capture where your day goes with gentle 20-40 min check-ins, a floating timer HUD, daily goals, and built-in ambient focus sounds. 100% local, zero spyware."
+    />
+    <meta property="og:image" content="assets/icon-512.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Focus — Calm, Minimal Daily Activity Logger" />
+    <meta
+      property="twitter:description"
+      content="A quiet desktop helper for everyday flow. Zero screen surveillance, zero keystroke logging, 100% offline SQLite storage."
+    />
+    <meta property="twitter:image" content="assets/icon-512.png" />
+
+    <!-- Favicons -->
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="apple-touch-icon" href="assets/icon-128.png" />
+
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              obsidian: {
+                DEFAULT: '#06070a',
+                700: '#1e2438',
+                800: '#141724',
+                850: '#0f121c',
+                900: '#0b0d14',
+                950: '#06070a'
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace']
+            }
+          }
+        }
+      }
+    </script>
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body
+    class="bg-obsidian text-slate-100 antialiased selection:bg-sky-500/30 selection:text-sky-200"
+  >
+    <!-- Ambient Glow Effects -->
+    <div
+      class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-b from-sky-500/15 via-indigo-500/10 to-transparent blur-[120px] pointer-events-none -z-10"
+    ></div>
+    <div
+      class="fixed bottom-0 right-0 w-[500px] h-[300px] bg-gradient-to-t from-sky-600/10 to-transparent blur-[140px] pointer-events-none -z-10"
+    ></div>
+
+    <!-- Background Grid Pattern -->
+    <div class="fixed inset-0 bg-grid-pattern opacity-[0.035] pointer-events-none -z-10"></div>
+
+    <!-- Navigation Bar (Sleek h-14 to minimize top space) -->
+    <header
+      class="sticky top-0 z-50 backdrop-blur-xl bg-obsidian-900/80 border-b border-white/[0.06] transition-all duration-300"
+    >
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#" class="flex items-center gap-2.5 group">
+          <div
+            class="relative w-7 h-7 rounded-lg overflow-hidden shadow-md shadow-sky-500/20 ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-200"
+          >
+            <img src="assets/icon.svg" alt="Focus Logo" class="w-full h-full object-cover" />
+          </div>
+          <div class="flex items-center gap-2">
+            <span
+              class="text-lg font-bold tracking-tight text-white group-hover:text-sky-400 transition-colors"
+              >Focus</span
+            >
+            <span
+              id="nav-version-badge"
+              class="px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-full"
+              >v1.0.0</span
+            >
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav
+          class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-slate-300"
+        >
+          <a href="#preview" class="hover:text-white transition-colors">How it works</a>
+          <a href="#features" class="hover:text-white transition-colors">Features</a>
+          <a href="#privacy" class="hover:text-white transition-colors">Privacy</a>
+          <a href="#download" class="hover:text-white transition-colors">Downloads</a>
+          <a href="#faq" class="hover:text-white transition-colors">FAQ</a>
+        </nav>
+
+        <!-- Right Action CTAs -->
+        <div class="flex items-center gap-2.5">
+          <!-- GitHub Star Link -->
+          <a
+            href="https://github.com/healthOS/focus"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 transition-all"
+          >
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+              />
+            </svg>
+            <span>Star</span>
+            <span
+              id="github-stars-badge"
+              class="ml-0.5 px-1.5 py-0.2 bg-white/10 rounded-full text-[10px] text-slate-300"
+              >★</span
+            >
+          </a>
+
+          <!-- Quick Download Header CTA -->
+          <a
+            href="#download"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-md shadow-sky-500/25 transition-all"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            <span id="nav-download-label">Download</span>
+          </a>
+
+          <!-- Mobile Menu Toggle Button -->
+          <button
+            id="mobile-menu-btn"
+            class="md:hidden p-1.5 text-slate-400 hover:text-white rounded-lg focus:outline-none"
+            aria-label="Toggle navigation menu"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Navigation Drawer -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden border-b border-white/10 bg-obsidian-950/95 backdrop-blur-2xl px-5 py-3 space-y-2 text-sm"
+      >
+        <a href="#preview" class="block text-slate-300 hover:text-white py-1">How it works</a>
+        <a href="#features" class="block text-slate-300 hover:text-white py-1">Features</a>
+        <a href="#privacy" class="block text-slate-300 hover:text-white py-1">Privacy</a>
+        <a href="#download" class="block text-slate-300 hover:text-white py-1">Downloads</a>
+        <a href="#faq" class="block text-slate-300 hover:text-white py-1">FAQ</a>
+        <div class="pt-2 border-t border-white/10 flex items-center justify-between">
+          <a
+            href="https://github.com/healthOS/focus"
+            target="_blank"
+            class="text-xs text-slate-400 hover:text-white flex items-center gap-1.5"
+          >
+            GitHub Repository
+          </a>
+          <a
+            href="https://github.com/healthOS/focus/releases"
+            target="_blank"
+            class="text-xs text-sky-400 hover:underline"
+            >Releases →</a
+          >
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section (Clean top spacing, fits above fold without scroll) -->
+    <section class="relative pt-4 sm:pt-6 md:pt-8 pb-10 sm:pb-14 overflow-hidden">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <!-- Release Status Pill -->
+        <div
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-inner backdrop-blur-md mb-3 sm:mb-4 hover:border-sky-500/40 transition-colors cursor-pointer"
+          onclick="document.getElementById('download').scrollIntoView({ behavior: 'smooth' })"
+        >
+          <span class="flex h-2 w-2 relative">
+            <span
+              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+            ></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+          </span>
+          <span class="text-xs font-medium text-slate-300">
+            <strong class="text-white font-semibold" id="hero-release-tag">Focus v1.0.0</strong> is
+            ready for Windows, Mac & Linux
+          </span>
+          <span class="text-xs text-sky-400 font-medium">Free & Open Source →</span>
+        </div>
+
+        <!-- Main Headline -->
+        <h1
+          class="text-3xl sm:text-5xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white mb-3 sm:mb-4 leading-[1.12]"
+        >
+          Understand where your day goes.<br class="hidden sm:inline" />
+          <span class="gradient-text">Quietly, gently, without the spyware.</span>
+        </h1>
+
+        <!-- Subtitle: informal, friendly, concise -->
+        <p
+          class="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-slate-300 font-normal leading-relaxed mb-6"
+        >
+          A calm desktop helper that quietly asks what you're working on every half hour. No creepy
+          screenshots, no surveillance—just your own flow notes saved right on your machine.
+        </p>
+
+        <!-- Primary Smart Download CTA Box (The "Good Download Button") -->
+        <div class="max-w-md mx-auto mb-4">
+          <div
+            class="p-2 rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 backdrop-blur-xl shadow-2xl shadow-sky-950/50"
+          >
+            <!-- Primary Detected OS Button -->
+            <a
+              id="hero-primary-download-btn"
+              href="https://github.com/healthOS/focus/releases/latest/download/Focus-Setup-1.0.0.exe"
+              class="w-full flex items-center justify-between gap-3.5 px-5 py-3.5 rounded-xl text-white bg-gradient-to-r from-sky-500 via-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-[1.01] active:scale-[0.98] transition-all group"
+            >
+              <div class="flex items-center gap-3">
+                <span id="hero-os-icon" class="text-2xl shrink-0">🪟</span>
+                <div class="text-left">
+                  <div
+                    id="hero-download-headline"
+                    class="text-base sm:text-lg font-bold leading-tight"
+                  >
+                    Download for Windows
+                  </div>
+                  <div
+                    id="hero-download-subline"
+                    class="text-xs text-sky-100/90 font-normal mt-0.5"
+                  >
+                    Setup Installer (.exe) • Free • ~112 MB
+                  </div>
+                </div>
+              </div>
+              <div
+                class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 group-hover:translate-y-0.5 transition-transform"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+              </div>
+            </a>
+
+            <!-- Secondary Quick Platform Links -->
+            <div
+              class="pt-2.5 pb-0.5 px-2 flex flex-wrap items-center justify-center gap-y-1.5 gap-x-3 text-xs text-slate-400 border-t border-white/[0.06] mt-2"
+            >
+              <span class="text-slate-500">Also available:</span>
+              <a
+                id="portable-quick-link"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-Portable-1.0.0.exe"
+                class="hover:text-sky-300 transition-colors"
+              >
+                Portable (.exe)
+              </a>
+              <span class="text-slate-600">•</span>
+              <a
+                href="#download"
+                onclick="selectPlatformTab('mac')"
+                class="hover:text-sky-300 transition-colors"
+              >
+                macOS (.dmg)
+              </a>
+              <span class="text-slate-600">•</span>
+              <a
+                href="#download"
+                onclick="selectPlatformTab('linux')"
+                class="hover:text-sky-300 transition-colors"
+              >
+                Linux (.AppImage)
+              </a>
+              <span class="text-slate-600">•</span>
+              <a
+                href="#download"
+                class="text-sky-400 hover:text-sky-300 font-semibold transition-colors"
+              >
+                All formats ↓
+              </a>
+            </div>
+          </div>
+
+          <!-- Trust & Privacy Signals -->
+          <div
+            class="mt-3 flex flex-wrap items-center justify-center gap-y-1 gap-x-5 text-xs text-slate-400"
+          >
+            <span class="inline-flex items-center gap-1.5">
+              <svg
+                class="w-3.5 h-3.5 text-emerald-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              100% Free & Open Source
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg
+                class="w-3.5 h-3.5 text-emerald-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              100% Offline SQLite
+            </span>
+            <span class="inline-flex items-center gap-1.5">
+              <svg
+                class="w-3.5 h-3.5 text-emerald-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2.5"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Zero Surveillance
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Minimal, Static App Demo & Workflow Showcase -->
+    <section id="preview" class="py-14 md:py-20 relative border-t border-white/[0.06]">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <!-- Section Header -->
+        <div class="text-center max-w-2xl mx-auto mb-12">
+          <span
+            class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
+            >How It Works</span
+          >
+          <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
+            Three simple habits. Zero overhead.
+          </h2>
+          <p class="text-slate-400 text-sm sm:text-base">
+            Focus stays out of your way until you need it. Here is what your day looks like:
+          </p>
+        </div>
+
+        <!-- 3 Workflow Showcase Cards (Clean static UI mockups) -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Card 1: The Gentle Check-in -->
+          <div
+            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 text-xs">
+                <span class="font-bold text-sky-400 uppercase tracking-wider">1. The Prompt</span>
+                <span class="text-slate-500 font-mono">Every 30m</span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-1.5">Gentle Check-in</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                A quiet card surfaces. Type a quick note about what you're doing, or hit Snooze if
+                you're deep in flow.
+              </p>
+
+              <!-- Static UI Mockup of Prompt -->
+              <div
+                class="p-3.5 rounded-xl bg-obsidian-900 border border-sky-500/25 shadow-lg space-y-3"
+              >
+                <div
+                  class="flex items-center justify-between text-xs border-b border-white/10 pb-2"
+                >
+                  <span class="flex items-center gap-1.5 font-semibold text-white">
+                    <span class="w-2 h-2 rounded-full bg-sky-400"></span>
+                    Focus Check-in
+                  </span>
+                  <span class="text-[11px] text-slate-500">Prompt #4 today</span>
+                </div>
+                <div class="text-xs text-slate-300">What have you been working on recently?</div>
+                <div
+                  class="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200"
+                >
+                  Polished app release & updated landing page
+                </div>
+                <div class="flex items-center justify-between pt-1 text-[11px]">
+                  <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-medium"
+                    >🎯 Core Launch</span
+                  >
+                  <span class="px-2.5 py-1 rounded bg-sky-500 text-white font-semibold shadow-sm"
+                    >Log Note</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
+              Takes 5 seconds • Fully customizable intervals
+            </div>
+          </div>
+
+          <!-- Card 2: Floating Timer HUD -->
+          <div
+            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 text-xs">
+                <span class="font-bold text-indigo-400 uppercase tracking-wider"
+                  >2. In The Zone</span
+                >
+                <span class="text-slate-500 font-mono">Desktop Widget</span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-1.5">Always-in-Sight Timer</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                A tiny, elegant pill rests on your desktop. Glance at your elapsed flow anytime
+                without switching windows.
+              </p>
+
+              <!-- Static UI Mockup of Floating Pill on Desktop -->
+              <div
+                class="h-36 rounded-xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950/40 border border-white/10 p-4 flex flex-col justify-center items-center relative overflow-hidden"
+              >
+                <div class="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
+                <!-- Pill -->
+                <div
+                  class="relative z-10 px-4 py-2.5 rounded-xl bg-obsidian-900/95 border border-sky-400/40 shadow-xl flex items-center gap-3"
+                >
+                  <div class="w-6 h-6 rounded-lg bg-sky-500/20 flex items-center justify-center">
+                    <img src="assets/icon.svg" class="w-4 h-4" alt="Icon" />
+                  </div>
+                  <div>
+                    <div
+                      class="text-[10px] text-slate-400 font-semibold uppercase flex items-center gap-1"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      Deep Work
+                    </div>
+                    <div class="text-xs font-mono font-bold text-sky-300">00:42:15</div>
+                  </div>
+                  <div class="text-[10px] text-slate-500 border-l border-white/10 pl-2">
+                    Target: 1h
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
+              Pins anywhere • Non-distracting • Includes ambient sounds
+            </div>
+          </div>
+
+          <!-- Card 3: End of Day Review -->
+          <div
+            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3 text-xs">
+                <span class="font-bold text-emerald-400 uppercase tracking-wider">3. Wrap Up</span>
+                <span class="text-slate-500 font-mono">5:30 PM</span>
+              </div>
+              <h3 class="text-base font-bold text-white mb-1.5">Visual Day Summary</h3>
+              <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                At the end of your day, see an honest, color-coded timeline. Close your laptop
+                knowing exactly what you did.
+              </p>
+
+              <!-- Static UI Mockup of Timeline Summary -->
+              <div
+                class="p-3.5 rounded-xl bg-obsidian-900 border border-white/10 shadow-lg space-y-2.5"
+              >
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                  <span class="font-semibold text-white">Today's Flow</span>
+                  <span class="text-emerald-400 font-bold">5h 45m Productive</span>
+                </div>
+                <!-- Timeline Bar -->
+                <div
+                  class="h-4 w-full rounded-md bg-black/40 border border-white/10 p-0.5 flex gap-1 overflow-hidden"
+                >
+                  <div
+                    class="h-full rounded bg-sky-500"
+                    style="width: 40%"
+                    title="Deep Architecture"
+                  ></div>
+                  <div
+                    class="h-full rounded bg-amber-500/80"
+                    style="width: 10%"
+                    title="Walk Break"
+                  ></div>
+                  <div
+                    class="h-full rounded bg-indigo-500"
+                    style="width: 35%"
+                    title="Engineering"
+                  ></div>
+                  <div
+                    class="h-full rounded bg-emerald-500"
+                    style="width: 15%"
+                    title="Review"
+                  ></div>
+                </div>
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 gap-2 pt-1 text-[11px]">
+                  <div class="px-2 py-1 rounded bg-white/[0.03] border border-white/5">
+                    <span class="text-slate-400">Check-ins:</span>
+                    <span class="font-bold text-white ml-1">8 logged</span>
+                  </div>
+                  <div class="px-2 py-1 rounded bg-white/[0.03] border border-white/5">
+                    <span class="text-slate-400">Goals:</span>
+                    <span class="font-bold text-emerald-400 ml-1">4 of 4 completed</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
+              100% offline SQLite • No timesheets • No guilt
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Key Features Grid (Informal, friendly, clear) -->
+    <section id="features" class="py-16 md:py-24 relative">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-2xl mx-auto mb-14">
+          <span
+            class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
+            >Features</span
+          >
+          <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
+            Everything you need. Nothing you don't.
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base">
+            No complex multi-tier project tracking or overwhelming setup. Just a simple helper that
+            sits quietly on your computer.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Feature 1 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              💬
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Friendly Check-ins</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Every 20 to 40 minutes, a small prompt asks what you're working on. Type a sentence,
+              tag a goal, or snooze if you're in deep flow.
+            </p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              🪟
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Floating Timer Widget</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              A gentle floating pill rests in the corner of your desktop so you can glance at your
+              session progress without switching apps.
+            </p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              🎯
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Simple Morning Goals</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Jot down 2 or 3 intentions each morning, set simple target hours, and check them off
+              as you complete them throughout the day.
+            </p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              📊
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Visual Day Summary</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Wrap up your day with a clear, color-coded visual timeline of your productive hours,
+              break intervals, and accomplishments.
+            </p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              🔒
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">100% Private (No Spying)</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Never takes screenshots, never records keystrokes, and never inspects browser tabs.
+              All data stays strictly in your local SQLite.
+            </p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div
+            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
+          >
+            <div
+              class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+            >
+              🎧
+            </div>
+            <h3 class="text-base font-bold text-white mb-2">Calming Ambient Audio</h3>
+            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+              Built-in gentle rain, brown noise, and ocean soundscapes mask room chatter and
+              background noise when you need deep focus.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Privacy Comparison Table Section -->
+    <section
+      id="privacy"
+      class="py-16 md:py-24 bg-gradient-to-b from-transparent via-black/40 to-transparent border-t border-white/[0.06] relative"
+    >
+      <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="text-center max-w-xl mx-auto mb-12">
+          <span
+            class="text-xs font-semibold tracking-wider text-rose-400 uppercase bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20"
+            >Your Data Belongs to You</span
+          >
+          <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
+            Focus vs. Invasive Surveillance
+          </h2>
+          <p class="text-slate-400 text-sm">
+            Most work trackers spy on employees. Focus was built on personal sovereignty and
+            respect.
+          </p>
+        </div>
+
+        <div
+          class="rounded-2xl border border-white/10 bg-obsidian-900/60 overflow-hidden backdrop-blur-xl shadow-xl"
+        >
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-white/10 bg-white/[0.02]">
+                  <th class="py-3.5 px-5 text-xs sm:text-sm font-semibold text-slate-300">
+                    Feature
+                  </th>
+                  <th
+                    class="py-3.5 px-5 text-xs sm:text-sm font-bold text-sky-400 bg-sky-500/10 border-x border-sky-500/20"
+                  >
+                    Focus (This App)
+                  </th>
+                  <th class="py-3.5 px-5 text-xs sm:text-sm font-semibold text-slate-400">
+                    Corporate Trackers
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/[0.06] text-xs sm:text-sm">
+                <tr>
+                  <td class="py-3 px-5 font-medium text-white">Screen Screenshots</td>
+                  <td
+                    class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
+                  >
+                    ❌ Never (Zero code for screenshots)
+                  </td>
+                  <td class="py-3 px-5 text-rose-400">⚠️ Every 5-10 minutes</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-5 font-medium text-white">Keystroke & Mouse Logging</td>
+                  <td
+                    class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
+                  >
+                    ❌ Never (Zero keylogging)
+                  </td>
+                  <td class="py-3 px-5 text-rose-400">⚠️ Tracks activity %</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-5 font-medium text-white">Where is data stored?</td>
+                  <td
+                    class="py-3 px-5 font-bold text-sky-300 bg-sky-500/5 border-x border-sky-500/20"
+                  >
+                    💻 100% Local SQLite Database
+                  </td>
+                  <td class="py-3 px-5 text-slate-400">☁️ Remote Corporate Cloud</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-5 font-medium text-white">Works completely offline?</td>
+                  <td
+                    class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
+                  >
+                    ✓ Yes, 100% offline
+                  </td>
+                  <td class="py-3 px-5 text-slate-400">Requires connection</td>
+                </tr>
+                <tr>
+                  <td class="py-3 px-5 font-medium text-white">Cost & License</td>
+                  <td
+                    class="py-3 px-5 font-bold text-sky-400 bg-sky-500/5 border-x border-sky-500/20"
+                  >
+                    100% Free & Open Source (MIT)
+                  </td>
+                  <td class="py-3 px-5 text-slate-400">$10 - $30 / user / month</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Complete GUI Download Hub -->
+    <section id="download" class="py-16 md:py-24 relative scroll-mt-10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6">
+        <!-- Section Header -->
+        <div class="text-center max-w-2xl mx-auto mb-10">
+          <span
+            class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
+            >Downloads</span
+          >
+          <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
+            Grab Focus for your computer
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base">
+            Official compiled releases directly from GitHub. Ready to run on Windows, Mac, and
+            Linux.
+          </p>
+
+          <!-- Live API sync status -->
+          <div
+            class="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/[0.04] border border-white/10 text-xs text-slate-400"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span id="releases-api-status"
+              >Synced with GitHub:
+              <strong class="text-white" id="github-latest-tag">v1.0.0</strong></span
+            >
+          </div>
+        </div>
+
+        <!-- Platform Selection Filter Tabs -->
+        <div
+          class="flex items-center justify-center gap-1.5 mb-8 overflow-x-auto p-1 bg-black/40 rounded-xl border border-white/10 max-w-sm mx-auto"
+        >
+          <button
+            class="platform-tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-sky-500 shadow-md shadow-sky-500/30 transition-all"
+            data-os="windows"
+          >
+            🪟 Windows
+          </button>
+          <button
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            data-os="mac"
+          >
+            🍏 macOS
+          </button>
+          <button
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            data-os="linux"
+          >
+            🐧 Linux
+          </button>
+          <button
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            data-os="source"
+          >
+            ⚡ Source
+          </button>
+        </div>
+
+        <!-- Platform Download Cards Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="download-cards-grid">
+          <!-- CARD 1: Windows Setup Installer -->
+          <div
+            class="download-card os-windows p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🪟</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30"
+                  >Recommended</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
+                Windows Installer
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Standard setup wizard with start menu shortcuts and auto-updates.
+              </p>
+
+              <div class="space-y-1 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div class="flex justify-between">
+                  <span>File:</span>
+                  <span class="font-mono text-slate-300" id="file-win-installer"
+                    >Focus-Setup-1.0.0.exe</span
+                  >
+                </div>
+                <div class="flex justify-between">
+                  <span>Size:</span>
+                  <span class="font-mono text-slate-300" id="size-win-installer">~112 MB</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>OS:</span>
+                  <span class="text-slate-300">Windows 10 / 11 (64-bit)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                id="btn-win-installer"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-Setup-1.0.0.exe"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-md shadow-sky-500/25 transition-all"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download Installer (.exe)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 2: Windows Portable Executable -->
+          <div
+            class="download-card os-windows p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">💼</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
+                  >Zero Install</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
+                Windows Portable
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Standalone .exe. Runs immediately without installation or admin rights.
+              </p>
+
+              <div class="space-y-1 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div class="flex justify-between">
+                  <span>File:</span>
+                  <span class="font-mono text-slate-300" id="file-win-portable"
+                    >Focus-Portable-1.0.0.exe</span
+                  >
+                </div>
+                <div class="flex justify-between">
+                  <span>Size:</span>
+                  <span class="font-mono text-slate-300" id="size-win-portable">~111 MB</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Best For:</span>
+                  <span class="text-slate-300">USB drives, work laptops</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                id="btn-win-portable"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-Portable-1.0.0.exe"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/15 active:scale-95 transition-all border border-white/15"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download Portable (.exe)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 3: macOS Disk Image (.dmg) -->
+          <div
+            class="download-card os-mac p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🍏</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
+                  >Universal</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
+                macOS DMG
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Standard disk image. Drag and drop into your Applications folder.
+              </p>
+
+              <div class="space-y-1 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div class="flex justify-between">
+                  <span>File:</span>
+                  <span class="font-mono text-slate-300" id="file-mac-dmg">Focus-1.0.0.dmg</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Arch:</span>
+                  <span class="text-slate-300">Apple Silicon (M1-M4) & Intel</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>OS:</span>
+                  <span class="text-slate-300">macOS 12+ (Monterey, Sonoma, Sequoia)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                id="btn-mac-dmg"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-1.0.0.dmg"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-md shadow-sky-500/25 transition-all"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download for macOS (.dmg)</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 4: Linux AppImage -->
+          <div
+            class="download-card os-linux p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">🐧</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
+                  >Universal Linux</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
+                Linux AppImage
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Run directly on Ubuntu, Debian, Fedora, Arch, and more without root.
+              </p>
+
+              <div class="space-y-1 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div class="flex justify-between">
+                  <span>File:</span>
+                  <span class="font-mono text-slate-300" id="file-linux-appimage"
+                    >Focus-1.0.0.AppImage</span
+                  >
+                </div>
+                <div class="flex justify-between">
+                  <span>Run:</span>
+                  <span class="font-mono text-slate-300">chmod +x && ./Focus</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                id="btn-linux-appimage"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-1.0.0.AppImage"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-md shadow-sky-500/25 transition-all"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download AppImage</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 5: Linux Debian (.deb) -->
+          <div
+            class="download-card os-linux p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">📦</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
+                  >Debian / Ubuntu</span
+                >
+              </div>
+              <h3 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors">
+                Debian Package
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Native package with desktop app menu integration.
+              </p>
+
+              <div class="space-y-1 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div class="flex justify-between">
+                  <span>File:</span>
+                  <span class="font-mono text-slate-300" id="file-linux-deb">Focus-1.0.0.deb</span>
+                </div>
+                <div class="flex justify-between">
+                  <span>Command:</span>
+                  <span class="font-mono text-slate-300">sudo dpkg -i</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                id="btn-linux-deb"
+                href="https://github.com/healthOS/focus/releases/latest/download/Focus-1.0.0.deb"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/15 active:scale-95 transition-all border border-white/15"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Download .deb Package</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- CARD 6: Source Code & Local Build -->
+          <div
+            class="download-card os-source p-5 rounded-2xl bg-gradient-to-b from-white/[0.04] to-white/[0.01] border border-white/15 hover:border-sky-500/50 transition-all flex flex-col justify-between group shadow-xl"
+          >
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-2xl">💻</span>
+                <span
+                  class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+                  >Developers</span
+                >
+              </div>
+              <h3
+                class="text-lg font-bold text-white group-hover:text-emerald-300 transition-colors"
+              >
+                Build From Source
+              </h3>
+              <p class="text-xs text-slate-400 mt-1 mb-3">
+                Clone the repo and run natively using Node.js & Vite.
+              </p>
+
+              <div class="space-y-1.5 text-xs text-slate-400 border-t border-white/10 pt-2.5">
+                <div
+                  class="font-mono bg-black/40 p-2 rounded-lg text-[11px] text-slate-300 select-all overflow-x-auto"
+                >
+                  git clone https://github.com/healthOS/focus.git<br />
+                  cd focus && npm install<br />
+                  npm run dev
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-white/10">
+              <a
+                href="https://github.com/healthOS/focus"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs font-bold text-white bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition-all"
+              >
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                  <path
+                    d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+                  />
+                </svg>
+                <span>GitHub Repository →</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verification Checksums Accordion -->
+        <div class="mt-8 p-5 rounded-2xl bg-white/[0.02] border border-white/10 max-w-3xl mx-auto">
+          <div
+            class="flex items-center justify-between cursor-pointer select-none"
+            id="checksum-toggle-btn"
+          >
+            <div class="flex items-center gap-2.5">
+              <span class="text-lg">🔐</span>
+              <div>
+                <div class="text-xs sm:text-sm font-bold text-white">
+                  SHA-512 Checksums & Verification
+                </div>
+                <div class="text-[11px] text-slate-400">
+                  Verify file integrity of binary downloads
+                </div>
+              </div>
+            </div>
+            <span
+              id="checksum-chevron"
+              class="text-slate-400 text-xs font-bold transition-transform"
+              >▼</span
+            >
+          </div>
+
+          <div
+            id="checksum-content"
+            class="hidden mt-3 pt-3 border-t border-white/10 space-y-2 text-xs"
+          >
+            <div>
+              <div class="font-semibold text-slate-300">Focus-Setup-1.0.0.exe (SHA-512):</div>
+              <div
+                class="font-mono text-[11px] text-sky-400 bg-black/50 p-2 rounded-lg break-all select-all mt-1"
+              >
+                qceZS433pDgS5MTlIMPsxpndwmvRUSIl7h4To6c/i2wpDgO3wcoJ5vzHe4/1/PnqL/c3nsZa7H9J9Q4SGwlesw==
+              </div>
+            </div>
+            <div class="text-slate-400 text-[11px]">
+              Verify on Windows PowerShell:
+              <code class="text-slate-200"
+                >Get-FileHash Focus-Setup-1.0.0.exe -Algorithm SHA512</code
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Frequently Asked Questions (FAQ) -->
+    <section id="faq" class="py-16 md:py-20 border-t border-white/[0.06] relative">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6">
+        <div class="text-center mb-10">
+          <span
+            class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
+            >FAQ</span
+          >
+          <h2 class="text-2xl sm:text-3xl font-bold text-white mt-3 mb-2">Common Questions</h2>
+          <p class="text-slate-400 text-xs sm:text-sm">
+            Quick answers about privacy, downloads, offline use, and features.
+          </p>
+        </div>
+
+        <div class="space-y-3">
+          <!-- FAQ 1 -->
+          <div
+            class="faq-item p-4 rounded-xl bg-white/[0.02] border border-white/10 transition-colors"
+          >
+            <button
+              class="faq-question w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-white focus:outline-none"
+            >
+              <span>Is Focus really 100% free and open source?</span>
+              <span class="faq-icon text-sky-400 ml-4 font-bold text-lg">+</span>
+            </button>
+            <div
+              class="faq-answer hidden mt-2.5 pt-2.5 border-t border-white/10 text-xs sm:text-sm text-slate-300 leading-relaxed"
+            >
+              Yes! Focus is licensed under the permissive MIT License. There are no subscriptions,
+              no locked premium tiers, no hidden ads, and no in-app purchases. You can inspect the
+              complete source code on GitHub.
+            </div>
+          </div>
+
+          <!-- FAQ 2 -->
+          <div
+            class="faq-item p-4 rounded-xl bg-white/[0.02] border border-white/10 transition-colors"
+          >
+            <button
+              class="faq-question w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-white focus:outline-none"
+            >
+              <span>Does Focus record my screen or keystrokes?</span>
+              <span class="faq-icon text-sky-400 ml-4 font-bold text-lg">+</span>
+            </button>
+            <div
+              class="faq-answer hidden mt-2.5 pt-2.5 border-t border-white/10 text-xs sm:text-sm text-slate-300 leading-relaxed"
+            >
+              Never. Traditional tracking software installs system hooks to capture screenshots and
+              track keystrokes. Focus has zero code for recording your screen or keystrokes. All
+              logs are stored strictly on your local disk in an embedded SQLite database.
+            </div>
+          </div>
+
+          <!-- FAQ 3 -->
+          <div
+            class="faq-item p-4 rounded-xl bg-white/[0.02] border border-white/10 transition-colors"
+          >
+            <button
+              class="faq-question w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-white focus:outline-none"
+            >
+              <span>What is the difference between Installer and Portable?</span>
+              <span class="faq-icon text-sky-400 ml-4 font-bold text-lg">+</span>
+            </button>
+            <div
+              class="faq-answer hidden mt-2.5 pt-2.5 border-t border-white/10 text-xs sm:text-sm text-slate-300 leading-relaxed"
+            >
+              The Windows Setup Installer provides a guided setup wizard, registers start menu
+              shortcuts, and supports smooth updates. The Portable executable requires zero
+              installation or administrator rights: simply double-click and run from any folder or
+              USB drive.
+            </div>
+          </div>
+
+          <!-- FAQ 4 -->
+          <div
+            class="faq-item p-4 rounded-xl bg-white/[0.02] border border-white/10 transition-colors"
+          >
+            <button
+              class="faq-question w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-white focus:outline-none"
+            >
+              <span>Can I customize how often check-in prompts appear?</span>
+              <span class="faq-icon text-sky-400 ml-4 font-bold text-lg">+</span>
+            </button>
+            <div
+              class="faq-answer hidden mt-2.5 pt-2.5 border-t border-white/10 text-xs sm:text-sm text-slate-300 leading-relaxed"
+            >
+              Yes. In Settings, you can set the interval to 15, 20, 30, 45, or 60 minutes. You can
+              also temporarily pause prompts or snooze them by 5, 10, or 15 minutes whenever you're
+              in deep concentration.
+            </div>
+          </div>
+
+          <!-- FAQ 5 -->
+          <div
+            class="faq-item p-4 rounded-xl bg-white/[0.02] border border-white/10 transition-colors"
+          >
+            <button
+              class="faq-question w-full flex items-center justify-between text-left font-bold text-sm sm:text-base text-white focus:outline-none"
+            >
+              <span>Can I sync my data between multiple computers?</span>
+              <span class="faq-icon text-sky-400 ml-4 font-bold text-lg">+</span>
+            </button>
+            <div
+              class="faq-answer hidden mt-2.5 pt-2.5 border-t border-white/10 text-xs sm:text-sm text-slate-300 leading-relaxed"
+            >
+              By default, all data is 100% offline on your device. If you wish to sync across
+              machines, Focus includes an optional Google Drive integration that connects directly
+              to your personal cloud storage without intermediary servers.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Final Call to Action -->
+    <section class="py-16 md:py-20 relative overflow-hidden border-t border-white/10">
+      <div
+        class="absolute inset-0 bg-gradient-to-b from-sky-500/10 via-transparent to-transparent pointer-events-none"
+      ></div>
+
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative z-10">
+        <div
+          class="w-12 h-12 rounded-xl overflow-hidden shadow-xl shadow-sky-500/30 ring-2 ring-white/20 mx-auto mb-4"
+        >
+          <img src="assets/icon.svg" alt="Focus App Icon" class="w-full h-full object-cover" />
+        </div>
+
+        <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight mb-2.5">
+          Ready for a calmer, more mindful workday?
+        </h2>
+        <p class="text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-6">
+          Download Focus for free today. Set your morning intentions, stay in flow, and wrap up your
+          day with clarity.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <a
+            id="bottom-cta-download-btn"
+            href="#download"
+            class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-lg shadow-sky-500/30 transition-all flex items-center justify-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2.5"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
+            </svg>
+            <span>Download Focus (v1.0.0)</span>
+          </a>
+          <a
+            href="https://github.com/healthOS/focus"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs sm:text-sm font-bold text-slate-300 hover:text-white bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 active:scale-95 transition-all flex items-center justify-center gap-2"
+          >
+            <span>Star on GitHub ★</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 border-t border-white/[0.06] bg-obsidian-950 text-xs text-slate-400">
+      <div
+        class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+      >
+        <div class="flex items-center gap-2.5">
+          <img src="assets/icon.svg" class="w-5 h-5 rounded" alt="Focus icon" />
+          <span class="font-bold text-white">Focus</span>
+          <span class="text-slate-600">•</span>
+          <span>A calm, minimal daily activity logger</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-4 text-slate-400">
+          <a
+            href="https://github.com/healthOS/focus"
+            target="_blank"
+            class="hover:text-white transition-colors"
+            >GitHub</a
+          >
+          <a
+            href="https://github.com/healthOS/focus/releases"
+            target="_blank"
+            class="hover:text-white transition-colors"
+            >Releases</a
+          >
+          <a
+            href="https://github.com/healthOS/focus/issues"
+            target="_blank"
+            class="hover:text-white transition-colors"
+            >Issues</a
+          >
+          <a
+            href="https://github.com/healthOS/focus/blob/main/LICENSE"
+            target="_blank"
+            class="hover:text-white transition-colors"
+            >MIT License</a
+          >
+        </div>
+
+        <div>
+          <span>MIT © 2026 HealthOS</span>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,405 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme {
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-surface: hsl(var(--surface));
+  --color-surface-foreground: hsl(var(--surface-foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-apple-blue: hsl(var(--apple-blue));
+  --color-apple-green: hsl(var(--apple-green));
+  --color-apple-amber: hsl(var(--apple-amber));
+  --color-apple-red: hsl(var(--apple-red));
+  --color-apple-indigo: hsl(var(--apple-indigo));
+
+  --radius-2xl: 1rem;
+  --radius-xl: calc(var(--radius) + 2px);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', 'Inter',
+    system-ui, sans-serif;
+  --font-mono: 'SF Mono', Menlo, Monaco, Consolas, 'Liberation Mono', monospace;
+
+  --shadow-apple-subtle: 0 1px 3px rgba(0, 0, 0, 0.03), 0 4px 16px rgba(0, 0, 0, 0.02);
+  --shadow-apple-card: 0 2px 8px -1px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  --shadow-apple-popover: 0 20px 48px -6px rgba(0, 0, 0, 0.14), 0 8px 16px -2px rgba(0, 0, 0, 0.06);
+}
+
+@layer base {
+  :root {
+    /* Steve Jobs / Apple Light Mode — Crisp Cupertino Paper & Precision Aluminum */
+    --background: 240 5% 96.8%;
+    --foreground: 240 4% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 4% 12%;
+
+    --surface: 240 5% 94.5%;
+    --surface-foreground: 240 4% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 4% 12%;
+
+    --primary: 240 4% 12%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 240 5% 93%;
+    --secondary-foreground: 240 4% 16%;
+
+    --muted: 240 5% 93%;
+    --muted-foreground: 240 2% 52%;
+
+    --accent: 211 100% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 3 100% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 88.5%;
+    --input: 240 5% 88.5%;
+    --ring: 211 100% 48%;
+
+    --radius: 0.75rem;
+
+    /* Apple Semantic Colors — Iconic Keynote Tones */
+    --apple-blue: 211 100% 45%;
+    --apple-green: 135 65% 44%;
+    --apple-amber: 35 100% 50%;
+    --apple-red: 3 100% 60%;
+    --apple-indigo: 241 62% 59%;
+  }
+
+  .dark {
+    /* Steve Jobs / Apple Dark Mode — Obsidian Depth, Space Black & Precision Matte Glass */
+    --background: 240 9% 4.5%;
+    --foreground: 240 5% 96.5%;
+
+    --card: 240 5% 9.5%;
+    --card-foreground: 240 5% 96.5%;
+
+    --surface: 240 5% 13.5%;
+    --surface-foreground: 240 5% 96.5%;
+
+    --popover: 240 5% 11.5%;
+    --popover-foreground: 240 5% 96.5%;
+
+    --primary: 0 0% 100%;
+    --primary-foreground: 240 9% 4.5%;
+
+    --secondary: 240 5% 15%;
+    --secondary-foreground: 240 5% 92%;
+
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 2% 61%;
+
+    --accent: 211 100% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 4 100% 62%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 5% 17.5%;
+    --input: 240 5% 17.5%;
+    --ring: 211 100% 60%;
+
+    /* Apple Semantic Colors - Dark Luminous Keynote Accents */
+    --apple-blue: 211 100% 58%;
+    --apple-green: 135 72% 50%;
+    --apple-amber: 37 100% 52%;
+    --apple-red: 4 100% 62%;
+    --apple-indigo: 241 75% 63%;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    letter-spacing: -0.011em;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1,
+      'kern' 1;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font-family: inherit;
+  }
+
+  /* Text selection on content areas and interactive controls */
+  .select-text,
+  [data-selectable='true'] {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  button,
+  [role='button'],
+  [data-drag-handle] {
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* Visible focus rings for keyboard navigation */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--primary));
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
+  /* Skip link for screen readers */
+  .skip-to-content {
+    position: absolute;
+    left: -9999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  .skip-to-content:focus {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 8px;
+    width: auto;
+    height: auto;
+    padding: 8px 16px;
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    outline: none;
+  }
+}
+
+/* Apple Smooth Scrollbar */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 999px;
+  transition: background-color 0.2s ease;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.25);
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* Glassmorphism & Precision Materials */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 16px 40px -4px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.9);
+}
+.dark .apple-glass {
+  background: rgba(20, 20, 24, 0.84);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  box-shadow:
+    0 20px 48px -6px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.09);
+}
+
+/* Apple Precision Chamfer Card */
+.apple-card-elevated {
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    0 4px 16px rgba(0, 0, 0, 0.02),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
+}
+.dark .apple-card-elevated {
+  box-shadow:
+    0 4px 20px -2px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Steve Jobs Typography Utilities */
+.apple-display {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  font-feature-settings:
+    'cv02' 1,
+    'calt' 1,
+    'tnum' 1;
+}
+
+.apple-title {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+.apple-kicker {
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: hsl(var(--muted-foreground));
+}
+
+.apple-mono-timer {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings:
+    'tnum' 1,
+    'zero' 1;
+  letter-spacing: -0.03em;
+}
+
+/* Apple Tactile Spring Press */
+.apple-press {
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.15s ease;
+}
+.apple-press:active {
+  transform: scale(0.975);
+}
+
+/* Glowing Indicator Jewels */
+.apple-glow-green {
+  box-shadow: 0 0 12px -1px rgba(52, 199, 89, 0.5);
+}
+.apple-glow-amber {
+  box-shadow: 0 0 12px -1px rgba(255, 159, 10, 0.5);
+}
+.apple-glow-blue {
+  box-shadow: 0 0 12px -1px rgba(41, 151, 255, 0.5);
+}
+
+/* Tabular figures for clocks & metrics */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Global sleek scrollbar (replaces default browser scrollbars) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Hide scrollbars completely while maintaining scrollability */
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+
+/* Remove ugly browser spin buttons from number inputs */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !important;
+}
+input[type='number'] {
+  -moz-appearance: textfield !important;
+  appearance: textfield !important;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+@keyframes soundWave {
+  0% {
+    transform: scaleY(0.25);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(0.4);
+    opacity: 0.8;
+  }
+}
+
+.animate-sound-wave {
+  transform-origin: center;
+  animation: soundWave var(--wave-speed, 1.2s) ease-in-out infinite alternate;
+}
+

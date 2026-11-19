@@ -1,0 +1,58 @@
+appId: com.focus.app
+productName: Focus
+publish:
+  provider: github
+  owner: healthOS
+  repo: focus
+npmRebuild: false
+directories:
+  output: dist
+  buildResources: build
+asarUnpack:
+  - '**/*.node'
+  - 'node_modules/better-sqlite3'
+files:
+  - from: out
+    to: out
+    filter:
+      - '**/*'
+  - package.json
+  - node_modules/better-sqlite3/**/*
+  - node_modules/bindings/**/*
+  - node_modules/file-uri-to-path/**/*
+win:
+  target:
+    - nsis
+  icon: build/icon.ico
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  perMachine: false
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: Focus
+  uninstallDisplayName: Focus
+  deleteAppDataOnUninstall: false
+  runAfterFinish: true
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
+  include: build/installer.nsh
+  artifactName: ${productName}-Setup-${version}.${ext}
+portable:
+  artifactName: ${productName}-Portable-${version}.${ext}
+mac:
+  target:
+    - dmg
+    - zip
+  icon: build/icon.icns
+  category: public.app-category.productivity
+  artifactName: ${productName}-${version}.${ext}
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.inherit.plist
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Utility
+  icon: build/icon.png
+  artifactName: ${productName}-${version}.${ext}

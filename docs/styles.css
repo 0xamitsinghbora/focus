@@ -1,0 +1,146 @@
+/* Focus Landing Page & Download Hub Stylesheet
+   Modern, Dark Mode First, Apple & Linear Aesthetic
+*/
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --color-obsidian-950: #06070a;
+  --color-obsidian-900: #0b0d14;
+  --color-obsidian-850: #0f121c;
+  --color-obsidian-800: #141724;
+  --color-obsidian-700: #1f2438;
+
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-600: #0284c7;
+
+  --color-emerald-400: #34d399;
+  --color-amber-400: #fbbf24;
+  --color-rose-400: #f87171;
+}
+
+/* Base Reset & Typography */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-family: var(--font-sans);
+  background-color: var(--color-obsidian-950);
+  color: #f1f5f9;
+  scroll-behavior: smooth;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  overflow-x: hidden;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* Background Utilities */
+.bg-obsidian {
+  background-color: var(--color-obsidian-950);
+}
+
+.bg-obsidian-950 {
+  background-color: var(--color-obsidian-950);
+}
+
+.bg-obsidian-900 {
+  background-color: var(--color-obsidian-900);
+}
+
+.bg-obsidian-800 {
+  background-color: var(--color-obsidian-800);
+}
+
+.bg-grid-pattern {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Gradient Text */
+.gradient-text {
+  background: linear-gradient(135deg, #ffffff 10%, #38bdf8 55%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Platform Filter Tabs */
+.platform-tab-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.platform-tab-btn.active {
+  background: var(--color-sky-500) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+}
+
+/* Card Glow Effect on Hover */
+.download-card {
+  transition:
+    transform 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.download-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -10px rgba(14, 165, 233, 0.18);
+}
+
+/* FAQ Accordion */
+.faq-item {
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.faq-item:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.faq-item.open .faq-answer {
+  display: block !important;
+}
+
+.faq-item.open .faq-icon {
+  transform: rotate(45deg);
+}
+
+.faq-icon {
+  transition: transform 0.2s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #06070a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1e2438;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #38bdf8;
+}

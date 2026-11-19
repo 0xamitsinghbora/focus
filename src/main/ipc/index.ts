@@ -1,0 +1,6 @@
+export { LogsIpcController } from './LogsIpcController'
+export { GoalsIpcController } from './GoalsIpcController'
+export { SystemIpcController } from './SystemIpcController'
+export { SessionIpcController } from './SessionIpcController'
+export { ReminderIpcController } from './ReminderIpcController'
+export { SettingsIpcController } from './SettingsIpcController'

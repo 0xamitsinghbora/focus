@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Native OS System Tray Glyph: Crisp, Transparent Background, High-DPI -->
+  <!-- Outer Focus Ring (Radius 24, Stroke 5, filling 80% of canvas) -->
+  <circle
+    cx="32"
+    cy="32"
+    r="24"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="5"
+  />
+
+  <!-- Subtle Inset Horizon Ring (Radius 16, Stroke 1.5, 45% opacity) -->
+  <circle
+    cx="32"
+    cy="32"
+    r="16"
+    fill="none"
+    stroke="#FFFFFF"
+    stroke-width="1.5"
+    opacity="0.45"
+  />
+
+  <!-- Central Focal Nucleus (Radius 8, solid white) -->
+  <circle
+    cx="32"
+    cy="32"
+    r="8"
+    fill="#FFFFFF"
+  />
+</svg>
