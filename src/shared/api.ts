@@ -24,7 +24,9 @@ import {
   EvaluatorMode,
   EvaluationRecord,
   EvaluationSubmission,
-  EvaluatorMetrics
+  EvaluatorMetrics,
+  GoalBreakdownAnalysis,
+  GoalBreakdownResult
 } from './types'
 
 export interface FocusAPI {
@@ -92,6 +94,16 @@ export interface FocusAPI {
       newTag: string,
       newColor?: string
     ) => Promise<{ success: boolean }>
+    analyze: (payload: {
+      title: string
+      note?: string
+      targetMinutes?: number
+    }) => Promise<GoalBreakdownAnalysis>
+    breakdown: (payload: {
+      title: string
+      note?: string
+      targetMinutes?: number
+    }) => Promise<GoalBreakdownResult>
   }
 
   // --- Learning & Spaced Repetition ---

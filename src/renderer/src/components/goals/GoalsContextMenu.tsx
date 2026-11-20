@@ -32,6 +32,7 @@ export interface GoalsContextMenuProps {
   onAssignTaskGroup: (goal: DailyGoal, tag?: string, color?: string) => Promise<void>
   onCarryToToday?: (goal: DailyGoal) => Promise<void>
   onRescheduleGoal?: (goal: DailyGoal, deadline?: string) => Promise<void>
+  onBreakdownGoal?: (goal: DailyGoal) => void
   dayCutoffHour?: number
 
   // Group data
@@ -54,6 +55,7 @@ export function GoalsContextMenu({
   onAssignTaskGroup,
   onCarryToToday,
   onRescheduleGoal,
+  onBreakdownGoal,
   dayCutoffHour = 0,
   existingGroups
 }: GoalsContextMenuProps): React.ReactElement | null {
@@ -300,6 +302,35 @@ export function GoalsContextMenu({
                 </div>
                 <span className="text-[10px] text-muted-foreground font-mono">Double-click</span>
               </button>
+
+              {/* Goal Breakdown AI option */}
+              {onBreakdownGoal && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    onBreakdownGoal(contextMenu.goal)
+                    setContextMenu(null)
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-foreground hover:bg-secondary transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <svg
+                      width="13"
+                      height="13"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+                    </svg>
+                    <span className="font-medium">AI Challenge & Breakdown...</span>
+                  </div>
+                  <span className="text-[10px] text-purple-600 dark:text-purple-400 font-mono font-medium">
+                    AI
+                  </span>
+                </button>
+              )}
 
               {/* Quick Carry to Today for overdue task */}
               {isCardOverdue && onCarryToToday && (

@@ -108,3 +108,29 @@ in completed section:
     - if no tasks remain in progress, notify user to move a task to in progress to start focusing
 
 - now, new session timer starts from starting in all cases
+
+- add #learning to focus for revise on: 1st day, 7th day, 30th day with R-Y-G color grouping
+  Core Principles of Learning
+  Brain Design: The human brain is naturally wired to forget. To counteract this, always identify three key learnings from any content you consume.
+  Learning Pyramid: Passive consumption (reading/watching) yields low retention (5-10%). To boost retention to 90%, you must teach the concept or engage in active discussion.
+  Retrieval Practice: Force your brain to recall information periodically rather than just re-reading it.
+  Spaced Repetition (1-7-30 Rule): Review your key learnings after 1 day, 7 days, and 30 days to create memory spikes.
+  The Protegé Effect: The best way to master a topic is to teach it—try the "back of the napkin" method where you explain a concept simply.
+  48-Hour Rule: Apply a new framework or idea within 48 hours to ensure it moves into your long-term memory.
+  Less is More: Focus on deep-diving into fewer books or resources repeatedly rather than constant, shallow consumption.
+
+Common Pitfalls to Avoid
+
+1.  No Multitasking: Your brain has limited capacity; focus solely on the content without distractions like phones or food.
+2.  Prioritize Sleep: Treat your brain like a battery that needs recharging through adequate rest.
+3.  Avoid Passive Collection: Don't just list ideas; use "future painting" to visualize exactly when and where you will apply a new skill.
+
+The 15-Minute '5-5-5' Daily Framework
+Dedicate 15 minutes daily to boost your retention:
+
+5 Minutes: Identify the three key takeaways from today's learning.
+5 Minutes: Recall and reflect on content you consumed last week.
+5 Minutes: Teach or discuss these learnings with someone else (social media, family, or friends).
+
+- move from self evaluation to 3rd party evaluator using ai reviews, tracking, friend invitation as evaluator. so you cant cheat yourself
+- add goal breakdown ai, that will challenge and breakdown task, if task is detected very vague or big enough to digest

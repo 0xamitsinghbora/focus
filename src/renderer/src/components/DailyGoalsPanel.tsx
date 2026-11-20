@@ -1,8 +1,10 @@
 import React, { useState, memo } from 'react'
-import { DailyGoal } from '../../../shared/types'
+import { DailyGoal, GoalType, TaskBreakdownItem, GoalBreakdownResult } from '../../../shared/types'
 import { Panel } from './DashboardLayout'
 import { cn, isDeadlineOverdue, formatDeadlineBadge } from '../lib/utils'
 import { getGroupTheme, getPreferredGroupColor, getLearningStageTheme } from '../lib/groupTheme'
+import { GoalBreakdownModal } from './goals/GoalBreakdownModal'
+import { breakdownTaskAi } from '../lib/goalBreakdown'
 
 interface DailyGoalsPanelProps {
   goals: DailyGoal[]
@@ -11,6 +13,18 @@ interface DailyGoalsPanelProps {
   onPromoteGoal?: (goal: DailyGoal) => Promise<void>
   onUpdateGoal: (goal: DailyGoal) => Promise<void>
   onDeleteGoal?: (goal: DailyGoal) => Promise<void>
+  onAddGoal?: (
+    title: string,
+    targetMinutes?: number,
+    deadline?: string,
+    note?: string,
+    remindAt?: string,
+    repeat?: string,
+    groupTag?: string,
+    groupColor?: string,
+    status?: DailyGoal['status'],
+    goalType?: GoalType
+  ) => Promise<void>
   goalLoggedMinutesMap?: Record<string, number>
   onOpenPlanner?: () => void
 }
@@ -22,11 +36,60 @@ function DailyGoalsPanelComponent({
   onPromoteGoal,
   onUpdateGoal,
   onDeleteGoal,
+  onAddGoal,
   goalLoggedMinutesMap = {},
   onOpenPlanner
 }: DailyGoalsPanelProps): React.JSX.Element {
   // Task list & planning state
   const [activeTab, setActiveTab] = useState<'today' | 'planned' | 'done'>('today')
+
+  // Goal Breakdown AI Modal state
+  const [breakdownGoal, setBreakdownGoal] = useState<DailyGoal | null>(null)
+  const [breakdownLoading, setBreakdownLoading] = useState(false)
+  const [breakdownResult, setBreakdownResult] = useState<GoalBreakdownResult | null>(null)
+
+  const handleTriggerBreakdown = async (goal: DailyGoal): Promise<void> => {
+    setBreakdownGoal(goal)
+    setBreakdownLoading(true)
+    try {
+      const res = await breakdownTaskAi(goal.title, goal.note, goal.targetMinutes)
+      setBreakdownResult(res)
+    } catch (err) {
+      console.error('Failed to analyze breakdown for goal:', err)
+    } finally {
+      setBreakdownLoading(false)
+    }
+  }
+
+  const handleApplyBreakdown = async (
+    subtasks: TaskBreakdownItem[],
+    tag?: string
+  ): Promise<void> => {
+    if (!breakdownGoal) return
+    try {
+      if (onDeleteGoal) {
+        await onDeleteGoal(breakdownGoal)
+      }
+      if (onAddGoal) {
+        for (const t of subtasks) {
+          await onAddGoal(
+            t.title,
+            t.targetMinutes,
+            breakdownGoal.deadline,
+            t.rationale,
+            breakdownGoal.remindAt,
+            undefined,
+            tag || breakdownGoal.groupTag,
+            breakdownGoal.groupColor,
+            breakdownGoal.status,
+            t.goalType
+          )
+        }
+      }
+    } catch (err) {
+      console.error('Failed to apply breakdown:', err)
+    }
+  }
 
   const isCurrentTabEmpty =
     (activeTab === 'today' && goals.length === 0) ||
@@ -278,6 +341,26 @@ function DailyGoalsPanelComponent({
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleTriggerBreakdown(goal)
+                        }}
+                        className="opacity-0 group-hover:opacity-70 hover:opacity-100! p-1 text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-all cursor-pointer rounded"
+                        title="AI Challenge & Breakdown: decompose into bite-sized sprints"
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+                        </svg>
+                      </button>
                       {onDeleteGoal && (
                         <button
                           type="button"
@@ -500,6 +583,26 @@ function DailyGoalsPanelComponent({
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleTriggerBreakdown(goal)
+                        }}
+                        className="opacity-0 group-hover:opacity-70 hover:opacity-100! p-1 text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-all cursor-pointer rounded"
+                        title="AI Challenge & Breakdown: decompose into bite-sized sprints"
+                      >
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+                        </svg>
+                      </button>
                       {onDeleteGoal && (
                         <button
                           type="button"
@@ -530,6 +633,15 @@ function DailyGoalsPanelComponent({
             ))}
         </div>
       </div>
+
+      <GoalBreakdownModal
+        isOpen={Boolean(breakdownGoal)}
+        onClose={() => setBreakdownGoal(null)}
+        breakdownResult={breakdownResult}
+        isLoading={breakdownLoading}
+        onApplyBreakdown={handleApplyBreakdown}
+        existingGoalTitle={breakdownGoal?.title}
+      />
     </Panel>
   )
 }

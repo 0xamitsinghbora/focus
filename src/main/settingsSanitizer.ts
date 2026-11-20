@@ -27,7 +27,8 @@ const KNOWN_SETTING_KEYS = new Set<string>([
   'tratakaDurationSeconds',
   'evaluatorMode',
   'antiCheatStrictness',
-  'requireProofOfWork'
+  'requireProofOfWork',
+  'enableGoalBreakdownAi'
 ])
 
 export function sanitizeSettings(settings: Partial<AppSettings>): Record<string, unknown> {

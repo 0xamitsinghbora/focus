@@ -26,12 +26,14 @@ import { isValidDateString, isValidId, isValidIdArray, isValidGoalObject } from 
 import { logger } from '../logger'
 import type { GoalsRepository, SettingsRepository } from '../repositories'
 import type { AnalyticsService } from '../services/AnalyticsService'
+import { GoalBreakdownService } from '../services/GoalBreakdownService'
 import type { SyncTarget } from '../syncUtils'
 
 export interface GoalsIpcDependencies {
   goalsRepo: GoalsRepository
   settingsRepo: SettingsRepository
   analyticsService: AnalyticsService
+  goalBreakdownService?: GoalBreakdownService
   syncAfterWrite: (target?: SyncTarget) => void
   getDirtyGoalDates?: () => string[]
   security: {
@@ -551,6 +553,34 @@ export class GoalsIpcController {
         }
       }
     )
+
+    const breakdownService = this.deps.goalBreakdownService || new GoalBreakdownService()
+
+    ipcMain.handle(
+      IpcChannels.GoalsAnalyze,
+      async (event, payload?: { title?: string; note?: string; targetMinutes?: number }) => {
+        if (security.assertSenderIsAppWindow) {
+          security.assertSenderIsAppWindow(event)
+        } else {
+          security.assertSenderIsMainWindowOrPrompt(event)
+        }
+        const title = typeof payload?.title === 'string' ? payload.title : ''
+        return breakdownService.analyzeTask(title, payload?.note, payload?.targetMinutes)
+      }
+    )
+
+    ipcMain.handle(
+      IpcChannels.GoalsBreakdown,
+      async (event, payload?: { title?: string; note?: string; targetMinutes?: number }) => {
+        if (security.assertSenderIsAppWindow) {
+          security.assertSenderIsAppWindow(event)
+        } else {
+          security.assertSenderIsMainWindowOrPrompt(event)
+        }
+        const title = typeof payload?.title === 'string' ? payload.title : ''
+        return breakdownService.breakdownTask(title, payload?.note, payload?.targetMinutes)
+      }
+    )
   }
 
   public destroy(): void {
@@ -580,7 +610,9 @@ export class GoalsIpcController {
       IpcChannels.GoalsGetRecurring,
       IpcChannels.GoalsAddRecurring,
       IpcChannels.GoalsUpdateRecurring,
-      IpcChannels.GoalsGenerateToday
+      IpcChannels.GoalsGenerateToday,
+      IpcChannels.GoalsAnalyze,
+      IpcChannels.GoalsBreakdown
     ]
 
     for (const channel of channels) {

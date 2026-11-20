@@ -42,6 +42,7 @@ import {
 import { AnalyticsService } from './services/AnalyticsService'
 import { LearningService } from './services/LearningService'
 import { EvaluatorService } from './services/EvaluatorService'
+import { GoalBreakdownService } from './services/GoalBreakdownService'
 
 export interface PurgedRecord {
   id: string
@@ -63,6 +64,7 @@ export class DataManager {
   public learningService!: LearningService
   public evaluationRepo!: EvaluationRepository
   public evaluatorService!: EvaluatorService
+  public goalBreakdownService!: GoalBreakdownService
 
   public get dailyGoalsRepo(): DailyGoalsRepository {
     return this.goalsRepo.daily
@@ -282,6 +284,8 @@ export class DataManager {
       logsRepo: this.logsRepo,
       settingsRepo: this.settingsRepo
     })
+
+    this.goalBreakdownService = new GoalBreakdownService()
   }
 
   // --- Settings & Preferences Delegation ---

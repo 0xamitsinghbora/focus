@@ -60,7 +60,9 @@ export const api: FocusAPI = {
     setGroupColor: (tag, color) => ipcRenderer.invoke(IpcChannels.SetGroupColor, { tag, color }),
     deleteGroupColor: (tag) => ipcRenderer.invoke(IpcChannels.DeleteGroupColor, { tag }),
     renameGroup: (oldTag, newTag, newColor) =>
-      ipcRenderer.invoke(IpcChannels.RenameGroup, { oldTag, newTag, newColor })
+      ipcRenderer.invoke(IpcChannels.RenameGroup, { oldTag, newTag, newColor }),
+    analyze: (payload) => ipcRenderer.invoke(IpcChannels.GoalsAnalyze, payload),
+    breakdown: (payload) => ipcRenderer.invoke(IpcChannels.GoalsBreakdown, payload)
   },
 
   learning: {

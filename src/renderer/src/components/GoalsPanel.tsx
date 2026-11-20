@@ -30,6 +30,9 @@ import { GoalsDragGhost } from './goals/GoalsDragGhost'
 import { GoalsKanbanView } from './goals/GoalsKanbanView'
 import { GoalsContextProvider } from './goals/GoalsContext'
 import { calculateFractionalSortOrders, rebalanceGoals } from './goals/fractionalIndex'
+import { GoalBreakdownModal } from './goals/GoalBreakdownModal'
+import { breakdownTaskAi } from '../lib/goalBreakdown'
+import type { GoalBreakdownResult, TaskBreakdownItem } from '../../../shared/types'
 
 function GoalsPanelComponent({
   dailyGoals,
@@ -70,6 +73,60 @@ function GoalsPanelComponent({
     x: number
     y: number
   } | null>(null)
+
+  // Goal Breakdown AI Modal state
+  const [breakdownGoal, setBreakdownGoal] = useState<DailyGoal | null>(null)
+  const [breakdownLoading, setBreakdownLoading] = useState(false)
+  const [breakdownResult, setBreakdownResult] = useState<GoalBreakdownResult | null>(null)
+
+  const handleTriggerBreakdown = useCallback(async (goal: DailyGoal) => {
+    setBreakdownGoal(goal)
+    setBreakdownLoading(true)
+    try {
+      const res = await breakdownTaskAi(goal.title, goal.note, goal.targetMinutes)
+      setBreakdownResult(res)
+    } catch (err) {
+      console.error('Failed to analyze breakdown for goal:', err)
+    } finally {
+      setBreakdownLoading(false)
+    }
+  }, [])
+
+  const handleApplyGoalBreakdown = useCallback(
+    async (tasks: TaskBreakdownItem[], groupTag?: string) => {
+      if (!breakdownGoal) return
+      try {
+        // Delete or replace original vague/large goal
+        if (onDeleteDailyGoal) {
+          await onDeleteDailyGoal(breakdownGoal)
+        }
+
+        // Add each decomposed task sprint
+        for (const t of tasks) {
+          await onAddDailyGoal(
+            t.title,
+            t.targetMinutes,
+            breakdownGoal.deadline,
+            t.rationale,
+            breakdownGoal.remindAt,
+            undefined,
+            groupTag || breakdownGoal.groupTag,
+            breakdownGoal.groupColor,
+            breakdownGoal.status,
+            t.goalType
+          )
+        }
+        toast.success(
+          `Decomposed "${breakdownGoal.title}" into ${tasks.length} focused sprints.`,
+          'Goal Broken Down'
+        )
+      } catch (err) {
+        console.error('Failed to apply goal breakdown:', err)
+        toast.error('Failed to save decomposed sprints.', 'Error')
+      }
+    },
+    [breakdownGoal, onDeleteDailyGoal, onAddDailyGoal, toast]
+  )
 
   // Multi-goal updater helper
   const updateMultipleGoals = useCallback(
@@ -777,6 +834,7 @@ function GoalsPanelComponent({
         onAssignTaskGroup={handleAssignTaskGroup}
         onCarryToToday={handleCarryToToday}
         onRescheduleGoal={handleRescheduleGoal}
+        onBreakdownGoal={handleTriggerBreakdown}
         dayCutoffHour={dayCutoffHour}
         existingGroups={existingGroups}
       />
@@ -821,6 +879,15 @@ function GoalsPanelComponent({
         isOpen={showTrashModal}
         onClose={() => setShowTrashModal(false)}
         onGoalRestored={onGoalRestored}
+      />
+
+      <GoalBreakdownModal
+        isOpen={Boolean(breakdownGoal)}
+        onClose={() => setBreakdownGoal(null)}
+        breakdownResult={breakdownResult}
+        isLoading={breakdownLoading}
+        onApplyBreakdown={handleApplyGoalBreakdown}
+        existingGoalTitle={breakdownGoal?.title}
       />
     </div>
   )

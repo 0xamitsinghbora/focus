@@ -64,6 +64,46 @@ export interface EvaluatorMetrics {
   lastEvaluatedAt?: string
 }
 
+export type GoalComplexityLevel = 'digestible' | 'vague' | 'too_big' | 'vague_and_too_big'
+
+export interface TaskBreakdownItem {
+  id: string
+  title: string
+  targetMinutes: number
+  goalType: 'deep' | 'routine'
+  rationale?: string
+  order: number
+}
+
+export interface GoalBreakdownAnalysis {
+  isVague: boolean
+  isTooBig: boolean
+  complexity: GoalComplexityLevel
+  clarityScore: number
+  scopeScore: number
+  detectedDomain?: string
+  challengeHeading: string
+  challengeCritique: string
+  probingQuestions: string[]
+  recommendedMinutes?: number
+}
+
+export interface GoalBreakdownResult {
+  originalTitle: string
+  analysis: GoalBreakdownAnalysis
+  suggestedTasks: TaskBreakdownItem[]
+  suggestedGroupTag?: string
+  totalMinutes: number
+}
+
+export interface BreakdownTaskPayload {
+  title: string
+  note?: string
+  targetMinutes?: number
+  deadline?: string
+  groupTag?: string
+}
+
 export type AppSettings = {
   reminderIntervalMinutes: number
   openAtLogin: boolean
@@ -92,6 +132,7 @@ export type AppSettings = {
   evaluatorMode?: EvaluatorMode
   antiCheatStrictness?: 'strict' | 'moderate' | 'lenient'
   requireProofOfWork?: boolean
+  enableGoalBreakdownAi?: boolean
 }
 
 export type LogEntry = {
@@ -308,6 +349,8 @@ export enum IpcChannels {
   GoalsAddRecurring = 'goals:add-recurring',
   GoalsUpdateRecurring = 'goals:update-recurring',
   GoalsGenerateToday = 'goals:generate-today',
+  GoalsAnalyze = 'goals:analyze',
+  GoalsBreakdown = 'goals:breakdown',
   GetGroupColors = 'goals:get-group-colors',
   SetGroupColor = 'goals:set-group-color',
   DeleteGroupColor = 'goals:delete-group-color',

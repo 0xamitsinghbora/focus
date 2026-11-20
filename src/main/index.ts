@@ -270,6 +270,7 @@ if (!gotTheLock) {
       goalsRepo: dataManager.goalsRepo,
       settingsRepo: dataManager.settingsRepo,
       analyticsService: dataManager.analyticsService,
+      goalBreakdownService: dataManager.goalBreakdownService,
       syncAfterWrite,
       getDirtyGoalDates: () => dataManager.getDirtySyncTargets().goalDates,
       security,

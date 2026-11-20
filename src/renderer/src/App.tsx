@@ -570,6 +570,7 @@ function App(): React.JSX.Element {
                     onPromoteGoal={handlePromoteGoal}
                     onUpdateGoal={handleUpdateGoal}
                     onDeleteGoal={handleDeleteGoal}
+                    onAddGoal={handleAddGoal}
                     goalLoggedMinutesMap={goalLoggedMinutesMap}
                     onOpenPlanner={handleOpenPlanner}
                   />

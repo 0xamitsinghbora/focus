@@ -9,3 +9,6 @@ out
 *.log*
 *.tsbuildinfo
 electron.vite.config.*.mjs
+.agents
+.claude
+skills-lock.json

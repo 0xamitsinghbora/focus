@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, FormEvent, KeyboardEvent } from 'react'
+import { useState, useRef, useEffect, useCallback, FormEvent, KeyboardEvent, useMemo } from 'react'
 import { DueDateTimePicker } from './ui/DueDateTimePicker'
 import { cn } from '../lib/utils'
 import {
@@ -11,6 +11,9 @@ import {
 import { TaskPropertiesRow } from './task/TaskPropertiesRow'
 import { TaskTagPopover } from './task/TaskTagPopover'
 import { parseTaskShorthand } from '../lib/taskShorthand'
+import { quickAssessTask, breakdownTaskAi } from '../lib/goalBreakdown'
+import { GoalBreakdownModal } from './goals/GoalBreakdownModal'
+import { GoalBreakdownResult, TaskBreakdownItem } from '../../../shared/types'
 
 interface TaskFormData {
   title: string
@@ -26,6 +29,7 @@ interface TaskFormData {
 
 export interface AddTaskCardProps {
   onAdd: (data: TaskFormData) => Promise<void>
+  onAddBatch?: (data: TaskFormData[]) => Promise<void>
   initialData?: Partial<TaskFormData>
   existingGroups?: { tag: string; color?: string }[]
   mode?: 'create' | 'edit'
@@ -41,6 +45,7 @@ type ActivePopover = 'due' | 'group' | null
 
 export function AddTaskCard({
   onAdd,
+  onAddBatch,
   initialData,
   existingGroups = [],
   mode = 'create',
@@ -86,6 +91,98 @@ export function AddTaskCard({
   const [popoverPos, setPopoverPos] = useState<{ x: number; y: number } | null>(null)
   const [showDiscardConfirm, setShowDiscardConfirm] = useState(false)
   const discardTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Goal Breakdown AI state
+  const [isBreakdownOpen, setIsBreakdownOpen] = useState(false)
+  const [breakdownLoading, setBreakdownLoading] = useState(false)
+  const [breakdownResult, setBreakdownResult] = useState<GoalBreakdownResult | null>(null)
+
+  const { cleanTitle, parsedMinutes, parsedTag, parsedDueDate, parsedDueTime } = useMemo(() => {
+    return parseTaskShorthand(heading)
+  }, [heading])
+
+  const effectiveMinutes = initialData?.targetMinutes || parsedMinutes
+
+  const assessment = useMemo(() => {
+    const raw = cleanTitle || heading.trim()
+    if (!raw || raw.length < 2) {
+      return { isVague: false, isTooBig: false, complexity: 'digestible' as const }
+    }
+    return quickAssessTask(raw, note, effectiveMinutes)
+  }, [cleanTitle, heading, note, effectiveMinutes])
+
+  const handleOpenBreakdownModal = async (): Promise<void> => {
+    const raw = cleanTitle || heading.trim()
+    if (!raw) return
+    setIsBreakdownOpen(true)
+    setBreakdownLoading(true)
+    try {
+      const res = await breakdownTaskAi(raw, note, effectiveMinutes)
+      setBreakdownResult(res)
+    } catch (err) {
+      console.error('Failed to breakdown goal:', err)
+    } finally {
+      setBreakdownLoading(false)
+    }
+  }
+
+  const handleApplyBreakdown = async (
+    subtasks: TaskBreakdownItem[],
+    tag?: string
+  ): Promise<void> => {
+    const effectiveTag = tag || groupTag.trim() || parsedTag || ''
+    let resolvedColor = groupColor
+    if (effectiveTag) {
+      if (!groupTag.trim() && parsedTag) {
+        resolvedColor = getPreferredGroupColor(parsedTag)
+      }
+      saveGroupColor(effectiveTag, resolvedColor)
+    }
+
+    const effectiveDueDate = dueDate || parsedDueDate
+    const effectiveDueTime = dueTime || parsedDueTime
+    let finalDeadline: string | undefined = undefined
+    if (effectiveDueDate) {
+      finalDeadline = effectiveDueTime
+        ? `${effectiveDueDate}T${effectiveDueTime}:00`
+        : effectiveDueDate
+    }
+
+    const tasksPayload: TaskFormData[] = subtasks.map((st) => ({
+      title: st.title,
+      targetMinutes: st.targetMinutes,
+      note: st.rationale,
+      deadline: finalDeadline,
+      groupTag: effectiveTag || undefined,
+      groupColor: effectiveTag ? resolvedColor : undefined,
+      goalType: st.goalType
+    }))
+
+    if (onAddBatch) {
+      await onAddBatch(tasksPayload)
+    } else {
+      for (const t of tasksPayload) {
+        await onAdd(t)
+      }
+    }
+
+    if (mode === 'edit') {
+      onCancel?.()
+    } else {
+      resetForm()
+      setExpandedState(false)
+    }
+  }
+
+  const handleAdoptStep1 = (step1: TaskBreakdownItem): void => {
+    setHeading(step1.title)
+    if (step1.rationale && !note) {
+      setNote(step1.rationale)
+    }
+    if (step1.goalType) {
+      setGoalType(step1.goalType)
+    }
+  }
 
   const isFormDirty =
     heading.trim() !== (initialData?.title || '').trim() ||
@@ -507,6 +604,38 @@ export function AddTaskCard({
           </div>
         </div>
 
+        {/* AI Goal Breakdown Insight Pill */}
+        {(assessment.isVague || assessment.isTooBig) &&
+          (cleanTitle || heading.trim()).length >= 2 && (
+            <div
+              role="button"
+              tabIndex={0}
+              onClick={handleOpenBreakdownModal}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  handleOpenBreakdownModal()
+                }
+              }}
+              className="flex items-center justify-between px-2.5 py-1.5 rounded-lg border border-purple-500/25 bg-purple-500/[0.04] dark:bg-purple-500/[0.08] text-[11px] text-purple-700 dark:text-purple-300 hover:bg-purple-500/10 transition-colors cursor-pointer select-none shadow-2xs"
+            >
+              <div className="flex items-center gap-1.5 truncate">
+                <span className="shrink-0 text-[12px]">✨</span>
+                <span className="font-semibold">Goal Breakdown AI:</span>
+                <span className="truncate opacity-90">
+                  {assessment.complexity === 'vague_and_too_big'
+                    ? 'Vague finish line & oversized scope detected'
+                    : assessment.complexity === 'vague'
+                      ? 'Ambiguous finish line detected'
+                      : 'Scope may be too big for a single session'}
+                </span>
+              </div>
+              <span className="font-medium underline shrink-0 ml-1.5 text-purple-600 dark:text-purple-400">
+                Challenge & Decompose &rarr;
+              </span>
+            </div>
+          )}
+
         {/* Selected Properties Chips / Tags Row */}
         <TaskPropertiesRow
           groupTag={groupTag}
@@ -653,6 +782,36 @@ export function AddTaskCard({
                 <path d="M7 7h.01" />
               </svg>
             </button>
+
+            {/* AI Breakdown Button */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                handleOpenBreakdownModal()
+              }}
+              disabled={!heading.trim()}
+              className={cn(
+                'flex h-7 items-center gap-1 px-2 rounded-lg text-muted-foreground transition-all duration-150 hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-[1.5px] focus:ring-primary cursor-pointer text-[11px] disabled:opacity-40 disabled:cursor-not-allowed',
+                (assessment.isVague || assessment.isTooBig) && heading.trim().length >= 2
+                  ? 'text-purple-600 dark:text-purple-400 bg-purple-500/10 border border-purple-500/30 font-semibold shadow-2xs'
+                  : ''
+              )}
+              title="AI Challenge & Breakdown: detect vagueness or overload and decompose into focused sprints"
+            >
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3Z" />
+              </svg>
+              <span>Breakdown</span>
+            </button>
           </div>
 
           {/* Right Action Buttons */}
@@ -772,6 +931,17 @@ export function AddTaskCard({
           groupTriggerRef={groupTriggerRef}
         />
       )}
+
+      {/* --- Goal Breakdown AI Modal --- */}
+      <GoalBreakdownModal
+        isOpen={isBreakdownOpen}
+        onClose={() => setIsBreakdownOpen(false)}
+        breakdownResult={breakdownResult}
+        isLoading={breakdownLoading}
+        onApplyBreakdown={handleApplyBreakdown}
+        onAdoptStep1={handleAdoptStep1}
+        existingGoalTitle={cleanTitle || heading}
+      />
     </div>
   )
 }
