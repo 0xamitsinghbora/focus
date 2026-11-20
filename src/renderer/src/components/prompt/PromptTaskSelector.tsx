@@ -12,6 +12,7 @@ export interface PromptTaskSelectorProps {
   onQuickDone?: (index: number) => void
   onSnooze: () => void
   snoozeCount?: number
+  onStartDotReset?: () => void
 }
 
 export function PromptTaskSelector({
@@ -22,7 +23,8 @@ export function PromptTaskSelector({
   onSelectOption,
   onQuickDone,
   onSnooze,
-  snoozeCount
+  snoozeCount,
+  onStartDotReset
 }: PromptTaskSelectorProps): React.JSX.Element {
   return (
     <>
@@ -229,24 +231,42 @@ export function PromptTaskSelector({
 
       {/* Action Footer for Step 1 */}
       <div className="flex items-center justify-between pt-1">
-        <button
-          type="button"
-          disabled={status === 'saving'}
-          onClick={(e) => {
-            e.stopPropagation()
-            onSnooze()
-          }}
-          className="px-3.5 py-1.5 text-[12px] font-medium text-foreground bg-card hover:bg-secondary border border-border/80 hover:border-border transition-all rounded-xl shadow-apple-subtle hover:shadow-apple-card flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-40"
-        >
-          <span>
-            {typeof snoozeCount === 'number' && snoozeCount > 0
-              ? `Snooze (${snoozeCount}x)`
-              : 'Snooze'}
-          </span>
-          <kbd className="px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground border border-border/70 text-[10px] font-mono leading-none">
-            Esc
-          </kbd>
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            disabled={status === 'saving'}
+            onClick={(e) => {
+              e.stopPropagation()
+              onSnooze()
+            }}
+            className="px-3 py-1.5 text-[12px] font-medium text-foreground bg-card hover:bg-secondary border border-border/80 hover:border-border transition-all rounded-xl shadow-apple-subtle hover:shadow-apple-card flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-40"
+          >
+            <span>
+              {typeof snoozeCount === 'number' && snoozeCount > 0
+                ? `Snooze (${snoozeCount}x)`
+                : 'Snooze'}
+            </span>
+            <kbd className="px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground border border-border/70 text-[10px] font-mono leading-none">
+              Esc
+            </kbd>
+          </button>
+
+          {onStartDotReset && (
+            <button
+              type="button"
+              disabled={status === 'saving'}
+              onClick={(e) => {
+                e.stopPropagation()
+                onStartDotReset()
+              }}
+              className="px-2.5 py-1.5 text-[12px] font-medium text-foreground bg-card hover:bg-secondary border border-border/80 hover:border-border transition-all rounded-xl shadow-apple-subtle hover:shadow-apple-card flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-40"
+              title="90-second Trataka Mind Reset — decompress and break out of distraction"
+            >
+              <span className="text-apple-amber text-[11px] leading-none">◉</span>
+              <span>90s Dot Reset</span>
+            </button>
+          )}
+        </div>
 
         <button
           type="button"

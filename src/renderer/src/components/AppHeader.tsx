@@ -120,10 +120,12 @@ const HeaderFocusStatusIndicator = memo(
 
 export interface AppHeaderProps {
   onOpenMorningRitual?: () => void
+  onOpenTrataka?: () => void
 }
 
 export const AppHeader = memo(function AppHeader({
-  onOpenMorningRitual
+  onOpenMorningRitual,
+  onOpenTrataka
 }: AppHeaderProps = {}): React.JSX.Element {
   return (
     <header
@@ -138,6 +140,22 @@ export const AppHeader = memo(function AppHeader({
           <FocusLogo size={24} variant="tile" />
           <h1 className="text-[18px] font-bold tracking-[-0.03em] text-foreground">Focus</h1>
           <HeaderFocusStatusIndicator />
+          {onOpenTrataka && (
+            <button
+              type="button"
+              onClick={onOpenTrataka}
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium border border-border/70 bg-card hover:bg-secondary text-foreground transition-all cursor-pointer select-none shadow-2xs"
+              title="90s Mind Reset (Trataka) — zero-input visual decompression"
+              aria-label="90s Mind Reset"
+            >
+              <span className="text-apple-amber text-[12px] leading-none" aria-hidden="true">
+                ◉
+              </span>
+              <span className="hidden md:inline font-semibold text-[11px] leading-none tracking-tight">
+                Reset
+              </span>
+            </button>
+          )}
           {onOpenMorningRitual && (
             <button
               type="button"

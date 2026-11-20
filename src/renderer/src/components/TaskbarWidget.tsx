@@ -864,6 +864,21 @@ export function TaskbarWidget(): React.JSX.Element {
           >
             {timerText}
           </span>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              if (typeof window !== 'undefined' && window.api?.session?.quickAction) {
+                window.api.session.quickAction('dot-reset')
+              }
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            className="h-3.5 w-3.5 rounded-full flex items-center justify-center text-amber-500/80 hover:text-amber-500 transition-all hover:scale-110 active:scale-95 cursor-pointer shrink-0 opacity-50 hover:opacity-100"
+            title="90s Mind Reset (Trataka)"
+            aria-label="90s Mind Reset"
+          >
+            <span className="text-[10px] leading-none">◉</span>
+          </button>
         </div>
 
         {/* Daily target progress bar — thin bottom edge strip */}

@@ -1,5 +1,5 @@
 import Database from 'better-sqlite3'
-import { LogEntry, localDateStr } from '../../shared/types'
+import { LogEntry, localDateStr, GoalType, AudioMode } from '../../shared/types'
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
 
@@ -47,18 +47,20 @@ export class LogsRepository {
         'SELECT DISTINCT date FROM logs ORDER BY date ASC'
       ),
       insertLog: db.prepare(`
-        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, updatedAt, deletedAt)
-        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @updatedAt, @deletedAt)
+        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, updatedAt, deletedAt)
+        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @updatedAt, @deletedAt)
       `),
       upsertLog: db.prepare(`
-        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, updatedAt, deletedAt)
-        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @updatedAt, @deletedAt)
+        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, updatedAt, deletedAt)
+        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @updatedAt, @deletedAt)
         ON CONFLICT(id) DO UPDATE SET
           timestamp=excluded.timestamp, text=excluded.text, startedAt=excluded.startedAt,
           endedAt=excluded.endedAt, goalId=excluded.goalId, goalTitle=excluded.goalTitle,
           note=excluded.note, productivity=excluded.productivity,
           durationMinutes=excluded.durationMinutes, productiveMinutes=excluded.productiveMinutes,
-          date=excluded.date, focusQuality=excluded.focusQuality, updatedAt=excluded.updatedAt, deletedAt=excluded.deletedAt
+          date=excluded.date, focusQuality=excluded.focusQuality,
+          goalType=excluded.goalType, audioMode=excluded.audioMode, didDotReset=excluded.didDotReset,
+          updatedAt=excluded.updatedAt, deletedAt=excluded.deletedAt
       `),
       deleteLog: db.prepare('UPDATE logs SET deletedAt = ?, updatedAt = ? WHERE id = ?'),
       deleteLogById: db.prepare('DELETE FROM logs WHERE id = ?'),
@@ -104,6 +106,9 @@ export class LogsRepository {
         typeof entry.focusQuality === 'number' && entry.focusQuality >= 1 && entry.focusQuality <= 5
           ? entry.focusQuality
           : null,
+      goalType: entry.goalType ?? 'deep',
+      audioMode: entry.audioMode ?? null,
+      didDotReset: entry.didDotReset ? 1 : 0,
       updatedAt: entry.updatedAt ?? now,
       deletedAt: entry.deletedAt && entry.deletedAt.trim() !== '' ? entry.deletedAt : null,
       date
@@ -167,6 +172,9 @@ export class LogsRepository {
       note: r.note ?? undefined,
       durationMinutes: r.durationMinutes ?? undefined,
       productiveMinutes: r.productiveMinutes ?? undefined,
+      goalType: (r.goalType as GoalType) || 'deep',
+      audioMode: (r.audioMode as AudioMode) ?? undefined,
+      didDotReset: Boolean(r.didDotReset),
       updatedAt: r.updatedAt ?? undefined,
       deletedAt: r.deletedAt ?? undefined
     }))

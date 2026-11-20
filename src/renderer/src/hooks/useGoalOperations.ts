@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { DailyGoal, DEFAULT_SORT_ORDER } from '../../../shared/types'
+import { DailyGoal, DEFAULT_SORT_ORDER, GoalType } from '../../../shared/types'
 import { calculateFractionalSortOrders, rebalanceGoals } from '../components/goals/fractionalIndex'
 
 interface ToastMethods {
@@ -35,7 +35,8 @@ export interface UseGoalOperationsResult {
     repeat?: string,
     groupTag?: string,
     groupColor?: string,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    goalType?: GoalType
   ) => Promise<void>
   handleUpdateGoal: (goal: DailyGoal) => Promise<void>
   handleUpdateGoals: (goals: DailyGoal[]) => Promise<void>
@@ -74,7 +75,8 @@ export function useGoalOperations({
       repeat?: string,
       groupTag?: string,
       groupColor?: string,
-      status: DailyGoal['status'] = 'planned'
+      status: DailyGoal['status'] = 'planned',
+      goalType: GoalType = 'deep'
     ): Promise<void> => {
       const today = getTodayStr()
       const cleanTag = groupTag?.trim()
@@ -88,7 +90,8 @@ export function useGoalOperations({
         repeat,
         groupTag: cleanTag,
         groupColor,
-        status
+        status,
+        goalType
       })
       if (addedGoal) {
         const deadlineDate = addedGoal.deadline

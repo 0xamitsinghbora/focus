@@ -153,6 +153,15 @@ export class SessionIpcController {
       security.assertSenderIsAppWindow(event)
       const mainWin = this.deps.getMainWindow?.()
       if (mainWin && !mainWin.isDestroyed() && mainWin.webContents) {
+        if (action === 'dot-reset') {
+          try {
+            if (mainWin.isMinimized()) mainWin.restore()
+            mainWin.show()
+            mainWin.focus()
+          } catch {
+            // ignore window focus errors
+          }
+        }
         mainWin.webContents.send(IpcChannels.SessionQuickAction, action)
       }
     })

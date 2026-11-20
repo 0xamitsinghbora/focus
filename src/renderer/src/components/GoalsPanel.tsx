@@ -334,6 +334,7 @@ function GoalsPanelComponent({
       groupTag?: string
       groupColor?: string
       targetMinutes?: number
+      goalType?: 'deep' | 'routine'
     }
   ): Promise<void> => {
     const todayStr = localDateStr(new Date(), dayCutoffHour)
@@ -349,7 +350,8 @@ function GoalsPanelComponent({
       repeat: data.repeat ?? '',
       groupTag: data.groupTag?.trim() ?? '',
       groupColor: data.groupTag ? data.groupColor || goal.groupColor : '',
-      targetMinutes: data.targetMinutes
+      targetMinutes: data.targetMinutes,
+      goalType: data.goalType ?? goal.goalType ?? 'deep'
     })
     setEditingId(null)
   }

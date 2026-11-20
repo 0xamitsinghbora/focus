@@ -87,6 +87,28 @@ describe('PromptTaskSelector', () => {
     expect(screen.getByText('Something Else')).toBeDefined()
     expect(screen.getByText('Break')).toBeDefined()
   })
+
+  it('renders ◉ 90s Dot Reset button and handles click', () => {
+    const onStartDotReset = vi.fn()
+    const itemRefs = { current: [] }
+
+    render(
+      <PromptTaskSelector
+        goals={[mockGoal]}
+        safeSelectedIndex={0}
+        itemRefs={itemRefs}
+        status="idle"
+        onSelectOption={vi.fn()}
+        onSnooze={vi.fn()}
+        onStartDotReset={onStartDotReset}
+      />
+    )
+
+    const dotResetBtn = screen.getByRole('button', { name: /dot reset/i })
+    expect(dotResetBtn).toBeDefined()
+    fireEvent.click(dotResetBtn)
+    expect(onStartDotReset).toHaveBeenCalled()
+  })
 })
 
 describe('PromptDetailInput', () => {
@@ -190,6 +212,62 @@ describe('PromptDetailInput', () => {
     expect((checkbox as HTMLInputElement).checked).toBe(false)
     fireEvent.click(checkbox)
     expect(setAddToPlanner).toHaveBeenCalledWith(true)
+  })
+
+  it('renders audio mode pill selector and allows toggling soundtrack', () => {
+    const setAudioMode = vi.fn()
+    render(
+      <PromptDetailInput
+        currentOption={currentGoalOption}
+        note=""
+        setNote={vi.fn()}
+        validationError={null}
+        setValidationError={vi.fn()}
+        status="idle"
+        detailInputRef={React.createRef()}
+        audioMode="silence"
+        setAudioMode={setAudioMode}
+        onBack={vi.fn()}
+        onSubmit={vi.fn()}
+        onKeyDown={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText('Soundtrack')).toBeDefined()
+    expect(screen.getByRole('radio', { name: /Silence/i })).toBeDefined()
+    expect(screen.getByRole('radio', { name: /Focus Sound/i })).toBeDefined()
+    expect(screen.getByRole('radio', { name: /Music/i })).toBeDefined()
+
+    fireEvent.click(screen.getByRole('radio', { name: /Music/i }))
+    expect(setAudioMode).toHaveBeenCalledWith('music')
+  })
+
+  it('renders gentle nudge alert when focusQuality <= 2 while playing Music on a Deep Focus goal', () => {
+    render(
+      <PromptDetailInput
+        currentOption={{
+          ...currentGoalOption,
+          goal: { ...currentGoalOption.goal!, goalType: 'deep' }
+        }}
+        note=""
+        setNote={vi.fn()}
+        focusQuality={2}
+        audioMode="music"
+        validationError={null}
+        setValidationError={vi.fn()}
+        status="idle"
+        detailInputRef={React.createRef()}
+        onBack={vi.fn()}
+        onSubmit={vi.fn()}
+        onKeyDown={vi.fn()}
+      />
+    )
+
+    expect(
+      screen.getByText(
+        /Feeling scattered\? Try pausing lyrics and switching to Rain or Silence for the next 20 minutes\./i
+      )
+    ).toBeDefined()
   })
 })
 

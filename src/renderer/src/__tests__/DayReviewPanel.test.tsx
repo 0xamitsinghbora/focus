@@ -286,4 +286,99 @@ describe('DayReviewPanel Component', () => {
       expect.objectContaining({ id: 'goal-completed-past' })
     )
   })
+
+  it('renders audio correlation insights when 3+ sessions with audio logged exist', () => {
+    const mockReview: DayReviewData = {
+      date: '2026-10-28',
+      logs: [
+        {
+          id: 'log-1',
+          timestamp: '2026-10-28T10:00:00Z',
+          startedAt: '2026-10-28T09:15:00Z',
+          endedAt: '2026-10-28T10:00:00Z',
+          text: 'Architecture spec',
+          goalId: 'goal-deep-1',
+          goalTitle: 'Architecture spec',
+          goalType: 'deep',
+          audioMode: 'focus_sound',
+          focusQuality: 5,
+          productivity: 'productive',
+          durationMinutes: 45,
+          productiveMinutes: 45
+        },
+        {
+          id: 'log-2',
+          timestamp: '2026-10-28T11:00:00Z',
+          startedAt: '2026-10-28T10:15:00Z',
+          endedAt: '2026-10-28T11:00:00Z',
+          text: 'Core refactor',
+          goalId: 'goal-deep-2',
+          goalTitle: 'Core refactor',
+          goalType: 'deep',
+          audioMode: 'silence',
+          focusQuality: 4,
+          productivity: 'productive',
+          durationMinutes: 45,
+          productiveMinutes: 45
+        },
+        {
+          id: 'log-3',
+          timestamp: '2026-10-28T13:00:00Z',
+          startedAt: '2026-10-28T12:15:00Z',
+          endedAt: '2026-10-28T13:00:00Z',
+          text: 'Bug fixes',
+          goalId: 'goal-deep-3',
+          goalTitle: 'Bug fixes',
+          goalType: 'deep',
+          audioMode: 'music',
+          focusQuality: 2,
+          productivity: 'productive',
+          durationMinutes: 45,
+          productiveMinutes: 45
+        }
+      ],
+      goals: [
+        {
+          id: 'goal-deep-1',
+          title: 'Architecture spec',
+          status: 'done',
+          date: '2026-10-28',
+          createdAt: '2026-10-28T09:00:00Z',
+          goalType: 'deep'
+        },
+        {
+          id: 'goal-deep-2',
+          title: 'Core refactor',
+          status: 'done',
+          date: '2026-10-28',
+          createdAt: '2026-10-28T09:00:00Z',
+          goalType: 'deep'
+        },
+        {
+          id: 'goal-deep-3',
+          title: 'Bug fixes',
+          status: 'in_progress',
+          date: '2026-10-28',
+          createdAt: '2026-10-28T09:00:00Z',
+          goalType: 'deep'
+        }
+      ],
+      totalProductiveMinutes: 135,
+      goalBreakdown: [],
+      otherProductiveMinutes: 0,
+      unclassifiedLogs: []
+    }
+
+    render(<DayReviewPanel review={mockReview} today="2026-10-28" />)
+
+    expect(screen.getByText(/Audio & Deep Focus Correlation/i)).toBeDefined()
+    expect(screen.getByText(/3 audio-tracked sessions/i)).toBeDefined()
+    expect(
+      screen.getByText(
+        /You completed 100% of deep focus goals when listening to rain\/silence, compared to 0% with music\./i
+      )
+    ).toBeDefined()
+    expect(screen.getByText(/Silence & Focus Sounds/i)).toBeDefined()
+    expect(screen.getByText(/🎵 Music/i)).toBeDefined()
+  })
 })

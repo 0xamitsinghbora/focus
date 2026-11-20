@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react'
+import { AudioMode } from '../../../../shared/types'
 import { PromptOption } from './types'
 import { cn } from '../../lib/utils'
 import { getGroupTheme, getPreferredGroupColor } from '../../lib/groupTheme'
@@ -9,6 +10,8 @@ export interface PromptDetailInputProps {
   setNote: (note: string) => void
   focusQuality?: number
   setFocusQuality?: (quality: number) => void
+  audioMode?: AudioMode | null
+  setAudioMode?: (mode: AudioMode | null) => void
   validationError: string | null
   setValidationError: (err: string | null) => void
   status: 'idle' | 'saving' | 'error'
@@ -28,6 +31,8 @@ export function PromptDetailInput({
   setNote,
   focusQuality = 4,
   setFocusQuality,
+  audioMode,
+  setAudioMode,
   validationError,
   setValidationError,
   status,
@@ -272,6 +277,62 @@ export function PromptDetailInput({
                 )
               })}
             </div>
+          </div>
+        )}
+
+        {/* Audio Mode Pill Selector */}
+        {currentOption?.type !== 'break' && (
+          <div className="space-y-1.5 pt-1 border-t border-border/50">
+            <div className="flex items-center justify-between text-[11px] font-medium px-0.5">
+              <span className="text-muted-foreground">Soundtrack</span>
+              {audioMode && (
+                <span className="text-[10px] text-muted-foreground/75 font-mono capitalize">
+                  {audioMode === 'focus_sound' ? 'Focus Sounds' : audioMode}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Audio Mode">
+              {[
+                { id: 'silence' as const, label: 'Silence', icon: '🔇' },
+                { id: 'focus_sound' as const, label: 'Focus Sound', icon: '🎧' },
+                { id: 'music' as const, label: 'Music', icon: '🎵' }
+              ].map((m) => {
+                const isSelected = audioMode === m.id
+                return (
+                  <button
+                    key={m.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    onClick={() => setAudioMode?.(isSelected ? null : m.id)}
+                    disabled={status === 'saving'}
+                    className={cn(
+                      'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-[11px] font-medium transition-all duration-150 cursor-pointer select-none',
+                      isSelected
+                        ? 'bg-primary/15 border-primary text-primary font-semibold shadow-2xs'
+                        : 'bg-card hover:bg-secondary/70 border-border/70 text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    <span className="text-[12px]">{m.icon}</span>
+                    <span>{m.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Gentle Nudge when feeling scattered / distracted while listening to music on deep task */}
+            {currentOption?.type === 'goal' &&
+              (currentOption.goal.goalType || 'deep') === 'deep' &&
+              audioMode === 'music' &&
+              (focusQuality ?? 4) <= 2 && (
+                <div className="mt-1.5 p-2.5 rounded-xl bg-apple-amber/10 border border-apple-amber/30 text-foreground text-[11px] leading-relaxed flex items-start gap-2 animate-in fade-in duration-200">
+                  <span className="text-[13px] shrink-0">💡</span>
+                  <span>
+                    Feeling scattered? Try pausing lyrics and switching to Rain or Silence for the
+                    next 20 minutes.
+                  </span>
+                </div>
+              )}
           </div>
         )}
       </div>

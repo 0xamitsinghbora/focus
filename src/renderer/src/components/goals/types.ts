@@ -1,4 +1,4 @@
-import { DailyGoal, localDateStr } from '../../../../shared/types'
+import { DailyGoal, localDateStr, GoalType } from '../../../../shared/types'
 import { getGroupTheme, getPreferredGroupColor } from '../../lib/groupTheme'
 
 export interface ColumnGroup {
@@ -168,7 +168,8 @@ export interface GoalsPanelProps {
     repeat?: string,
     groupTag?: string,
     groupColor?: string,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    goalType?: GoalType
   ) => Promise<void>
   onUpdateDailyGoal: (goal: DailyGoal) => Promise<void>
   onUpdateDailyGoals?: (goals: DailyGoal[]) => Promise<void>

@@ -78,6 +78,7 @@ const MIGRATIONS: Migration[] = [
           groupTag TEXT COLLATE NOCASE,
           groupColor TEXT,
           sortOrder REAL,
+          goalType TEXT DEFAULT 'deep' CHECK(goalType IN ('deep', 'routine') OR goalType IS NULL),
           restoredAt TEXT,
           updatedAt TEXT,
           deletedAt TEXT,
@@ -113,6 +114,9 @@ const MIGRATIONS: Migration[] = [
           productiveMinutes REAL,
           date TEXT NOT NULL DEFAULT '',
           focusQuality INTEGER,
+          goalType TEXT DEFAULT 'deep' CHECK(goalType IN ('deep', 'routine') OR goalType IS NULL),
+          audioMode TEXT CHECK(audioMode IN ('silence', 'focus_sound', 'music') OR audioMode IS NULL),
+          didDotReset INTEGER DEFAULT 0,
           updatedAt TEXT,
           deletedAt TEXT,
           CHECK(deletedAt IS NULL OR length(deletedAt) > 0)
@@ -211,6 +215,33 @@ const MIGRATIONS: Migration[] = [
       db.exec(
         'CREATE INDEX IF NOT EXISTS idx_daily_goals_learningTrackId ON daily_goals(learningTrackId);'
       )
+    }
+  },
+  {
+    version: 3,
+    description: 'Add goalType to daily_goals and goalType, audioMode, didDotReset to logs',
+    up: (db: Database.Database): void => {
+      const goalCols = db.prepare("PRAGMA table_info('daily_goals')").all() as { name: string }[]
+      if (!goalCols.some((col) => col.name === 'goalType')) {
+        db.exec(
+          "ALTER TABLE daily_goals ADD COLUMN goalType TEXT DEFAULT 'deep' CHECK(goalType IN ('deep', 'routine') OR goalType IS NULL);"
+        )
+      }
+
+      const logCols = db.prepare("PRAGMA table_info('logs')").all() as { name: string }[]
+      if (!logCols.some((col) => col.name === 'goalType')) {
+        db.exec(
+          "ALTER TABLE logs ADD COLUMN goalType TEXT DEFAULT 'deep' CHECK(goalType IN ('deep', 'routine') OR goalType IS NULL);"
+        )
+      }
+      if (!logCols.some((col) => col.name === 'audioMode')) {
+        db.exec(
+          "ALTER TABLE logs ADD COLUMN audioMode TEXT CHECK(audioMode IN ('silence', 'focus_sound', 'music') OR audioMode IS NULL);"
+        )
+      }
+      if (!logCols.some((col) => col.name === 'didDotReset')) {
+        db.exec('ALTER TABLE logs ADD COLUMN didDotReset INTEGER DEFAULT 0;')
+      }
     }
   }
 ]

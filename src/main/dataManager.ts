@@ -13,7 +13,8 @@ import {
   DayReviewData,
   SessionTimerPayload,
   HeatmapBreakdown,
-  SyncDirtyTargets
+  SyncDirtyTargets,
+  GoalType
 } from '../shared/types'
 import { SyncManifest, SyncTarget } from './syncUtils'
 import { initDatabaseSchema } from './dataMigrations'
@@ -692,7 +693,8 @@ export class DataManager {
     sortOrder?: number,
     status?: DailyGoal['status'],
     learningTrackId?: string,
-    learningStage?: 1 | 2 | 3
+    learningStage?: 1 | 2 | 3,
+    goalType?: GoalType
   ): Promise<DailyGoal> {
     const goal = await this.goalsRepo.addGoal(
       date,
@@ -708,7 +710,8 @@ export class DataManager {
       sortOrder,
       status,
       learningTrackId,
-      learningStage
+      learningStage,
+      goalType
     )
     this.dirtyGoalDates.add(date)
     if (this.learningService) {

@@ -394,4 +394,39 @@ describe('AudioEngine & Chime Context Lifecycle', () => {
 
     audioEngine.pause()
   })
+
+  it('supports pure brown-noise procedural generator and preset formatting', () => {
+    audioEngine.setNoiseType('brown-noise')
+    expect(audioEngine.noiseType).toBe('brown-noise')
+    expect(formatNoiseType('brown-noise')).toBe('Brown Noise')
+    audioEngine.play()
+    expect(audioEngine.isPlaying).toBe(true)
+    audioEngine.pause()
+  })
+
+  it('supports Fade to Silence ramping and cancellation', () => {
+    audioEngine.play()
+    expect(audioEngine.isPlaying).toBe(true)
+    expect(audioEngine.isFadingToSilence).toBe(false)
+
+    audioEngine.startFadeToSilence(300)
+    expect(audioEngine.isFadingToSilence).toBe(true)
+    expect(audioEngine.fadeEndEpoch).toBeGreaterThan(Date.now())
+
+    // Advance timers partially
+    vi.advanceTimersByTime(100000)
+    expect(audioEngine.isFadingToSilence).toBe(true)
+
+    // Cancel fade
+    audioEngine.cancelFadeToSilence()
+    expect(audioEngine.isFadingToSilence).toBe(false)
+    expect(audioEngine.fadeEndEpoch).toBeNull()
+
+    // Start fade again and let it run to completion
+    audioEngine.startFadeToSilence(10)
+    expect(audioEngine.isFadingToSilence).toBe(true)
+    vi.advanceTimersByTime(11000)
+    expect(audioEngine.isFadingToSilence).toBe(false)
+    expect(audioEngine.isPlaying).toBe(false)
+  })
 })

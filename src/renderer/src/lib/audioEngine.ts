@@ -19,6 +19,7 @@ export type NoiseType =
   | 'waves'
   | 'wind'
   | 'white-noise'
+  | 'brown-noise'
   | 'city-tokyo'
   | 'city-london'
   | 'city-reykjavik'
@@ -576,6 +577,33 @@ const buildWhiteNoise: PresetBuilder = (ctx, master) => {
   return parts
 }
 
+const buildBrownNoise: PresetBuilder = (ctx, master) => {
+  const parts: Cleanup[] = []
+
+  // Deep brown acoustic masking: warm, rumble-free low frequencies
+  const noiseGain = trackNode(ctx.createGain(), parts)
+  noiseGain.gain.value = 0.5
+
+  const lpFilter = trackNode(ctx.createBiquadFilter(), parts)
+  lpFilter.type = 'lowpass'
+  lpFilter.frequency.value = 450
+  lpFilter.Q.value = 0.7
+
+  const hpFilter = trackNode(ctx.createBiquadFilter(), parts)
+  hpFilter.type = 'highpass'
+  hpFilter.frequency.value = 40
+  hpFilter.Q.value = 0.5
+
+  noiseGain.connect(lpFilter)
+  lpFilter.connect(hpFilter)
+  hpFilter.connect(master)
+
+  parts.push(loopNoise(ctx, fillBrown, noiseGain))
+  parts.push(lfo(ctx, 0.02, 0.02, noiseGain.gain))
+
+  return parts
+}
+
 const buildCityTokyo: PresetBuilder = (ctx, master) => {
   const parts: Cleanup[] = []
 
@@ -855,6 +883,7 @@ const FALLBACK_BUILDERS: Record<NoiseType, PresetBuilder> = {
   waves: buildWaves,
   wind: buildWind,
   'white-noise': buildWhiteNoise,
+  'brown-noise': buildBrownNoise,
   'city-tokyo': buildCityTokyo,
   'city-london': buildCityLondon,
   'city-reykjavik': buildCityReykjavik,
@@ -1037,6 +1066,7 @@ const BUILDERS: Record<NoiseType, PresetBuilder> = {
   waves: buildSoundscape('waves'),
   wind: buildSoundscape('wind'),
   'white-noise': buildSoundscape('white-noise'),
+  'brown-noise': buildBrownNoise,
   'city-tokyo': buildSoundscape('city-tokyo'),
   'city-london': buildSoundscape('city-london'),
   'city-reykjavik': buildSoundscape('city-reykjavik'),
@@ -1051,6 +1081,7 @@ const ALL_KEYS: NoiseType[] = [
   'waves',
   'wind',
   'white-noise',
+  'brown-noise',
   'city-tokyo',
   'city-london',
   'city-reykjavik',
@@ -1204,7 +1235,7 @@ export function saveUserPausedPreference(userPaused: boolean): void {
   }
 }
 
-interface AudioEngineSnapshot {
+export interface AudioEngineSnapshot {
   playing: boolean
   userPaused: boolean
   volume: number
@@ -1213,6 +1244,8 @@ interface AudioEngineSnapshot {
   customAudioName?: string
   activeCustomTrackId?: string
   customTracks: CustomAudioMeta[]
+  isFadingToSilence?: boolean
+  fadeEndEpoch?: number | null
 }
 
 let sharedAudioCtx: AudioContext | null = null
@@ -1306,13 +1339,18 @@ class AmbientAudioEngine {
   private listeners = new Set<() => void>()
   private recoveryTimer: ReturnType<typeof setTimeout> | null = null
   private isListeningToWindow = false
+  private fadeTimer: ReturnType<typeof setTimeout> | null = null
+  private _isFadingToSilence = false
+  private _fadeEndEpoch: number | null = null
   private snapshot: AudioEngineSnapshot = {
     playing: false,
     userPaused: loadUserPausedPreference(),
     volume: 0.8,
     noiseType: 'cocoon',
     spatialAudio: true,
-    customTracks: []
+    customTracks: [],
+    isFadingToSilence: false,
+    fadeEndEpoch: null
   }
 
   constructor() {
@@ -1417,7 +1455,9 @@ class AmbientAudioEngine {
       spatialAudio: this._spatialAudio,
       customAudioName: this.customAudioName || undefined,
       activeCustomTrackId: this._activeCustomTrackId || undefined,
-      customTracks: this.customTracks
+      customTracks: this.customTracks,
+      isFadingToSilence: this._isFadingToSilence,
+      fadeEndEpoch: this._fadeEndEpoch
     }
   }
 
@@ -1661,6 +1701,14 @@ class AmbientAudioEngine {
     return this._noiseType
   }
 
+  public get isFadingToSilence(): boolean {
+    return this._isFadingToSilence
+  }
+
+  public get fadeEndEpoch(): number | null {
+    return this._fadeEndEpoch
+  }
+
   private ensureContext(): AudioContext {
     const ctx = getSharedAudioContext()
     if (!ctx) {
@@ -1874,6 +1922,9 @@ class AmbientAudioEngine {
   }
 
   pause(options?: { userInitiated?: boolean }): void {
+    if (this._isFadingToSilence && options?.userInitiated) {
+      this.cancelFadeToSilence()
+    }
     if (options?.userInitiated) {
       this._userPaused = true
       saveUserPausedPreference(true)
@@ -1956,11 +2007,69 @@ class AmbientAudioEngine {
     this.notify()
   }
 
+  public startFadeToSilence = (durationSeconds = 300): void => {
+    if (!this._playing) {
+      this.play({ userInitiated: true })
+    }
+    this.cancelFadeToSilence()
+    this._isFadingToSilence = true
+    this._fadeEndEpoch = Date.now() + durationSeconds * 1000
+    this.notify()
+
+    try {
+      if (this.ctx && this.masterGain) {
+        const now = this.ctx.currentTime
+        const master = this.masterGain.gain
+        master.cancelScheduledValues(now)
+        master.setValueAtTime(master.value, now)
+        master.linearRampToValueAtTime(0.0001, now + durationSeconds)
+      }
+    } catch {
+      // ignore
+    }
+
+    this.fadeTimer = setTimeout(() => {
+      this._isFadingToSilence = false
+      this._fadeEndEpoch = null
+      this.pause({ userInitiated: false })
+      if (this.masterGain && this.ctx) {
+        try {
+          this.masterGain.gain.setValueAtTime(this._volume, this.ctx.currentTime)
+        } catch {
+          // ignore
+        }
+      }
+      this.notify()
+    }, durationSeconds * 1000)
+  }
+
+  public cancelFadeToSilence = (): void => {
+    if (this.fadeTimer) {
+      clearTimeout(this.fadeTimer)
+      this.fadeTimer = null
+    }
+    if (this._isFadingToSilence) {
+      this._isFadingToSilence = false
+      this._fadeEndEpoch = null
+      if (this.ctx && this.masterGain) {
+        try {
+          const now = this.ctx.currentTime
+          this.masterGain.gain.cancelScheduledValues(now)
+          this.masterGain.gain.linearRampToValueAtTime(this._volume, now + 0.2)
+        } catch {
+          // ignore
+        }
+      }
+      this.notify()
+    }
+  }
+
   public toggleSpatialAudio(): void {
     this.setSpatialAudio(!this._spatialAudio)
   }
 
   destroy(): void {
+    this.cancelFadeToSilence()
     if (this.spatialStage) {
       this.spatialStage.cleanup.stop()
       this.spatialStage = null
@@ -2014,6 +2123,8 @@ export function formatNoiseType(type: NoiseType): string {
       return 'Stream'
     case 'white-noise':
       return 'White Noise'
+    case 'brown-noise':
+      return 'Brown Noise'
     case 'cocoon':
       return 'Cocoon'
     case 'deep':
@@ -2047,6 +2158,8 @@ export interface UseAudioEngineReturn extends AudioEngineSnapshot {
   removeCustomAudio: (id: string) => Promise<void>
   loadCustomAudio: (input: File | { name: string; buffer: ArrayBuffer }) => Promise<void>
   clearCustomAudio: () => void
+  startFadeToSilence: (durationSeconds?: number) => void
+  cancelFadeToSilence: () => void
 }
 
 const stableAudioEngineActions = {
@@ -2069,7 +2182,9 @@ const stableAudioEngineActions = {
   removeCustomAudio: (id: string) => audioEngine.removeCustomAudio(id),
   loadCustomAudio: (input: File | { name: string; buffer: ArrayBuffer }) =>
     audioEngine.loadCustomAudio(input),
-  clearCustomAudio: () => audioEngine.clearCustomAudio()
+  clearCustomAudio: () => audioEngine.clearCustomAudio(),
+  startFadeToSilence: (durationSeconds?: number) => audioEngine.startFadeToSilence(durationSeconds),
+  cancelFadeToSilence: () => audioEngine.cancelFadeToSilence()
 }
 
 export function useAudioEngine(): UseAudioEngineReturn {
@@ -2090,7 +2205,9 @@ export function useAudioEngine(): UseAudioEngineReturn {
     selectCustomAudio: stableAudioEngineActions.selectCustomAudio,
     removeCustomAudio: stableAudioEngineActions.removeCustomAudio,
     loadCustomAudio: stableAudioEngineActions.loadCustomAudio,
-    clearCustomAudio: stableAudioEngineActions.clearCustomAudio
+    clearCustomAudio: stableAudioEngineActions.clearCustomAudio,
+    startFadeToSilence: stableAudioEngineActions.startFadeToSilence,
+    cancelFadeToSilence: stableAudioEngineActions.cancelFadeToSilence
   }
 }
 

@@ -21,6 +21,7 @@ interface TaskFormData {
   groupTag?: string
   groupColor?: string
   targetMinutes?: number
+  goalType?: 'deep' | 'routine'
 }
 
 export interface AddTaskCardProps {
@@ -60,6 +61,7 @@ export function AddTaskCard({
     const saved = getSavedGroupColors()
     return getRandomUnusedColor(Object.values(saved))
   })
+  const [goalType, setGoalType] = useState<'deep' | 'routine'>(initialData?.goalType || 'deep')
 
   // Date and Time components of deadline
   const [dueDate, setDueDate] = useState<string | null>(() => {
@@ -143,6 +145,9 @@ export function AddTaskCard({
           : null
       setDueDate(initialDate)
       setDueTime(initialTime)
+      if (initialData.goalType) {
+        setGoalType(initialData.goalType)
+      }
     }
   }, [initialData])
 
@@ -244,6 +249,7 @@ export function AddTaskCard({
         : null
     setDueDate(initialDate)
     setDueTime(initialTime)
+    setGoalType(initialData?.goalType || 'deep')
     setActivePopover(null)
   }
 
@@ -306,7 +312,8 @@ export function AddTaskCard({
       deadline: finalDeadline,
       groupTag: effectiveTag || undefined,
       groupColor: effectiveTag ? resolvedColor : undefined,
-      targetMinutes: effectiveMinutes || undefined
+      targetMinutes: effectiveMinutes || undefined,
+      goalType
     })
 
     if (mode === 'edit') {
@@ -511,6 +518,41 @@ export function AddTaskCard({
           setDueTime={setDueTime}
           dayCutoffHour={dayCutoffHour}
         />
+
+        {/* Goal Type 2-Way Selector & Micro-copy */}
+        <div className="pt-1.5 pb-0.5 space-y-1">
+          <div className="flex items-center gap-1.5 bg-secondary/50 p-0.5 rounded-lg w-fit">
+            <button
+              type="button"
+              onClick={() => setGoalType('deep')}
+              className={cn(
+                'px-2 py-0.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
+                goalType === 'deep'
+                  ? 'bg-card text-foreground shadow-2xs font-semibold'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              🎯 Deep Focus
+            </button>
+            <button
+              type="button"
+              onClick={() => setGoalType('routine')}
+              className={cn(
+                'px-2 py-0.5 rounded-md text-[11px] font-medium transition-all cursor-pointer',
+                goalType === 'routine'
+                  ? 'bg-card text-foreground shadow-2xs font-semibold'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              ⚡ Routine
+            </button>
+          </div>
+          <div className="text-[10.5px] text-muted-foreground/75 italic px-0.5">
+            {goalType === 'deep'
+              ? 'Lyrics compete with verbal memory — Silence or Rain recommended'
+              : 'Routine work — music keeps your pace up'}
+          </div>
+        </div>
 
         {/* Bottom Bar: Action Icons on Left, Add/Cancel on Right */}
         <div className="flex items-center justify-between pt-2 border-t border-border/40">

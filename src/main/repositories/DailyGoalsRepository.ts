@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3'
 import { randomUUID } from 'crypto'
-import { DailyGoal, localDateStr } from '../../shared/types'
+import { DailyGoal, GoalType, localDateStr } from '../../shared/types'
 import { SettingsRepository } from './SettingsRepository'
 import { LogsRepository } from './LogsRepository'
 import { InboxRepository } from './InboxRepository'
@@ -123,14 +123,14 @@ export class DailyGoalsRepository {
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
           note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
-          learningTrackId, learningStage
+          learningTrackId, learningStage, goalType
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
           @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
-          @learningTrackId, @learningStage
+          @learningTrackId, @learningStage, @goalType
         )
       `),
       upsertDailyGoal: this.db.prepare(`
@@ -139,14 +139,14 @@ export class DailyGoalsRepository {
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
           note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
-          learningTrackId, learningStage
+          learningTrackId, learningStage, goalType
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
           @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
-          @learningTrackId, @learningStage
+          @learningTrackId, @learningStage, @goalType
         )
         ON CONFLICT(id) DO UPDATE SET
           date = excluded.date,
@@ -171,7 +171,8 @@ export class DailyGoalsRepository {
           updatedAt = excluded.updatedAt,
           deletedAt = excluded.deletedAt,
           learningTrackId = excluded.learningTrackId,
-          learningStage = excluded.learningStage
+          learningStage = excluded.learningStage,
+          goalType = excluded.goalType
       `),
       updateDailyGoal: this.db.prepare(`
         UPDATE daily_goals SET
@@ -197,7 +198,8 @@ export class DailyGoalsRepository {
           updatedAt = @updatedAt,
           deletedAt = @deletedAt,
           learningTrackId = @learningTrackId,
-          learningStage = @learningStage
+          learningStage = @learningStage,
+          goalType = @goalType
         WHERE id = @id
       `),
       deleteDailyGoal: this.db.prepare(`
@@ -291,7 +293,8 @@ export class DailyGoalsRepository {
       deletedAt: r.deletedAt ?? undefined,
       restoredAt: r.restoredAt ?? undefined,
       learningTrackId: r.learningTrackId ?? undefined,
-      learningStage: (r.learningStage as 1 | 2 | 3) ?? undefined
+      learningStage: (r.learningStage as 1 | 2 | 3) ?? undefined,
+      goalType: (r.goalType as GoalType) || 'deep'
     }
   }
 
@@ -334,7 +337,8 @@ export class DailyGoalsRepository {
       deletedAt: goal.deletedAt && goal.deletedAt.trim() !== '' ? goal.deletedAt : null,
       restoredAt: goal.restoredAt ?? null,
       learningTrackId: goal.learningTrackId ?? null,
-      learningStage: goal.learningStage ?? null
+      learningStage: goal.learningStage ?? null,
+      goalType: goal.goalType ?? 'deep'
     }
   }
 
@@ -485,7 +489,8 @@ export class DailyGoalsRepository {
     sortOrder?: number,
     status?: DailyGoal['status'],
     learningTrackId?: string,
-    learningStage?: 1 | 2 | 3
+    learningStage?: 1 | 2 | 3,
+    goalType?: GoalType
   ): Promise<DailyGoal> {
     assertValidDate(date)
     const trimmedTitle = title.trim()
@@ -526,7 +531,8 @@ export class DailyGoalsRepository {
       sortOrder: nextSort,
       updatedAt: now,
       learningTrackId: learningTrackId?.trim() || undefined,
-      learningStage
+      learningStage,
+      goalType: goalType || 'deep'
     }
     goal.effectiveDate = this.computeEffectiveDate(goal)
 
@@ -821,7 +827,8 @@ export class DailyGoalsRepository {
           sortOrder: currentMaxSort,
           updatedAt: now,
           learningTrackId: orig.learningTrackId,
-          learningStage: orig.learningStage
+          learningStage: orig.learningStage,
+          goalType: orig.goalType || 'deep'
         }
         this.stmts.insertDailyGoal.run(this.goalParams(newGoal))
         this.stmts.markCarriedDailyGoal.run(toDate, now, now, orig.id)

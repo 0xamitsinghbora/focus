@@ -6,7 +6,8 @@ import {
   SyncTarget,
   localDateStr,
   DEFAULT_SORT_ORDER,
-  LogEntry
+  LogEntry,
+  AudioMode
 } from '../../../shared/types'
 import { formatTime } from '../lib/utils'
 import { FocusLogo } from './FocusLogo'
@@ -33,6 +34,7 @@ export function PromptWindow(): React.JSX.Element {
   const [markCompleted, setMarkCompleted] = useState<boolean>(false)
   const [addToPlanner, setAddToPlanner] = useState<boolean>(false)
   const [focusQuality, setFocusQuality] = useState<number>(4)
+  const [audioMode, setAudioMode] = useState<AudioMode | null>(null)
 
   const detailInputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -110,6 +112,7 @@ export function PromptWindow(): React.JSX.Element {
     setMarkCompleted(false)
     setAddToPlanner(false)
     setFocusQuality(4)
+    setAudioMode(null)
     setAfkSecondsLeft(40)
     afkBreakStartEpochRef.current = 0
     setAfkBreakSeconds(0)
@@ -311,6 +314,8 @@ export function PromptWindow(): React.JSX.Element {
           text,
           goalId,
           goalTitle,
+          goalType: opt?.type === 'goal' ? opt.goal.goalType : undefined,
+          audioMode: audioMode ?? undefined,
           note: trimmedNote || undefined,
           productivity: finalProductivity,
           durationMinutes: durationMins,
@@ -407,7 +412,7 @@ export function PromptWindow(): React.JSX.Element {
         setTimeout(() => setStatus('idle'), 2000)
       }
     },
-    [options, status, resetPrompt, reminderStatus, markCompleted, addToPlanner]
+    [options, status, resetPrompt, reminderStatus, markCompleted, addToPlanner, audioMode]
   )
 
   const handleSelectOption = useCallback(
@@ -429,6 +434,12 @@ export function PromptWindow(): React.JSX.Element {
     window.api.session?.quickAction?.('restart-session')
     resetPrompt()
   }, [resetPrompt, reminderStatus?.intervalMinutes])
+
+  const handleStartDotReset = useCallback((): void => {
+    window.api.scheduler.snooze(2)
+    window.api.session?.quickAction?.('dot-reset')
+    resetPrompt()
+  }, [resetPrompt])
 
   // 1. AFK 40s countdown effect (only while in select step and not saving)
   useEffect(() => {
@@ -669,6 +680,7 @@ export function PromptWindow(): React.JSX.Element {
           onQuickDone={(idx) => submitOption(idx, '', { markCompleted: true })}
           onSnooze={handleSnooze}
           snoozeCount={reminderStatus?.snoozeCount}
+          onStartDotReset={handleStartDotReset}
         />
       )}
 
@@ -679,6 +691,8 @@ export function PromptWindow(): React.JSX.Element {
           setNote={setNote}
           focusQuality={focusQuality}
           setFocusQuality={setFocusQuality}
+          audioMode={audioMode}
+          setAudioMode={setAudioMode}
           validationError={validationError}
           setValidationError={setValidationError}
           status={status}

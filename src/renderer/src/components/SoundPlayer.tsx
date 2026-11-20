@@ -143,6 +143,29 @@ const PRESETS: PresetInfo[] = [
     )
   },
   {
+    key: 'brown-noise',
+    category: 'focus',
+    label: 'Brown Noise',
+    sublabel: 'Deep masking',
+    desc: 'Pure acoustic brown noise for continuous verbal & ambient masking',
+    icon: (className) => (
+      <svg
+        width="13"
+        height="13"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+      >
+        <circle cx="12" cy="12" r="9" />
+        <path d="M7 12c1.5-2 3.5-2 5 0s3.5 2 5 0" />
+      </svg>
+    )
+  },
+  {
     key: 'cocoon',
     category: 'focus',
     label: 'Cocoon',
@@ -302,6 +325,8 @@ function SoundPresetPopover({
   onRemoveCustomTrack,
   onChooseCustomFile,
   onClearCustomFile,
+  isFadingToSilence,
+  onToggleFadeToSilence,
   className,
   gridClassName
 }: {
@@ -322,6 +347,8 @@ function SoundPresetPopover({
   onRemoveCustomTrack?: (id: string) => void
   onChooseCustomFile: () => void
   onClearCustomFile?: () => void
+  isFadingToSilence?: boolean
+  onToggleFadeToSilence?: () => void
   className?: string
   gridClassName?: string
 }): React.JSX.Element {
@@ -614,6 +641,24 @@ function SoundPresetPopover({
           })
         )}
       </div>
+
+      {/* Fade to Silence (5m) Toggle */}
+      <div className="mt-2.5 pt-2 border-t border-border/40 flex items-center justify-between px-1">
+        <span className="text-[11px] text-muted-foreground font-medium">Fade to Silence (5m)</span>
+        <button
+          type="button"
+          onClick={onToggleFadeToSilence}
+          className={cn(
+            'px-2 py-0.5 rounded-lg text-[10.5px] font-medium transition-all cursor-pointer border',
+            isFadingToSilence
+              ? 'bg-apple-amber/20 text-apple-amber border-apple-amber/40 font-semibold'
+              : 'bg-secondary/70 text-muted-foreground hover:text-foreground border-border/60'
+          )}
+          title="Gradually fade audio to true silence over 5 minutes once in flow"
+        >
+          {isFadingToSilence ? 'Fading (5m)...' : 'Fade in 5m'}
+        </button>
+      </div>
     </div>
   )
 }
@@ -638,7 +683,10 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio
+    clearCustomAudio,
+    isFadingToSilence,
+    startFadeToSilence,
+    cancelFadeToSilence
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -908,6 +956,11 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
+          isFadingToSilence={isFadingToSilence}
+          onToggleFadeToSilence={() => {
+            if (isFadingToSilence) cancelFadeToSilence()
+            else startFadeToSilence(300)
+          }}
         />
       )}
     </div>
@@ -933,7 +986,10 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio
+    clearCustomAudio,
+    isFadingToSilence,
+    startFadeToSilence,
+    cancelFadeToSilence
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -1256,6 +1312,11 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
+          isFadingToSilence={isFadingToSilence}
+          onToggleFadeToSilence={() => {
+            if (isFadingToSilence) cancelFadeToSilence()
+            else startFadeToSilence(300)
+          }}
           className="w-[320px] sm:w-[340px]"
         />
       )}
@@ -1287,7 +1348,10 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio
+    clearCustomAudio,
+    isFadingToSilence,
+    startFadeToSilence,
+    cancelFadeToSilence
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -1666,6 +1730,11 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
+          isFadingToSilence={isFadingToSilence}
+          onToggleFadeToSilence={() => {
+            if (isFadingToSilence) cancelFadeToSilence()
+            else startFadeToSilence(300)
+          }}
           className="w-[340px] sm:w-[370px] left-0 sm:left-2 top-full mt-2.5 z-50 shadow-apple-popover"
           gridClassName="h-[185px] sm:h-[205px]"
         />

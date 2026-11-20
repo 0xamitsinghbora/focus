@@ -29,6 +29,7 @@ import { useWeeklyInsights } from './hooks/useWeeklyInsights'
 import { MorningRitualModal } from './components/MorningRitualModal'
 import { BreakRecoveryModal } from './components/BreakRecoveryModal'
 import { OnboardingModal, OnboardingConfig } from './components/OnboardingModal'
+import { TratakaModal } from './components/TratakaModal'
 import { BreakNudgePayload, AppSettings } from '../../shared/types'
 import { playFocusChime } from './lib/audioEngine'
 
@@ -49,8 +50,20 @@ function App(): React.JSX.Element {
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
   const [lastMorningRitualDate, setLastMorningRitualDate] = useState<string>('')
   const [activeBreakNudge, setActiveBreakNudge] = useState<BreakNudgePayload | null>(null)
+  const [isTratakaOpen, setIsTratakaOpen] = useState(false)
   const ritualCheckDoneRef = useRef(false)
   const onboardingCheckDoneRef = useRef(false)
+
+  // Listen for remote quick actions (such as dot-reset from widget or prompt)
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.api?.session?.onQuickAction) return
+    const cleanup = window.api.session.onQuickAction((action) => {
+      if (action === 'dot-reset') {
+        setIsTratakaOpen(true)
+      }
+    })
+    return cleanup
+  }, [])
 
   // Global hotkey to open shortcuts modal (? or Ctrl+/)
   useEffect(() => {
@@ -494,6 +507,7 @@ function App(): React.JSX.Element {
           onOpenMorningRitual={
             lastMorningRitualDate !== todayDateStr ? () => setIsMorningRitualOpen(true) : undefined
           }
+          onOpenTrataka={() => setIsTratakaOpen(true)}
         />
 
         <div id="main-content" role="main" className="relative z-10 min-h-0 flex-1 overflow-hidden">
@@ -732,6 +746,7 @@ function App(): React.JSX.Element {
         defaultDailyTargetMinutes={dailyFocusTargetMinutes}
         onComplete={handleCompleteOnboarding}
       />
+      <TratakaModal isOpen={isTratakaOpen} onClose={() => setIsTratakaOpen(false)} />
     </FocusSessionProvider>
   )
 }

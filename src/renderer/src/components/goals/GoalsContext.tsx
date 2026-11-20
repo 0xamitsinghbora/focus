@@ -43,6 +43,7 @@ export interface GoalsContextType {
       groupTag?: string
       groupColor?: string
       targetMinutes?: number
+      goalType?: 'deep' | 'routine'
     }
   ) => Promise<void>
   cancelEdit: () => void

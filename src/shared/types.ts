@@ -6,6 +6,10 @@ export type CloudSyncProvider = 'none' | 'google-drive'
 
 export type FocusQualityRating = 1 | 2 | 3 | 4 | 5
 
+export type GoalType = 'deep' | 'routine'
+
+export type AudioMode = 'silence' | 'focus_sound' | 'music'
+
 export type AppSettings = {
   reminderIntervalMinutes: number
   openAtLogin: boolean
@@ -45,6 +49,9 @@ export type LogEntry = {
   durationMinutes?: number
   productiveMinutes?: number
   focusQuality?: number
+  goalType?: GoalType
+  audioMode?: AudioMode | null
+  didDotReset?: boolean
   updatedAt?: string
   deletedAt?: string
 }
@@ -72,6 +79,7 @@ export type DailyGoal = {
   groupTag?: string
   groupColor?: string
   sortOrder?: number
+  goalType?: GoalType
   updatedAt?: string
   deletedAt?: string
   restoredAt?: string
@@ -359,6 +367,7 @@ export type SessionQuickActionType =
   | 'resume'
   | 'snooze'
   | 'switch-task'
+  | 'dot-reset'
 
 export interface UninstallResult {
   success: boolean
@@ -407,6 +416,7 @@ export type AddGoalPayload = {
   groupTag?: string
   groupColor?: string
   sortOrder?: number
+  goalType?: GoalType
   learningTrackId?: string
   learningStage?: 1 | 2 | 3
 }

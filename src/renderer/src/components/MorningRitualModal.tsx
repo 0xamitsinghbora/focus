@@ -53,6 +53,7 @@ export function MorningRitualModal({
   const [selectedToCarry, setSelectedToCarry] = useState<Set<string>>(new Set())
   const [anchorGoalId, setAnchorGoalId] = useState<string>('')
   const [newAnchorTitle, setNewAnchorTitle] = useState('')
+  const [startWithDotReset, setStartWithDotReset] = useState(false)
   const [isCommitting, setIsCommitting] = useState(false)
   const [loadingPast, setLoadingPast] = useState(true)
 
@@ -185,6 +186,12 @@ export function MorningRitualModal({
         // ignore audio failure
       }
 
+      if (startWithDotReset) {
+        if (typeof window !== 'undefined' && window.api?.session?.quickAction) {
+          window.api.session.quickAction('dot-reset')
+        }
+      }
+
       onRitualCompleted()
       onClose()
     } catch (err) {
@@ -202,6 +209,7 @@ export function MorningRitualModal({
     anchorGoalId,
     availableTodayGoals,
     todayStr,
+    startWithDotReset,
     onUpdateTargetMinutes,
     onCarryGoal,
     onAddGoal,
@@ -431,6 +439,20 @@ export function MorningRitualModal({
                 className="w-full px-3.5 py-2 rounded-xl text-[12.5px] border border-input bg-card shadow-apple-subtle focus:ring-2 focus:ring-primary/60 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/60 select-text"
               />
             </div>
+
+            {/* Optional Trataka Mind Reset on launch */}
+            <label className="flex items-center gap-2 pt-1 text-[12px] font-medium text-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={startWithDotReset}
+                onChange={(e) => setStartWithDotReset(e.target.checked)}
+                className="h-4 w-4 rounded border-border text-primary focus:ring-primary/60 cursor-pointer accent-primary"
+              />
+              <span className="flex items-center gap-1.5">
+                <span className="text-amber-500 font-bold">◉</span>
+                <span>Start first goal with 60s Mind Reset (Trataka)</span>
+              </span>
+            </label>
           </div>
         </div>
 

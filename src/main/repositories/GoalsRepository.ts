@@ -4,7 +4,8 @@ import {
   GoalInboxItem,
   RecurringGoal,
   RecurringFrequency,
-  localDateStr
+  localDateStr,
+  GoalType
 } from '../../shared/types'
 import { PurgedRecord } from '../dataManager'
 import { SettingsRepository } from './SettingsRepository'
@@ -148,7 +149,8 @@ export class GoalsRepository {
     sortOrder?: number,
     status?: DailyGoal['status'],
     learningTrackId?: string,
-    learningStage?: 1 | 2 | 3
+    learningStage?: 1 | 2 | 3,
+    goalType?: GoalType
   ): Promise<DailyGoal> {
     return this.daily.addGoal(
       date,
@@ -164,7 +166,8 @@ export class GoalsRepository {
       sortOrder,
       status,
       learningTrackId,
-      learningStage
+      learningStage,
+      goalType
     )
   }
 

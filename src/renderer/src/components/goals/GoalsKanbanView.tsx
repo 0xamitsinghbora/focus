@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react'
-import { DailyGoal } from '../../../../shared/types'
+import { DailyGoal, GoalType } from '../../../../shared/types'
 import { cn } from '../../lib/utils'
 import { GroupColorId } from '../../lib/groupTheme'
 import { EmptyState } from '../DashboardLayout'
@@ -35,7 +35,8 @@ export interface GoalsKanbanViewProps {
     repeat?: string,
     groupTag?: string,
     groupColor?: string,
-    status?: DailyGoal['status']
+    status?: DailyGoal['status'],
+    goalType?: GoalType
   ) => Promise<void>
   triggerAdd?: number
   shortcutLabel: string
@@ -611,7 +612,8 @@ export function GoalsKanbanView(props: GoalsKanbanViewProps): React.JSX.Element 
                           repeat,
                           groupTag,
                           groupColor,
-                          targetMinutes
+                          targetMinutes,
+                          goalType
                         }) => {
                           await onAddDailyGoal(
                             title,
@@ -622,7 +624,8 @@ export function GoalsKanbanView(props: GoalsKanbanViewProps): React.JSX.Element 
                             repeat,
                             groupTag,
                             groupColor,
-                            col.id === 'in_progress' ? 'in_progress' : 'planned'
+                            col.id === 'in_progress' ? 'in_progress' : 'planned',
+                            goalType
                           )
                           setShowAddCol(null)
                         }}
