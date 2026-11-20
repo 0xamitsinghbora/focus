@@ -38,6 +38,14 @@ const FALLBACK_ASSETS = {
 }
 
 /* OS Detection & Dynamic Hero Button Setup */
+const OS_ICONS = {
+  windows:
+    '<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.902-1.799"/></svg>',
+  mac: '<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.64-.78 1.08-1.86.96-2.95-1 .04-2.16.66-2.84 1.45-.58.67-1.1 1.76-.96 2.82 1.11.09 2.2-.56 2.84-1.32z"/></svg>',
+  linux:
+    '<svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.001 2c-2.4 0-4.001 1.6-4.001 4 0 1.2.4 2.2 1.1 3-.7.5-1.5 1.3-1.9 2.2-.4.9-.5 2-.5 3.3 0 1.3.3 2.4.9 3.3.6.9 1.4 1.5 2.4 1.8-.4.5-.7 1.1-.7 1.9 0 1.4 1.1 2.5 2.5 2.5h.4c1.4 0 2.5-1.1 2.5-2.5 0-.8-.3-1.4-.7-1.9 1-.3 1.8-.9 2.4-1.8.6-.9.9-2 .9-3.3 0-1.3-.1-2.4-.5-3.3-.4-.9-1.2-1.7-1.9-2.2.7-.8 1.1-1.8 1.1-3 0-2.4-1.601-4-4.001-4z"/></svg>'
+}
+
 function detectVisitorOS() {
   const ua = navigator.userAgent || ''
   const platform = navigator.platform || ''
@@ -67,7 +75,7 @@ function updateHeroDownloadButton(os, releaseData) {
   if (os === 'windows') {
     const asset = releaseData?.winInstaller || FALLBACK_ASSETS.winInstaller
     if (heroBtn) heroBtn.href = asset.url
-    if (heroIcon) heroIcon.textContent = '🪟'
+    if (heroIcon) heroIcon.innerHTML = OS_ICONS.windows
     if (heroHeadline) heroHeadline.textContent = 'Download for Windows'
     if (heroSubline)
       heroSubline.textContent = `Setup Installer (.exe) • Free • ${version} • ${asset.size}`
@@ -79,7 +87,7 @@ function updateHeroDownloadButton(os, releaseData) {
   } else if (os === 'mac') {
     const asset = releaseData?.macDmg || FALLBACK_ASSETS.macDmg
     if (heroBtn) heroBtn.href = asset.url
-    if (heroIcon) heroIcon.textContent = '🍏'
+    if (heroIcon) heroIcon.innerHTML = OS_ICONS.mac
     if (heroHeadline) heroHeadline.textContent = 'Download for macOS'
     if (heroSubline)
       heroSubline.textContent = `Universal DMG • Apple Silicon & Intel • ${version} • ${asset.size}`
@@ -91,7 +99,7 @@ function updateHeroDownloadButton(os, releaseData) {
   } else if (os === 'linux') {
     const asset = releaseData?.linuxAppImage || FALLBACK_ASSETS.linuxAppImage
     if (heroBtn) heroBtn.href = asset.url
-    if (heroIcon) heroIcon.textContent = '🐧'
+    if (heroIcon) heroIcon.innerHTML = OS_ICONS.linux
     if (heroHeadline) heroHeadline.textContent = 'Download for Linux'
     if (heroSubline) heroSubline.textContent = `Universal AppImage • ${version} • ${asset.size}`
     if (navDownloadLabel) navDownloadLabel.textContent = 'Download'
@@ -323,4 +331,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   fetchGitHubStars()
+  initStageshowInteractions()
 })
+
+/* Stageshow Interactive Demos (benjitaylor/skills) */
+function initStageshowInteractions() {
+  // 1. Live ticking timer on hero HUD widget
+  const heroLiveTimer = document.getElementById('hero-live-timer')
+  if (heroLiveTimer) {
+    let elapsedSeconds = 34 * 60 + 12
+    setInterval(() => {
+      elapsedSeconds++
+      const mins = Math.floor(elapsedSeconds / 60)
+      const secs = elapsedSeconds % 60
+      heroLiveTimer.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+    }, 1000)
+  }
+
+  // 2. Soundscape Track Selector in Bento Grid
+  const soundPills = document.querySelectorAll('.sound-track-pill')
+  soundPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      soundPills.forEach((p) => p.classList.remove('active'))
+      pill.classList.add('active')
+    })
+  })
+}

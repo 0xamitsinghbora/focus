@@ -63,16 +63,8 @@ body {
 }
 
 .bg-grid-pattern {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 24px 24px;
-}
-
-/* Gradient Text */
-.gradient-text {
-  background: linear-gradient(135deg, #ffffff 10%, #38bdf8 55%, #818cf8 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Platform Filter Tabs */
@@ -83,22 +75,23 @@ body {
 }
 
 .platform-tab-btn.active {
-  background: var(--color-sky-500) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);
+  background: #ffffff !important;
+  color: #090a0f !important;
+  font-weight: 600;
 }
 
-/* Card Glow Effect on Hover */
+/* Card Subtle Border on Hover */
 .download-card {
   transition:
-    transform 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.25s ease;
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .download-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px -10px rgba(14, 165, 233, 0.18);
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.6);
 }
 
 /* FAQ Accordion */
@@ -111,7 +104,7 @@ body {
 
 .faq-item:hover {
   border-color: rgba(255, 255, 255, 0.2);
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .faq-item.open .faq-answer {
@@ -128,52 +121,51 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #06070a;
+  background: #090a0f;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1e2438;
-  border-radius: 4px;
+  background: #27272a;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #38bdf8;
+  background: #3f3f46;
 }
 
 /* ==========================================================================
    Stageshow (benjitaylor/skills) Product UI & Bento Architecture
+   Quiet, restrained dark palette • One focal accent • High breathing room
    ========================================================================== */
 
 :root {
-  --ss-canvas: #07090e;
-  --ss-surface: #0e111a;
-  --ss-surface-raised: #141824;
-  --ss-chrome: #111420;
-  --ss-line: rgba(255, 255, 255, 0.08);
-  --ss-line-strong: rgba(255, 255, 255, 0.14);
+  --ss-canvas: #090a0f;
+  --ss-surface: #0f1118;
+  --ss-surface-raised: #151822;
+  --ss-chrome: #12141d;
+  --ss-line: rgba(255, 255, 255, 0.07);
+  --ss-line-strong: rgba(255, 255, 255, 0.12);
   --ss-line-faint: rgba(255, 255, 255, 0.04);
   
   --ss-text: #94a3b8;
   --ss-text-strong: #f8fafc;
   --ss-text-faint: #64748b;
   
-  --ss-accent: #0ea5e9;
-  --ss-accent-soft: rgba(14, 165, 233, 0.14);
-  --ss-success: #10b981;
-  --ss-warning: #f59e0b;
-  --ss-danger: #ef4444;
+  --ss-accent: #38bdf8;
+  --ss-accent-soft: rgba(56, 189, 248, 0.1);
+  --ss-success: #34d399;
 
-  --ss-shadow-hero: 0 0 0 1px rgba(255, 255, 255, 0.09), 0 30px 60px -15px rgba(0, 0, 0, 0.85), 0 15px 30px -15px rgba(0, 0, 0, 0.9);
-  --ss-shadow-satellite: 0 0 0 1px rgba(255, 255, 255, 0.14), 0 20px 40px -10px rgba(0, 0, 0, 0.9), 0 6px 16px -4px rgba(0, 0, 0, 0.7);
-  --ss-shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 4px 12px rgba(0, 0, 0, 0.5);
+  --ss-shadow-hero: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 24px 48px -12px rgba(0, 0, 0, 0.7);
+  --ss-shadow-satellite: 0 0 0 1px rgba(255, 255, 255, 0.12), 0 16px 32px -8px rgba(0, 0, 0, 0.7);
+  --ss-shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.06);
 
-  --ss-radius-window: 14px;
-  --ss-radius-tile: 20px;
+  --ss-radius-window: 12px;
+  --ss-radius-tile: 16px;
   --ss-radius-card: 10px;
   --ss-radius-pill: 9999px;
 }
@@ -186,14 +178,13 @@ body {
   box-shadow: var(--ss-shadow-hero);
   border: 1px solid var(--ss-line);
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
 }
 
 .ss-window-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 38px;
+  height: 36px;
   padding: 0 14px;
   background: var(--ss-chrome);
   border-bottom: 1px solid var(--ss-line);
@@ -203,19 +194,19 @@ body {
 .ss-window-lights {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
 }
 
 .ss-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   box-shadow: inset 0 0 0 0.5px rgba(0, 0, 0, 0.25);
 }
 
-.ss-dot-red { background: #ff5f57; }
-.ss-dot-yellow { background: #febc2e; }
-.ss-dot-green { background: #28c840; }
+.ss-dot-red { background: #ff5f57; opacity: 0.85; }
+.ss-dot-yellow { background: #febc2e; opacity: 0.85; }
+.ss-dot-green { background: #28c840; opacity: 0.85; }
 
 /* Satellites */
 .ss-satellite {
@@ -224,51 +215,40 @@ body {
   border-radius: var(--ss-radius-card);
   box-shadow: var(--ss-shadow-satellite);
   border: 1px solid var(--ss-line-strong);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 /* Animated Equalizer Wave Bars */
 .sound-wave-bars {
   display: flex;
   align-items: flex-end;
-  gap: 2.5px;
-  height: 14px;
+  gap: 2px;
+  height: 12px;
 }
 
 .sound-bar {
-  width: 2.5px;
-  border-radius: 2px;
-  background: #38bdf8;
+  width: 2px;
+  border-radius: 1px;
+  background: #94a3b8;
   animation: soundBarPulse 1.2s ease-in-out infinite alternate;
 }
 
-.sound-bar:nth-child(1) { height: 35%; animation-delay: 0.1s; }
-.sound-bar:nth-child(2) { height: 90%; animation-delay: 0.3s; }
-.sound-bar:nth-child(3) { height: 60%; animation-delay: 0.15s; }
-.sound-bar:nth-child(4) { height: 100%; animation-delay: 0.45s; }
-.sound-bar:nth-child(5) { height: 45%; animation-delay: 0.25s; }
+.sound-bar:nth-child(1) { height: 30%; animation-delay: 0.1s; }
+.sound-bar:nth-child(2) { height: 80%; animation-delay: 0.3s; }
+.sound-bar:nth-child(3) { height: 50%; animation-delay: 0.15s; }
+.sound-bar:nth-child(4) { height: 95%; animation-delay: 0.45s; }
+.sound-bar:nth-child(5) { height: 40%; animation-delay: 0.25s; }
 
 @keyframes soundBarPulse {
-  0% { transform: scaleY(0.3); opacity: 0.5; }
-  100% { transform: scaleY(1); opacity: 1; }
-}
-
-/* Subtle Cursor Indicator */
-.stageshow-cursor {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  pointer-events: none;
-  z-index: 30;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  0% { transform: scaleY(0.3); opacity: 0.4; }
+  100% { transform: scaleY(1); opacity: 0.9; }
 }
 
 /* Bento Grid System (from references/bento.md) */
 .focus-bento-grid {
   display: grid;
-  gap: 16px;
+  gap: 14px;
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 
@@ -299,62 +279,50 @@ body {
   border-radius: var(--ss-radius-tile);
   background: var(--ss-surface);
   border: 1px solid var(--ss-line);
-  padding: 24px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: border-color 0.2s ease, transform 0.2s ease;
+  transition: border-color 0.2s ease;
 }
 
 .fb-tile:hover {
-  border-color: rgba(56, 189, 248, 0.3);
-  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 .fb-copy {
-  margin-bottom: 20px;
-  font-size: 15px;
+  margin-bottom: 18px;
+  font-size: 14px;
   line-height: 1.5;
-  color: var(--ss-text);
+  color: #94a3b8;
 }
 
 .fb-copy strong {
-  font-size: 16px;
-  font-weight: 700;
-  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  color: #f8fafc;
   display: inline;
   margin-right: 4px;
 }
 
 .fb-stat-number {
   font-family: var(--font-mono);
-  font-size: 56px;
-  font-weight: 800;
+  font-size: 52px;
+  font-weight: 700;
   line-height: 1;
-  letter-spacing: -0.04em;
-  color: #34d399;
+  letter-spacing: -0.03em;
+  color: #ffffff;
 }
 
 /* Interactive Sound Pill Selection */
 .sound-track-pill {
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
 }
 
 .sound-track-pill.active {
-  background: rgba(14, 165, 233, 0.16);
-  border-color: rgba(56, 189, 248, 0.4);
-  color: #38bdf8;
-}
-
-/* Pulse animation */
-@keyframes ringPulse {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.1); opacity: 0.4; }
-  100% { transform: scale(0.95); opacity: 0.8; }
-}
-
-.animate-ring-pulse {
-  animation: ringPulse 2.5s infinite ease-in-out;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 

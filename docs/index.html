@@ -76,18 +76,10 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body
-    class="bg-obsidian text-slate-100 antialiased selection:bg-sky-500/30 selection:text-sky-200"
+    class="bg-obsidian text-slate-100 antialiased selection:bg-sky-500/20 selection:text-sky-200"
   >
-    <!-- Ambient Glow Effects -->
-    <div
-      class="fixed top-0 left-1/2 -translate-x-1/2 w-[800px] h-[360px] bg-gradient-to-b from-sky-500/15 via-indigo-500/10 to-transparent blur-[120px] pointer-events-none -z-10"
-    ></div>
-    <div
-      class="fixed bottom-0 right-0 w-[500px] h-[300px] bg-gradient-to-t from-sky-600/10 to-transparent blur-[140px] pointer-events-none -z-10"
-    ></div>
-
     <!-- Background Grid Pattern -->
-    <div class="fixed inset-0 bg-grid-pattern opacity-[0.035] pointer-events-none -z-10"></div>
+    <div class="fixed inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none -z-10"></div>
 
     <!-- Navigation Bar (Sleek h-14 to minimize top space) -->
     <header
@@ -97,7 +89,7 @@
         <!-- Brand Logo -->
         <a href="#" class="flex items-center gap-2.5 group">
           <div
-            class="relative w-7 h-7 rounded-lg overflow-hidden shadow-md shadow-sky-500/20 ring-1 ring-white/20 group-hover:scale-105 transition-transform duration-200"
+            class="relative w-7 h-7 rounded-lg overflow-hidden shadow-sm ring-1 ring-white/10 group-hover:scale-105 transition-transform duration-200"
           >
             <img src="assets/icon.svg" alt="Focus Logo" class="w-full h-full object-cover" />
           </div>
@@ -108,7 +100,7 @@
             >
             <span
               id="nav-version-badge"
-              class="px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-sky-500/10 text-sky-400 border border-sky-500/20 rounded-full"
+              class="px-2 py-0.5 text-[10px] font-semibold tracking-wide uppercase bg-white/5 text-slate-400 border border-white/10 rounded-full"
               >v1.0.0</span
             >
           </div>
@@ -118,7 +110,7 @@
         <nav
           class="hidden md:flex items-center gap-6 text-xs sm:text-sm font-medium text-slate-300"
         >
-          <a href="#preview" class="hover:text-white transition-colors">How it works</a>
+          <a href="#features" class="hover:text-white transition-colors">How it works</a>
           <a href="#features" class="hover:text-white transition-colors">Features</a>
           <a href="#privacy" class="hover:text-white transition-colors">Privacy</a>
           <a href="#download" class="hover:text-white transition-colors">Downloads</a>
@@ -150,7 +142,7 @@
           <!-- Quick Download Header CTA -->
           <a
             href="#download"
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-md shadow-sky-500/25 transition-all"
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-sky-500 hover:bg-sky-400 active:scale-95 shadow-sm transition-all"
           >
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -186,7 +178,7 @@
         id="mobile-menu"
         class="hidden md:hidden border-b border-white/10 bg-obsidian-950/95 backdrop-blur-2xl px-5 py-3 space-y-2 text-sm"
       >
-        <a href="#preview" class="block text-slate-300 hover:text-white py-1">How it works</a>
+        <a href="#features" class="block text-slate-300 hover:text-white py-1">How it works</a>
         <a href="#features" class="block text-slate-300 hover:text-white py-1">Features</a>
         <a href="#privacy" class="block text-slate-300 hover:text-white py-1">Privacy</a>
         <a href="#download" class="block text-slate-300 hover:text-white py-1">Downloads</a>
@@ -210,19 +202,14 @@
     </header>
 
     <!-- Hero Section (Clean top spacing, fits above fold without scroll) -->
-    <section class="relative pt-4 sm:pt-6 md:pt-8 pb-10 sm:pb-14 overflow-hidden">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+    <section class="relative pt-6 sm:pt-10 md:pt-12 pb-16 sm:pb-24 overflow-hidden">
+      <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
         <!-- Release Status Pill -->
         <div
-          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 shadow-inner backdrop-blur-md mb-3 sm:mb-4 hover:border-sky-500/40 transition-colors cursor-pointer"
+          class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md mb-4 sm:mb-5 hover:border-white/20 transition-colors cursor-pointer"
           onclick="document.getElementById('download').scrollIntoView({ behavior: 'smooth' })"
         >
-          <span class="flex h-2 w-2 relative">
-            <span
-              class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-            ></span>
-            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
-          </span>
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
           <span class="text-xs font-medium text-slate-300">
             <strong class="text-white font-semibold" id="hero-release-tag">Focus v1.0.0</strong> is
             ready for Windows, Mac & Linux
@@ -232,15 +219,15 @@
 
         <!-- Main Headline -->
         <h1
-          class="text-3xl sm:text-5xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white mb-3 sm:mb-4 leading-[1.12]"
+          class="text-3xl sm:text-5xl md:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight text-white mb-4 sm:mb-5 leading-[1.14]"
         >
           Understand where your day goes.<br class="hidden sm:inline" />
-          <span class="gradient-text">Quietly, gently, without the spyware.</span>
+          <span class="text-slate-400 font-medium">Quietly, gently, without the spyware.</span>
         </h1>
 
         <!-- Subtitle: informal, friendly, concise -->
         <p
-          class="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-slate-300 font-normal leading-relaxed mb-6"
+          class="max-w-2xl mx-auto text-sm sm:text-base md:text-lg text-slate-400 font-normal leading-relaxed mb-8"
         >
           A calm desktop helper that quietly asks what you're working on every half hour. No creepy
           screenshots, no surveillance—just your own flow notes saved right on your machine.
@@ -248,88 +235,87 @@
 
         <!-- Primary Smart Download CTA Box (The "Good Download Button") -->
         <div class="max-w-md mx-auto mb-4">
-          <div
-            class="p-2 rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 backdrop-blur-xl shadow-2xl shadow-sky-950/50"
+          <!-- Primary Detected OS Button -->
+          <a
+            id="hero-primary-download-btn"
+            href="https://github.com/healthOS/focus/releases/latest/download/Focus-Setup-1.0.0.exe"
+            class="w-full flex items-center justify-between gap-3.5 px-5 py-3.5 rounded-xl text-white bg-sky-500 hover:bg-sky-400 active:scale-[0.98] transition-all group shadow-lg shadow-sky-500/20 border border-sky-400/30"
           >
-            <!-- Primary Detected OS Button -->
-            <a
-              id="hero-primary-download-btn"
-              href="https://github.com/healthOS/focus/releases/latest/download/Focus-Setup-1.0.0.exe"
-              class="w-full flex items-center justify-between gap-3.5 px-5 py-3.5 rounded-xl text-white bg-gradient-to-r from-sky-500 via-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-[1.01] active:scale-[0.98] transition-all group"
-            >
-              <div class="flex items-center gap-3">
-                <span id="hero-os-icon" class="text-2xl shrink-0">🪟</span>
-                <div class="text-left">
-                  <div
-                    id="hero-download-headline"
-                    class="text-base sm:text-lg font-bold leading-tight"
-                  >
-                    Download for Windows
-                  </div>
-                  <div
-                    id="hero-download-subline"
-                    class="text-xs text-sky-100/90 font-normal mt-0.5"
-                  >
-                    Setup Installer (.exe) • Free • ~112 MB
-                  </div>
+            <div class="flex items-center gap-3">
+              <span id="hero-os-icon" class="w-6 h-6 flex items-center justify-center shrink-0 text-white">
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.902-1.799"/></svg>
+              </span>
+              <div class="text-left">
+                <div
+                  id="hero-download-headline"
+                  class="text-base sm:text-lg font-bold leading-tight"
+                >
+                  Download for Windows
+                </div>
+                <div
+                  id="hero-download-subline"
+                  class="text-xs text-sky-100/90 font-normal mt-0.5"
+                >
+                  Setup Installer (.exe) • Free • ~112 MB
                 </div>
               </div>
-              <div
-                class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 group-hover:translate-y-0.5 transition-transform"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  />
-                </svg>
-              </div>
-            </a>
-
-            <!-- Secondary Quick Platform Links -->
-            <div
-              class="pt-2.5 pb-0.5 px-2 flex flex-wrap items-center justify-center gap-y-1.5 gap-x-3 text-xs text-slate-400 border-t border-white/[0.06] mt-2"
-            >
-              <span class="text-slate-500">Also available:</span>
-              <a
-                id="portable-quick-link"
-                href="https://github.com/healthOS/focus/releases/latest/download/Focus-Portable-1.0.0.exe"
-                class="hover:text-sky-300 transition-colors"
-              >
-                Portable (.exe)
-              </a>
-              <span class="text-slate-600">•</span>
-              <a
-                href="#download"
-                onclick="selectPlatformTab('mac')"
-                class="hover:text-sky-300 transition-colors"
-              >
-                macOS (.dmg)
-              </a>
-              <span class="text-slate-600">•</span>
-              <a
-                href="#download"
-                onclick="selectPlatformTab('linux')"
-                class="hover:text-sky-300 transition-colors"
-              >
-                Linux (.AppImage)
-              </a>
-              <span class="text-slate-600">•</span>
-              <a
-                href="#download"
-                class="text-sky-400 hover:text-sky-300 font-semibold transition-colors"
-              >
-                All formats ↓
-              </a>
             </div>
+            <div
+              class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center shrink-0 group-hover:translate-y-0.5 transition-transform"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                />
+              </svg>
+            </div>
+          </a>
+
+          <!-- Secondary Quick Platform Links -->
+          <div
+            class="pt-3 pb-0.5 px-2 flex flex-wrap items-center justify-center gap-y-1.5 gap-x-3 text-xs text-slate-400"
+          >
+            <span class="text-slate-500">Also available:</span>
+            <a
+              id="portable-quick-link"
+              href="https://github.com/healthOS/focus/releases/latest/download/Focus-Portable-1.0.0.exe"
+              class="hover:text-sky-300 transition-colors"
+            >
+              Portable (.exe)
+            </a>
+            <span class="text-slate-600">•</span>
+            <a
+              href="#download"
+              onclick="selectPlatformTab('mac')"
+              class="hover:text-sky-300 transition-colors"
+            >
+              macOS (.dmg)
+            </a>
+            <span class="text-slate-600">•</span>
+            <a
+              href="#download"
+              onclick="selectPlatformTab('linux')"
+              class="hover:text-sky-300 transition-colors"
+            >
+              Linux (.AppImage)
+            </a>
+            <span class="text-slate-600">•</span>
+            <a
+              href="#download"
+              class="text-sky-400 hover:text-sky-300 font-semibold transition-colors"
+            >
+              All formats ↓
+            </a>
           </div>
+        </div>
 
           <!-- Trust & Privacy Signals -->
           <div
@@ -385,307 +371,439 @@
             </span>
           </div>
         </div>
+
+        <!-- ====================================================================
+             Stageshow (benjitaylor/skills) Dark Hero Product Stage
+             Restrained palette • Single focal satellite • True app structure
+             ==================================================================== -->
+        <div class="mt-10 sm:mt-12 max-w-5xl mx-auto relative px-1 sm:px-4">
+          <!-- Hero Main App Window -->
+          <div
+            class="ss-window text-left bg-obsidian-950 border border-white/[0.08] rounded-xl shadow-2xl"
+          >
+            <!-- Window Title Bar -->
+            <div
+              class="ss-window-bar border-b border-white/[0.06] bg-obsidian-900/60 px-4 py-2 flex items-center justify-between"
+            >
+              <div class="ss-window-lights flex items-center gap-1.5">
+                <span class="ss-dot ss-dot-red"></span>
+                <span class="ss-dot ss-dot-yellow"></span>
+                <span class="ss-dot ss-dot-green"></span>
+                <span class="text-[11px] font-mono text-slate-500 ml-2">Focus</span>
+              </div>
+              <div class="text-xs text-slate-400 font-medium">
+                <span class="text-slate-400 font-mono text-[11px]">Thursday, Nov 20</span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-500 text-xs">
+                <span class="text-[10px] font-mono text-slate-500">Local SQLite</span>
+              </div>
+            </div>
+
+            <!-- Window Content Grid -->
+            <div
+              class="grid grid-cols-1 md:grid-cols-12 min-h-[400px] divide-y md:divide-y-0 md:divide-x divide-white/[0.06]"
+            >
+              <!-- Left Sidebar: Quiet Navigation (3 cols) -->
+              <div class="md:col-span-3 p-4 flex flex-col justify-between bg-obsidian-900/20">
+                <div class="space-y-1">
+                  <div
+                    class="px-2.5 py-1.5 rounded-lg bg-white/[0.06] text-white text-xs font-medium flex items-center gap-2"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                    <span>Today's Flow</span>
+                  </div>
+                  <div
+                    class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 text-xs font-medium flex items-center gap-2"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-transparent border border-slate-600"></span>
+                    <span>Day Review</span>
+                  </div>
+                  <div
+                    class="px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-slate-300 text-xs font-medium flex items-center gap-2"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-transparent border border-slate-600"></span>
+                    <span>Settings</span>
+                  </div>
+                </div>
+
+                <!-- Ambient Audio Indicator in Sidebar -->
+                <div class="pt-3 border-t border-white/[0.05] flex items-center justify-between text-xs text-slate-400">
+                  <span class="text-[11px]">Ambiance: Rain</span>
+                  <div class="sound-wave-bars">
+                    <div class="sound-bar"></div>
+                    <div class="sound-bar"></div>
+                    <div class="sound-bar"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Flow Canvas (9 cols) -->
+              <div class="md:col-span-9 p-5 sm:p-6 flex flex-col justify-between bg-obsidian-950">
+                <div>
+                  <!-- Section Header -->
+                  <div class="flex items-center justify-between mb-4">
+                    <div class="text-xs font-semibold uppercase tracking-wider text-slate-400">
+                      Active Flow Session
+                    </div>
+                    <div class="text-xs font-mono text-slate-300">
+                      Today: <strong class="text-white">5h 45m focused</strong>
+                    </div>
+                  </div>
+
+                  <!-- Active Focus Session Card -->
+                  <div class="p-4 rounded-xl bg-white/[0.02] border border-white/[0.08] mb-6">
+                    <div class="flex items-start justify-between gap-4">
+                      <div>
+                        <div class="flex items-center gap-2 mb-1">
+                          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                          <h3 class="text-base sm:text-lg font-bold text-white tracking-tight">
+                            Core Launch Refactor
+                          </h3>
+                        </div>
+                        <p class="text-xs text-slate-400">
+                          Target: 45 min • Started at 2:00 PM • focus.sqlite
+                        </p>
+                      </div>
+                      <div class="text-right">
+                        <div
+                          id="hero-live-timer"
+                          class="text-2xl sm:text-3xl font-mono font-bold text-white tracking-tight"
+                        >
+                          34:12
+                        </div>
+                        <span class="text-[10px] font-mono text-slate-500 uppercase tracking-wider">
+                          Counting down
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- 24-Hour Timeline Ribbon -->
+                  <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-[10px] font-mono text-slate-500">
+                      <span>09:00</span>
+                      <span>12:00</span>
+                      <span>15:00</span>
+                      <span>18:00</span>
+                    </div>
+                    <!-- Timeline Bar: Calm Sky Blue vs Charcoal Breaks -->
+                    <div class="h-4 w-full rounded-md bg-black/60 border border-white/[0.08] p-0.5 flex gap-1 overflow-hidden">
+                      <div class="h-full rounded bg-sky-500/80" style="width: 32%" title="Deep Architecture (1h 50m)"></div>
+                      <div class="h-full rounded bg-white/[0.08]" style="width: 8%" title="Lunch Break (25m)"></div>
+                      <div class="h-full rounded bg-sky-500/80" style="width: 25%" title="Release Build (1h 25m)"></div>
+                      <div class="h-full rounded bg-white/[0.08]" style="width: 7%" title="Break (20m)"></div>
+                      <div class="h-full rounded bg-sky-400" style="width: 28%" title="Core Launch Refactor (Active)"></div>
+                    </div>
+                  </div>
+
+                  <!-- Earlier Completed Sessions -->
+                  <div class="mt-6 space-y-2">
+                    <div class="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                      Completed Today
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-white/[0.015] border border-white/[0.04] flex items-center justify-between text-xs text-slate-300">
+                      <span>Architecture & local storage audit</span>
+                      <span class="font-mono text-slate-400 text-[11px]">1h 15m</span>
+                    </div>
+                    <div class="p-2.5 rounded-lg bg-white/[0.015] border border-white/[0.04] flex items-center justify-between text-xs text-slate-300">
+                      <span>Offline SQLite verification & test runner</span>
+                      <span class="font-mono text-slate-400 text-[11px]">45m</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Footer Summary Bar -->
+                <div class="mt-6 pt-3 border-t border-white/[0.05] flex items-center justify-between text-xs text-slate-400">
+                  <span>8 Check-ins logged</span>
+                  <span class="font-mono text-slate-500">100% Offline • Zero Telemetry</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SATELLITE: Floating Desktop Timer HUD Widget (Single, Clean, Straddles Top-Right) -->
+          <div
+            class="ss-satellite -top-4 sm:-top-5 -right-1 sm:-right-4 bg-obsidian-900/95 border border-white/15 p-2.5 sm:p-3 rounded-xl shadow-xl flex items-center gap-3"
+          >
+            <div
+              class="w-7 h-7 rounded-lg bg-white/[0.06] border border-white/10 flex items-center justify-center shrink-0"
+            >
+              <img src="assets/icon.svg" class="w-4 h-4" alt="Focus icon" />
+            </div>
+            <div>
+              <div class="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 uppercase tracking-wider">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                <span>Deep Work</span>
+              </div>
+              <div class="text-sm font-mono font-bold text-white leading-tight">
+                34:12 <span class="text-[10px] font-sans font-normal text-slate-500">/ 45m</span>
+              </div>
+            </div>
+            <div class="pl-2 border-l border-white/10 flex items-center gap-1 text-[11px]">
+              <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9M16 19v2m-4-2v2m-4-2v2"/></svg>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Minimal, Static App Demo & Workflow Showcase -->
-    <section id="preview" class="py-14 md:py-20 relative border-t border-white/[0.06]">
+    <!-- Stageshow Feature Bento Grid (benjitaylor/skills bento architecture) -->
+    <section id="features" class="py-16 md:py-24 relative border-t border-white/[0.06]">
       <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <!-- Section Header -->
-        <div class="text-center max-w-2xl mx-auto mb-12">
-          <span
-            class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
-            >How It Works</span
-          >
-          <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
-            Three simple habits. Zero overhead.
-          </h2>
-          <p class="text-slate-400 text-sm sm:text-base">
-            Focus stays out of your way until you need it. Here is what your day looks like:
-          </p>
-        </div>
-
-        <!-- 3 Workflow Showcase Cards (Clean static UI mockups) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <!-- Card 1: The Gentle Check-in -->
-          <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-3 text-xs">
-                <span class="font-bold text-sky-400 uppercase tracking-wider">1. The Prompt</span>
-                <span class="text-slate-500 font-mono">Every 30m</span>
-              </div>
-              <h3 class="text-base font-bold text-white mb-1.5">Gentle Check-in</h3>
-              <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                A quiet card surfaces. Type a quick note about what you're doing, or hit Snooze if
-                you're deep in flow.
-              </p>
-
-              <!-- Static UI Mockup of Prompt -->
-              <div
-                class="p-3.5 rounded-xl bg-obsidian-900 border border-sky-500/25 shadow-lg space-y-3"
-              >
-                <div
-                  class="flex items-center justify-between text-xs border-b border-white/10 pb-2"
-                >
-                  <span class="flex items-center gap-1.5 font-semibold text-white">
-                    <span class="w-2 h-2 rounded-full bg-sky-400"></span>
-                    Focus Check-in
-                  </span>
-                  <span class="text-[11px] text-slate-500">Prompt #4 today</span>
-                </div>
-                <div class="text-xs text-slate-300">What have you been working on recently?</div>
-                <div
-                  class="px-2.5 py-1.5 rounded-lg bg-black/40 border border-white/10 text-xs text-slate-200"
-                >
-                  Polished app release & updated landing page
-                </div>
-                <div class="flex items-center justify-between pt-1 text-[11px]">
-                  <span class="px-2 py-0.5 rounded bg-sky-500/20 text-sky-300 font-medium"
-                    >🎯 Core Launch</span
-                  >
-                  <span class="px-2.5 py-1 rounded bg-sky-500 text-white font-semibold shadow-sm"
-                    >Log Note</span
-                  >
-                </div>
-              </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
-              Takes 5 seconds • Fully customizable intervals
-            </div>
-          </div>
-
-          <!-- Card 2: Floating Timer HUD -->
-          <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-3 text-xs">
-                <span class="font-bold text-indigo-400 uppercase tracking-wider"
-                  >2. In The Zone</span
-                >
-                <span class="text-slate-500 font-mono">Desktop Widget</span>
-              </div>
-              <h3 class="text-base font-bold text-white mb-1.5">Always-in-Sight Timer</h3>
-              <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                A tiny, elegant pill rests on your desktop. Glance at your elapsed flow anytime
-                without switching windows.
-              </p>
-
-              <!-- Static UI Mockup of Floating Pill on Desktop -->
-              <div
-                class="h-36 rounded-xl bg-gradient-to-tr from-slate-950 via-slate-900 to-indigo-950/40 border border-white/10 p-4 flex flex-col justify-center items-center relative overflow-hidden"
-              >
-                <div class="absolute inset-0 bg-grid-pattern opacity-10 pointer-events-none"></div>
-                <!-- Pill -->
-                <div
-                  class="relative z-10 px-4 py-2.5 rounded-xl bg-obsidian-900/95 border border-sky-400/40 shadow-xl flex items-center gap-3"
-                >
-                  <div class="w-6 h-6 rounded-lg bg-sky-500/20 flex items-center justify-center">
-                    <img src="assets/icon.svg" class="w-4 h-4" alt="Icon" />
-                  </div>
-                  <div>
-                    <div
-                      class="text-[10px] text-slate-400 font-semibold uppercase flex items-center gap-1"
-                    >
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                      Deep Work
-                    </div>
-                    <div class="text-xs font-mono font-bold text-sky-300">00:42:15</div>
-                  </div>
-                  <div class="text-[10px] text-slate-500 border-l border-white/10 pl-2">
-                    Target: 1h
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
-              Pins anywhere • Non-distracting • Includes ambient sounds
-            </div>
-          </div>
-
-          <!-- Card 3: End of Day Review -->
-          <div
-            class="p-5 rounded-2xl bg-white/[0.02] border border-white/10 flex flex-col justify-between hover:border-sky-500/30 transition-all shadow-xl"
-          >
-            <div>
-              <div class="flex items-center justify-between mb-3 text-xs">
-                <span class="font-bold text-emerald-400 uppercase tracking-wider">3. Wrap Up</span>
-                <span class="text-slate-500 font-mono">5:30 PM</span>
-              </div>
-              <h3 class="text-base font-bold text-white mb-1.5">Visual Day Summary</h3>
-              <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                At the end of your day, see an honest, color-coded timeline. Close your laptop
-                knowing exactly what you did.
-              </p>
-
-              <!-- Static UI Mockup of Timeline Summary -->
-              <div
-                class="p-3.5 rounded-xl bg-obsidian-900 border border-white/10 shadow-lg space-y-2.5"
-              >
-                <div class="flex items-center justify-between text-xs text-slate-400">
-                  <span class="font-semibold text-white">Today's Flow</span>
-                  <span class="text-emerald-400 font-bold">5h 45m Productive</span>
-                </div>
-                <!-- Timeline Bar -->
-                <div
-                  class="h-4 w-full rounded-md bg-black/40 border border-white/10 p-0.5 flex gap-1 overflow-hidden"
-                >
-                  <div
-                    class="h-full rounded bg-sky-500"
-                    style="width: 40%"
-                    title="Deep Architecture"
-                  ></div>
-                  <div
-                    class="h-full rounded bg-amber-500/80"
-                    style="width: 10%"
-                    title="Walk Break"
-                  ></div>
-                  <div
-                    class="h-full rounded bg-indigo-500"
-                    style="width: 35%"
-                    title="Engineering"
-                  ></div>
-                  <div
-                    class="h-full rounded bg-emerald-500"
-                    style="width: 15%"
-                    title="Review"
-                  ></div>
-                </div>
-                <!-- Metrics -->
-                <div class="grid grid-cols-2 gap-2 pt-1 text-[11px]">
-                  <div class="px-2 py-1 rounded bg-white/[0.03] border border-white/5">
-                    <span class="text-slate-400">Check-ins:</span>
-                    <span class="font-bold text-white ml-1">8 logged</span>
-                  </div>
-                  <div class="px-2 py-1 rounded bg-white/[0.03] border border-white/5">
-                    <span class="text-slate-400">Goals:</span>
-                    <span class="font-bold text-emerald-400 ml-1">4 of 4 completed</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-slate-500">
-              100% offline SQLite • No timesheets • No guilt
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Key Features Grid (Informal, friendly, clear) -->
-    <section id="features" class="py-16 md:py-24 relative">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6">
         <div class="text-center max-w-2xl mx-auto mb-14">
           <span
             class="text-xs font-semibold tracking-wider text-sky-400 uppercase bg-sky-500/10 px-3 py-1 rounded-full border border-sky-500/20"
-            >Features</span
+            >Feature Architecture</span
           >
           <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
-            Everything you need. Nothing you don't.
+            Crafted for everyday flow.
           </h2>
           <p class="text-slate-300 text-sm sm:text-base">
-            No complex multi-tier project tracking or overwhelming setup. Just a simple helper that
-            sits quietly on your computer.
+            No bloated enterprise surveillance or overwhelming setup. Just calm, private habits
+            designed to stay out of your way until you need them.
           </p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          <!-- Feature 1 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 mb-4 group-hover:scale-105 transition-transform text-lg"
-            >
-              💬
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Friendly Check-ins</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Every 20 to 40 minutes, a small prompt asks what you're working on. Type a sentence,
-              tag a goal, or snooze if you're in deep flow.
+        <!-- Master Bento Grid: 1 Hero UI + 1 Stat + 1 Audio Object + 1 Goal Component + 1 Diagram Strip -->
+        <div class="focus-bento-grid">
+          <!-- TILE 1: Hero UI (2 columns) - The Gentle Prompt -->
+          <div class="fb-tile fb-hero-tile group">
+            <p class="fb-copy">
+              <strong>Gentle check-ins.</strong> A quiet card surfaces every 20–40 minutes asking
+              what you're working on. Type a sentence, hit log, or snooze if you're deep in
+              flow.
             </p>
+            <div
+              class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.08] space-y-3 mt-auto"
+            >
+              <div
+                class="flex items-center justify-between text-xs border-b border-white/[0.06] pb-2.5"
+              >
+                <div class="flex items-center gap-2">
+                  <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+                  <span class="font-medium text-white">Focus Check-in</span>
+                  <span class="text-[10px] text-slate-500 font-mono">Prompt #5 today</span>
+                </div>
+                <div class="text-[11px] text-slate-500 font-mono">Interval: 30 min</div>
+              </div>
+              <div class="text-xs text-slate-300 font-medium">
+                What have you been working on recently?
+              </div>
+              <div
+                class="px-3 py-2 rounded-lg bg-black/50 border border-white/[0.08] text-xs text-slate-200"
+              >
+                Refactored SQLite schema & verified zero cloud calls
+              </div>
+              <div class="flex items-center justify-between pt-1 text-xs">
+                <span class="text-[11px] text-slate-500 hover:text-slate-400 cursor-pointer">Snooze 15m</span>
+                <button
+                  class="px-3.5 py-1.5 rounded-lg bg-white text-slate-950 font-semibold text-xs hover:bg-slate-200 transition-all shadow-sm"
+                >
+                  Log Note (↵ Enter)
+                </button>
+              </div>
+            </div>
           </div>
 
-          <!-- Feature 2 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 mb-4 group-hover:scale-105 transition-transform text-lg"
-            >
-              🪟
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Floating Timer Widget</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              A gentle floating pill rests in the corner of your desktop so you can glance at your
-              session progress without switching apps.
+          <!-- TILE 2: Stat Tile (1 column) - Zero Surveillance -->
+          <div class="fb-tile group">
+            <p class="fb-copy">
+              <strong>Zero surveillance.</strong> Your thoughts, keystrokes, and work notes stay
+              strictly on your machine.
             </p>
+            <div
+              class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.08] flex flex-col justify-between mt-auto space-y-3"
+            >
+              <div>
+                <div class="fb-stat-number text-white">0%</div>
+                <div class="text-xs font-semibold text-slate-400 mt-1">
+                  Cloud Transmission & Telemetry
+                </div>
+              </div>
+              <div class="space-y-1.5 pt-2 border-t border-white/[0.06] text-xs text-slate-400">
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-300 font-bold">✓</span>
+                  <span>Zero screenshot captures</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-300 font-bold">✓</span>
+                  <span>Zero keystroke loggers</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span class="text-slate-300 font-bold">✓</span>
+                  <span>100% offline SQLite storage</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Feature 3 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-4 group-hover:scale-105 transition-transform text-lg"
-            >
-              🎯
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Simple Morning Goals</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Jot down 2 or 3 intentions each morning, set simple target hours, and check them off
-              as you complete them throughout the day.
+          <!-- TILE 3: Audio Object Tile (1 column) - Ambient Soundscapes -->
+          <div class="fb-tile group">
+            <p class="fb-copy">
+              <strong>Ambient soundscapes.</strong> Built-in nature and generative audio mask office
+              noise and deepen concentration.
             </p>
+            <div
+              class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.08] mt-auto space-y-3"
+            >
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400 font-medium">Ambiance:</span>
+                <div class="sound-wave-bars">
+                  <div class="sound-bar"></div>
+                  <div class="sound-bar"></div>
+                  <div class="sound-bar"></div>
+                  <div class="sound-bar"></div>
+                  <div class="sound-bar"></div>
+                </div>
+              </div>
+              <!-- Sound Track Pills -->
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div
+                  class="sound-track-pill active px-2.5 py-2 rounded-lg bg-white/[0.06] border border-white/10 flex items-center gap-2"
+                >
+                  <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 16.2A4.5 4.5 0 0017.5 8h-1.8A7 7 0 104 14.9M16 19v2m-4-2v2m-4-2v2"/></svg>
+                  <span class="font-medium text-white text-[11px]">Tokyo Rain</span>
+                </div>
+                <div
+                  class="sound-track-pill px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-center gap-2 hover:border-white/20 text-slate-400"
+                >
+                  <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 2L6 10h3l-4 6h5v4h4v-4h5l-4-6h3L12 2z"/></svg>
+                  <span class="font-medium text-[11px]">Nordic Grove</span>
+                </div>
+                <div
+                  class="sound-track-pill px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-center gap-2 hover:border-white/20 text-slate-400"
+                >
+                  <svg class="w-3.5 h-3.5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                  <span class="font-medium text-[11px]">Deep Space</span>
+                </div>
+                <div
+                  class="sound-track-pill px-2.5 py-2 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-center gap-2 hover:border-white/20 text-slate-400"
+                >
+                  <svg class="w-3.5 h-3.5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M2 12c2.5-3 5.5-3 8 0s5.5 3 8 0 4-2 4-2M2 17c2.5-3 5.5-3 8 0s5.5 3 8 0 4-2 4-2"/></svg>
+                  <span class="font-medium text-[11px]">Ocean Stream</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Feature 4 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-4 group-hover:scale-105 transition-transform text-lg"
-            >
-              📊
-            </div>
-            <h3 class="text-base font-bold text-white mb-2">Visual Day Summary</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Wrap up your day with a clear, color-coded visual timeline of your productive hours,
-              break intervals, and accomplishments.
+          <!-- TILE 4: Component Tile (2 columns on wide screens) - Smart Goal Breakdown -->
+          <div class="fb-tile fb-span-2 group">
+            <p class="fb-copy">
+              <strong>Goal decomposition.</strong> Turn overwhelming milestones into actionable
+              25-minute sprints with ease.
             </p>
+            <div
+              class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.08] mt-auto space-y-3"
+            >
+              <div class="flex items-center justify-between">
+                <div>
+                  <div class="text-xs font-semibold text-white">Ship v1.0.0 Release</div>
+                  <div class="text-[10px] text-slate-400 font-mono">3 of 4 sprints completed</div>
+                </div>
+                <div class="px-2 py-0.5 rounded text-[10px] font-mono bg-white/[0.06] text-slate-300">
+                  75% complete
+                </div>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[11px]">
+                <div
+                  class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] text-slate-400 line-through flex justify-between items-center"
+                >
+                  <span>SQLite schema</span>
+                  <span class="font-mono text-slate-500">45m</span>
+                </div>
+                <div
+                  class="p-2.5 rounded-lg bg-white/[0.02] border border-white/[0.04] text-slate-400 line-through flex justify-between items-center"
+                >
+                  <span>Audio engine</span>
+                  <span class="font-mono text-slate-500">30m</span>
+                </div>
+                <div
+                  class="p-2.5 rounded-lg bg-white/[0.06] border border-white/[0.1] text-white flex justify-between items-center font-medium"
+                >
+                  <span>Release notes</span>
+                  <span class="font-mono text-sky-400">Active</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <!-- Feature 5 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
-            <div
-              class="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400 mb-4 group-hover:scale-105 transition-transform text-lg"
-            >
-              🔒
+          <!-- TILE 5: Diagram / Timeline Strip (Full 3-column span) -->
+          <div class="fb-tile fb-full-strip group">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+              <p class="fb-copy mb-0">
+                <strong>Visual day summary.</strong> Close your laptop at 6 PM with total clarity,
+                knowing exactly where your energy and hours went.
+              </p>
+              <div
+                class="flex items-center gap-2 text-xs font-mono font-medium text-slate-300 bg-white/[0.04] px-3 py-1 rounded-lg border border-white/[0.06] shrink-0 self-start sm:self-auto"
+              >
+                <span>5h 45m Focused Flow</span>
+              </div>
             </div>
-            <h3 class="text-base font-bold text-white mb-2">100% Private (No Spying)</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Never takes screenshots, never records keystrokes, and never inspects browser tabs.
-              All data stays strictly in your local SQLite.
-            </p>
-          </div>
 
-          <!-- Feature 6 -->
-          <div
-            class="p-6 rounded-2xl bg-white/[0.02] hover:bg-white/[0.04] border border-white/10 hover:border-sky-500/30 transition-all group"
-          >
+            <!-- Full-width visual 24h timeline ribbon -->
             <div
-              class="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 mb-4 group-hover:scale-105 transition-transform text-lg"
+              class="p-4 rounded-xl bg-obsidian-950 border border-white/[0.08] space-y-3"
             >
-              🎧
+              <div
+                class="flex items-center justify-between text-[11px] font-mono text-slate-500 px-0.5"
+              >
+                <span>09:00</span>
+                <span>11:00</span>
+                <span>13:00</span>
+                <span>15:00</span>
+                <span>17:00</span>
+                <span>19:00</span>
+              </div>
+
+              <!-- Segmented Timeline Bar: Calm sky blue vs charcoal breaks -->
+              <div
+                class="h-5 w-full rounded-md bg-black/60 border border-white/[0.08] p-0.5 flex gap-1 overflow-hidden"
+              >
+                <div
+                  class="h-full rounded bg-sky-500/80"
+                  style="width: 30%"
+                  title="Deep Architecture: SQLite (1h 50m)"
+                ></div>
+                <div
+                  class="h-full rounded bg-white/[0.06]"
+                  style="width: 8%"
+                  title="Lunch Break (25m)"
+                ></div>
+                <div
+                  class="h-full rounded bg-sky-500/80"
+                  style="width: 26%"
+                  title="Focus Timer Engine (1h 20m)"
+                ></div>
+                <div
+                  class="h-full rounded bg-white/[0.06]"
+                  style="width: 6%"
+                  title="Break (20m)"
+                ></div>
+                <div
+                  class="h-full rounded bg-sky-400"
+                  style="width: 30%"
+                  title="Core Launch Refactor (Active Session)"
+                ></div>
+              </div>
+
+              <div
+                class="flex flex-wrap items-center justify-between gap-y-2 pt-2 text-xs text-slate-400 border-t border-white/[0.04]"
+              >
+                <div class="flex items-center gap-4 text-[11px]">
+                  <span class="flex items-center gap-1.5"
+                    ><span class="w-2 h-2 rounded-full bg-sky-400"></span> Deep Focus (4h 35m)</span
+                  >
+                  <span class="flex items-center gap-1.5"
+                    ><span class="w-2 h-2 rounded-full bg-white/[0.1]"></span> Rest Breaks (45m)</span
+                  >
+                </div>
+                <div class="text-[11px] font-mono text-slate-500">
+                  Data source: <span class="text-slate-300">focus.sqlite</span> (100% offline)
+                </div>
+              </div>
             </div>
-            <h3 class="text-base font-bold text-white mb-2">Calming Ambient Audio</h3>
-            <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
-              Built-in gentle rain, brown noise, and ocean soundscapes mask room chatter and
-              background noise when you need deep focus.
-            </p>
           </div>
         </div>
       </div>
@@ -699,8 +817,8 @@
       <div class="max-w-4xl mx-auto px-4 sm:px-6">
         <div class="text-center max-w-xl mx-auto mb-12">
           <span
-            class="text-xs font-semibold tracking-wider text-rose-400 uppercase bg-rose-500/10 px-3 py-1 rounded-full border border-rose-500/20"
-            >Your Data Belongs to You</span
+            class="text-xs font-semibold tracking-wider text-slate-300 uppercase bg-white/[0.04] px-3 py-1 rounded-full border border-white/10"
+            >Local-First Architecture</span
           >
           <h2 class="text-2xl sm:text-4xl font-bold text-white mt-3 mb-3">
             Focus vs. Invasive Surveillance
@@ -733,40 +851,67 @@
               </thead>
               <tbody class="divide-y divide-white/[0.06] text-xs sm:text-sm">
                 <tr>
-                  <td class="py-3 px-5 font-medium text-white">Screen Screenshots</td>
+                  <td class="py-3 px-5 font-medium text-white">Screen Captures</td>
                   <td
                     class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
                   >
-                    ❌ Never (Zero code for screenshots)
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                      Never (Zero code for capture)
+                    </span>
                   </td>
-                  <td class="py-3 px-5 text-rose-400">⚠️ Every 5-10 minutes</td>
+                  <td class="py-3 px-5 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                      Captured every 5–10 min
+                    </span>
+                  </td>
                 </tr>
                 <tr>
                   <td class="py-3 px-5 font-medium text-white">Keystroke & Mouse Logging</td>
                   <td
                     class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
                   >
-                    ❌ Never (Zero keylogging)
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                      Never (Zero keylogging)
+                    </span>
                   </td>
-                  <td class="py-3 px-5 text-rose-400">⚠️ Tracks activity %</td>
+                  <td class="py-3 px-5 text-rose-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-3.5 h-3.5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                      Monitors activity % & idle time
+                    </span>
+                  </td>
                 </tr>
                 <tr>
-                  <td class="py-3 px-5 font-medium text-white">Where is data stored?</td>
+                  <td class="py-3 px-5 font-medium text-white">Data Storage Location</td>
                   <td
                     class="py-3 px-5 font-bold text-sky-300 bg-sky-500/5 border-x border-sky-500/20"
                   >
-                    💻 100% Local SQLite Database
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                      100% Local SQLite Database (.db)
+                    </span>
                   </td>
-                  <td class="py-3 px-5 text-slate-400">☁️ Remote Corporate Cloud</td>
+                  <td class="py-3 px-5 text-slate-400">
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-3.5 h-3.5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 00-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                      Remote Corporate Cloud Servers
+                    </span>
+                  </td>
                 </tr>
                 <tr>
-                  <td class="py-3 px-5 font-medium text-white">Works completely offline?</td>
+                  <td class="py-3 px-5 font-medium text-white">Offline Capability</td>
                   <td
                     class="py-3 px-5 font-bold text-emerald-400 bg-sky-500/5 border-x border-sky-500/20"
                   >
-                    ✓ Yes, 100% offline
+                    <span class="inline-flex items-center gap-1.5">
+                      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                      Fully functional offline
+                    </span>
                   </td>
-                  <td class="py-3 px-5 text-slate-400">Requires connection</td>
+                  <td class="py-3 px-5 text-slate-400">Requires continuous internet connection</td>
                 </tr>
                 <tr>
                   <td class="py-3 px-5 font-medium text-white">Cost & License</td>
@@ -775,7 +920,7 @@
                   >
                     100% Free & Open Source (MIT)
                   </td>
-                  <td class="py-3 px-5 text-slate-400">$10 - $30 / user / month</td>
+                  <td class="py-3 px-5 text-slate-400">$10 – $35 / user / month</td>
                 </tr>
               </tbody>
             </table>
@@ -815,31 +960,35 @@
 
         <!-- Platform Selection Filter Tabs -->
         <div
-          class="flex items-center justify-center gap-1.5 mb-8 overflow-x-auto p-1 bg-black/40 rounded-xl border border-white/10 max-w-sm mx-auto"
+          class="flex items-center justify-center gap-1.5 mb-8 overflow-x-auto p-1 bg-black/40 rounded-xl border border-white/10 max-w-md mx-auto"
         >
           <button
-            class="platform-tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-sky-500 shadow-md shadow-sky-500/30 transition-all"
+            class="platform-tab-btn active px-3.5 py-1.5 rounded-lg text-xs font-semibold text-white bg-sky-500 shadow-md shadow-sky-500/30 transition-all flex items-center gap-1.5"
             data-os="windows"
           >
-            🪟 Windows
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.902-1.799"/></svg>
+            <span>Windows</span>
           </button>
           <button
-            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5"
             data-os="mac"
           >
-            🍏 macOS
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.64-.78 1.08-1.86.96-2.95-1 .04-2.16.66-2.84 1.45-.58.67-1.1 1.76-.96 2.82 1.11.09 2.2-.56 2.84-1.32z"/></svg>
+            <span>macOS</span>
           </button>
           <button
-            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5"
             data-os="linux"
           >
-            🐧 Linux
+            <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12.001 2c-2.4 0-4.001 1.6-4.001 4 0 1.2.4 2.2 1.1 3-.7.5-1.5 1.3-1.9 2.2-.4.9-.5 2-.5 3.3 0 1.3.3 2.4.9 3.3.6.9 1.4 1.5 2.4 1.8-.4.5-.7 1.1-.7 1.9 0 1.4 1.1 2.5 2.5 2.5h.4c1.4 0 2.5-1.1 2.5-2.5 0-.8-.3-1.4-.7-1.9 1-.3 1.8-.9 2.4-1.8.6-.9.9-2 .9-3.3 0-1.3-.1-2.4-.5-3.3-.4-.9-1.2-1.7-1.9-2.2.7-.8 1.1-1.8 1.1-3 0-2.4-1.601-4-4.001-4z"/></svg>
+            <span>Linux</span>
           </button>
           <button
-            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all"
+            class="platform-tab-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all flex items-center gap-1.5"
             data-os="source"
           >
-            ⚡ Source
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>Source</span>
           </button>
         </div>
 
@@ -851,7 +1000,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">🪟</span>
+                <div class="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center">
+                  <svg class="w-4 h-4 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.902-1.799"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-sky-500/20 text-sky-300 border border-sky-500/30"
                   >Recommended</span
@@ -907,7 +1058,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">💼</span>
+                <div class="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
                   >Zero Install</span
@@ -963,7 +1116,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">🍏</span>
+                <div class="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 fill-current text-slate-200" viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.36c.64-.78 1.08-1.86.96-2.95-1 .04-2.16.66-2.84 1.45-.58.67-1.1 1.76-.96 2.82 1.11.09 2.2-.56 2.84-1.32z"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
                   >Universal</span
@@ -1017,7 +1172,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">🐧</span>
+                <div class="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 fill-current text-slate-300" viewBox="0 0 24 24"><path d="M12.001 2c-2.4 0-4.001 1.6-4.001 4 0 1.2.4 2.2 1.1 3-.7.5-1.5 1.3-1.9 2.2-.4.9-.5 2-.5 3.3 0 1.3.3 2.4.9 3.3.6.9 1.4 1.5 2.4 1.8-.4.5-.7 1.1-.7 1.9 0 1.4 1.1 2.5 2.5 2.5h.4c1.4 0 2.5-1.1 2.5-2.5 0-.8-.3-1.4-.7-1.9 1-.3 1.8-.9 2.4-1.8.6-.9.9-2 .9-3.3 0-1.3-.1-2.4-.5-3.3-.4-.9-1.2-1.7-1.9-2.2.7-.8 1.1-1.8 1.1-3 0-2.4-1.601-4-4.001-4z"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
                   >Universal Linux</span
@@ -1069,7 +1226,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">📦</span>
+                <div class="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-white/10 text-slate-300 border border-white/15"
                   >Debian / Ubuntu</span
@@ -1119,7 +1278,9 @@
           >
             <div>
               <div class="flex items-center justify-between mb-3">
-                <span class="text-2xl">💻</span>
+                <div class="w-8 h-8 rounded-lg bg-white/[0.05] border border-white/10 flex items-center justify-center">
+                  <svg class="w-4 h-4 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                </div>
                 <span
                   class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
                   >Developers</span
@@ -1170,7 +1331,9 @@
             id="checksum-toggle-btn"
           >
             <div class="flex items-center gap-2.5">
-              <span class="text-lg">🔐</span>
+              <div class="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </div>
               <div>
                 <div class="text-xs sm:text-sm font-bold text-white">
                   SHA-512 Checksums & Verification
