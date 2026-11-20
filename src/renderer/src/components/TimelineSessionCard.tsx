@@ -30,7 +30,10 @@ export const TimelineSessionCard = React.memo(function TimelineSessionCard({
   const config = getLogThemeConfig(log, goals)
   const isBreak = log.productivity === 'break' || log.text?.toLowerCase().includes('break')
   const isTask = Boolean(log.goalId || log.goalTitle)
-  const displayMinutes = log.durationMinutes || log.productiveMinutes
+  const displayMinutes =
+    !isBreak && typeof log.productiveMinutes === 'number' && log.productiveMinutes > 0
+      ? log.productiveMinutes
+      : log.durationMinutes || log.productiveMinutes
   const durationText = displayMinutes && displayMinutes > 0 ? formatMinutes(displayMinutes) : ''
 
   const clockSpanMinutes =

@@ -38,17 +38,7 @@ export function FocusSessionProvider({
   defaultIntervalMinutes
 }: FocusSessionProviderProps): React.JSX.Element {
   const toast = useToast()
-  const { startAmbient, playChime, playAudio, pauseAudio, audioPlaying, userPaused } =
-    useFocusSessionAudio()
-  const audioPlayingRef = useRef(audioPlaying)
-  audioPlayingRef.current = audioPlaying
-  const userPausedRef = useRef(userPaused)
-  userPausedRef.current = userPaused
-  const wasAudioPlayingOnPauseRef = useRef(false)
-
-  const isAudioActive = useCallback((): boolean => {
-    return Boolean(audioPlayingRef.current)
-  }, [])
+  const { playChime } = useFocusSessionAudio()
 
   const defaultIntervalMinutesRef = useRef<number>(defaultIntervalMinutes || 45)
   const prevIntervalRef = useRef<number>(defaultIntervalMinutes || 45)
@@ -550,13 +540,6 @@ export function FocusSessionProvider({
       const now = Date.now()
       pauseStartEpochRef.current = now
 
-      if (isAudioActive()) {
-        wasAudioPlayingOnPauseRef.current = true
-        pauseAudio()
-      } else {
-        wasAudioPlayingOnPauseRef.current = false
-      }
-
       // Note time of green task:
       // If actively focusing on a task (not a break) and worked >= 40 seconds:
       // Record/log the focus session segment into the daily logs.
@@ -650,7 +633,7 @@ export function FocusSessionProvider({
         )
       }
     }
-  }, [broadcastTaskbarTimer, isAudioActive, pauseAudio, toast])
+  }, [broadcastTaskbarTimer, toast])
 
   const resumeFocus = useCallback(async () => {
     const { isPaused, isActive, isBreak, totalSeconds, activeGoal } =
@@ -698,10 +681,6 @@ export function FocusSessionProvider({
         useFocusSessionStore.setState({ startedAt: new Date(now).toISOString() })
       }
       hasNotedOnPauseRef.current = false
-      if (wasAudioPlayingOnPauseRef.current && !userPausedRef.current) {
-        playAudio()
-        wasAudioPlayingOnPauseRef.current = false
-      }
       useFocusSessionStore.setState({ isPaused: false, pauseStartEpoch: 0 })
       if (isActive) {
         broadcastTaskbarTimer(
@@ -714,7 +693,7 @@ export function FocusSessionProvider({
         )
       }
     }
-  }, [broadcastTaskbarTimer, playAudio])
+  }, [broadcastTaskbarTimer])
 
   const togglePause = useCallback(() => {
     const { isPaused } = useFocusSessionStore.getState()
@@ -758,7 +737,6 @@ export function FocusSessionProvider({
       const targetSec = targetMins * 60
       const now = Date.now()
 
-      wasAudioPlayingOnPauseRef.current = false
       sessionStartEpochRef.current = now
       pauseStartEpochRef.current = 0
       accumulatedPausedMsRef.current = 0
@@ -792,7 +770,6 @@ export function FocusSessionProvider({
 
       playChime('start')
       broadcastTaskbarTimer(true, false, false, targetSec, targetSec, goal ?? null)
-      startAmbient()
 
       // Automatically promote to In Progress if currently planned
       if (goal && goal.status === 'planned' && onUpdateDailyGoalRef.current) {
@@ -810,9 +787,7 @@ export function FocusSessionProvider({
       }
 
       toast.success(
-        userPausedRef.current
-          ? `Focus timer started for ${formatMinutes(targetMins)}.`
-          : `Focus timer started for ${formatMinutes(targetMins)}. Ambient engine engaged.`,
+        `Focus timer started for ${formatMinutes(targetMins)}.`,
         goal ? `Focusing: ${goal.title}` : 'Focusing'
       )
     },
@@ -821,7 +796,6 @@ export function FocusSessionProvider({
       broadcastTaskbarTimer,
       playChime,
       resumeFocus,
-      startAmbient,
       toast,
       logEmptyInProgressBreak
     ]
@@ -843,7 +817,6 @@ export function FocusSessionProvider({
 
       const sec = breakMinutes * 60
       const now = Date.now()
-      wasAudioPlayingOnPauseRef.current = false
       sessionStartEpochRef.current = now
       pauseStartEpochRef.current = 0
       accumulatedPausedMsRef.current = 0
@@ -874,22 +847,11 @@ export function FocusSessionProvider({
 
       timerControlRef.current?.setTimer(sec, 0, sec)
 
-      if (isAudioActive()) {
-        pauseAudio()
-      }
       playChime('break')
       broadcastTaskbarTimer(true, false, true, sec, sec, null)
       toast.info(`Time for a quick recharge (${breakMinutes}m).`, 'Break Started')
     },
-    [
-      logActiveTaskElapsed,
-      broadcastTaskbarTimer,
-      playChime,
-      isAudioActive,
-      pauseAudio,
-      toast,
-      logEmptyInProgressBreak
-    ]
+    [logActiveTaskElapsed, broadcastTaskbarTimer, playChime, toast, logEmptyInProgressBreak]
   )
 
   const startAfkBreak = useCallback(
@@ -899,7 +861,6 @@ export function FocusSessionProvider({
       }
       const now = startEpoch && startEpoch > 0 ? startEpoch : Date.now()
       afkBreakStartEpochRef.current = now
-      wasAudioPlayingOnPauseRef.current = false
       sessionStartEpochRef.current = now
       pauseStartEpochRef.current = 0
       accumulatedPausedMsRef.current = 0
@@ -934,9 +895,6 @@ export function FocusSessionProvider({
 
       timerControlRef.current?.setTimer(0, 0, 0)
 
-      if (isAudioActive()) {
-        pauseAudio()
-      }
       playChime('break')
       broadcastTaskbarTimer(true, false, true, 0, 0, null, {
         isAfk: true,
@@ -945,7 +903,7 @@ export function FocusSessionProvider({
         sessionStartEpoch: now
       })
     },
-    [broadcastTaskbarTimer, playChime, isAudioActive, pauseAudio, logEmptyInProgressBreak]
+    [broadcastTaskbarTimer, playChime, logEmptyInProgressBreak]
   )
 
   const addMinutes = useCallback(
@@ -1041,7 +999,6 @@ export function FocusSessionProvider({
         }
       }
     }
-    wasAudioPlayingOnPauseRef.current = false
     sessionStartEpochRef.current = 0
     pauseStartEpochRef.current = 0
     accumulatedPausedMsRef.current = 0
@@ -1418,7 +1375,6 @@ export function FocusSessionProvider({
         }
       }
 
-      wasAudioPlayingOnPauseRef.current = false
       sessionStartEpochRef.current = now
       afkBreakStartEpochRef.current = 0
       pauseStartEpochRef.current = 0
@@ -1454,9 +1410,8 @@ export function FocusSessionProvider({
       timerControlRef.current?.setTimer(targetSec, 0, targetSec)
       playChime('start')
       broadcastTaskbarTimer(true, false, false, targetSec, targetSec, targetGoal ?? null)
-      startAmbient()
     },
-    [broadcastTaskbarTimer, playChime, startAmbient, resetSession, toast, logEmptyInProgressBreak]
+    [broadcastTaskbarTimer, playChime, resetSession, toast, logEmptyInProgressBreak]
   )
 
   // Listen to remote quick action events from system tray
@@ -1771,13 +1726,7 @@ export function FocusSessionProvider({
     // 1. Play session complete chime sound
     playChime('complete')
 
-    // 2. Pause ambient white noise so prompt and chime are heard
-    if (isAudioActive()) {
-      wasAudioPlayingOnPauseRef.current = true
-      pauseAudio()
-    }
-
-    // 3. Pause background timer at 00:00 (designate Main as authoritative master)
+    // 2. Pause background timer at 00:00 (designate Main as authoritative master)
     const { targetSeconds, activeGoal, isBreak } = useFocusSessionStore.getState()
     const target = targetSecondsRef.current || targetSeconds || 45 * 60
     secondsRemainingRef.current = 0
@@ -1813,7 +1762,7 @@ export function FocusSessionProvider({
       }
     }
     toast.success('Focus session complete! What did you do?', 'Timer Up')
-  }, [playChime, isAudioActive, pauseAudio, broadcastTaskbarTimer, toast])
+  }, [playChime, broadcastTaskbarTimer, toast])
 
   const setIsOvertime = useCallback((action: boolean | React.SetStateAction<boolean>) => {
     const next =

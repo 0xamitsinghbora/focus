@@ -26,6 +26,10 @@ export type AppSettings = {
   lastMorningRitualDate?: string
   enableBreakNudges?: boolean
   hasCompletedOnboarding?: boolean
+  autoCheckUpdates?: boolean
+  autoDownloadUpdates?: boolean
+  lastUpdateCheck?: number
+  lastRunVersion?: string
 }
 
 export type LogEntry = {
@@ -273,7 +277,66 @@ export enum IpcChannels {
   LearningGetTracks = 'learning:get-tracks',
   LearningGetDue = 'learning:get-due',
   LearningResetStage = 'learning:reset-stage',
-  LearningSkipStage = 'learning:skip-stage'
+  LearningSkipStage = 'learning:skip-stage',
+  UpdateCheck = 'update:check',
+  UpdateDownload = 'update:download',
+  UpdateCancelDownload = 'update:cancel-download',
+  UpdateInstall = 'update:install',
+  UpdateGetState = 'update:get-state',
+  UpdateCleanCache = 'update:clean-cache',
+  UpdateStatusChanged = 'update:status-changed',
+  UpdateDownloadProgress = 'update:download-progress'
+}
+
+export type UpdateStatus =
+  | 'idle'
+  | 'checking'
+  | 'available'
+  | 'not-available'
+  | 'downloading'
+  | 'downloaded'
+  | 'installing'
+  | 'error'
+
+export interface UpdateReleaseInfo {
+  version: string
+  releaseName: string
+  releaseNotes: string
+  publishedAt: string
+  htmlUrl: string
+  isPrerelease: boolean
+  assetName: string
+  assetSize: number
+  downloadUrl: string
+}
+
+export interface UpdateDownloadProgress {
+  bytesDownloaded: number
+  totalBytes: number
+  percent: number
+  bytesPerSecond: number
+  remainingSeconds: number
+}
+
+export interface UpdateState {
+  status: UpdateStatus
+  currentVersion: string
+  availableUpdate?: UpdateReleaseInfo | null
+  progress?: UpdateDownloadProgress | null
+  error?: string | null
+  lastCheckedAt?: number | null
+  downloadedFilePath?: string | null
+}
+
+export interface CleanCacheResult {
+  success: boolean
+  freedBytes: number
+  cleanedFiles: string[]
+  error?: string
+}
+
+export interface InstallUpdateOptions {
+  silent?: boolean
 }
 
 export type BreakNudgePayload = {

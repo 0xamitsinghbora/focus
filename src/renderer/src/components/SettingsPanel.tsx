@@ -5,6 +5,7 @@ import { useToast } from '../lib/useToast'
 import { logger } from '../lib/logger'
 import { GeneralSettingsSection } from './settings/GeneralSettingsSection'
 import { CloudSyncSection } from './settings/CloudSyncSection'
+import { UpdateSettingsSection } from './settings/UpdateSettingsSection'
 import { DiagnosticsSection } from './settings/DiagnosticsSection'
 import { DeleteDataSection } from './settings/DeleteDataSection'
 import { DeleteDataModal } from './settings/DeleteDataModal'
@@ -55,6 +56,9 @@ export function SettingsPanel({
   const [isUploadingToDrive, setIsUploadingToDrive] = useState(false)
   const [isDeleteDataModalOpen, setIsDeleteDataModalOpen] = useState(false)
   const [isDeletingData, setIsDeletingData] = useState(false)
+  const [autoCheckUpdates, setAutoCheckUpdates] = useState(true)
+  const [autoDownloadUpdates, setAutoDownloadUpdates] = useState(false)
+  const [lastUpdateCheck, setLastUpdateCheck] = useState<number | undefined>(undefined)
   const [loaded, setLoaded] = useState(false)
 
   const lastSavedSettingsRef = useRef<{
@@ -65,6 +69,8 @@ export function SettingsPanel({
     syncProvider: CloudSyncProvider
     driveSyncEnabled: boolean
     theme: ThemeMode
+    autoCheckUpdates: boolean
+    autoDownloadUpdates: boolean
   } | null>(null)
 
   const pendingSaveRef = useRef<(() => Promise<void>) | null>(null)
@@ -125,6 +131,9 @@ export function SettingsPanel({
           loadedProvider = 'none'
         }
         const loadedTheme = settings.theme || 'system'
+        const loadedAutoCheck = settings.autoCheckUpdates !== false
+        const loadedAutoDownload = settings.autoDownloadUpdates || false
+        const loadedLastCheck = settings.lastUpdateCheck
 
         setInterval_(loadedInterval)
         setDailyFocusTarget(loadedDailyTarget)
@@ -132,6 +141,9 @@ export function SettingsPanel({
         setShowWidget(loadedShowWidget)
         setSyncProvider(loadedProvider)
         setDriveSyncEnabled(loadedSync)
+        setAutoCheckUpdates(loadedAutoCheck)
+        setAutoDownloadUpdates(loadedAutoDownload)
+        setLastUpdateCheck(loadedLastCheck)
         onIntervalChange(loadedInterval)
 
         lastSavedSettingsRef.current = {
@@ -141,7 +153,9 @@ export function SettingsPanel({
           showWidget: loadedShowWidget,
           syncProvider: loadedProvider,
           driveSyncEnabled: loadedSync,
-          theme: loadedTheme
+          theme: loadedTheme,
+          autoCheckUpdates: loadedAutoCheck,
+          autoDownloadUpdates: loadedAutoDownload
         }
         setLoaded(true)
       })
@@ -188,6 +202,15 @@ export function SettingsPanel({
           if (typeof latest.showWidget === 'boolean') {
             setShowWidget(latest.showWidget)
           }
+          if (typeof latest.autoCheckUpdates === 'boolean') {
+            setAutoCheckUpdates(latest.autoCheckUpdates)
+          }
+          if (typeof latest.autoDownloadUpdates === 'boolean') {
+            setAutoDownloadUpdates(latest.autoDownloadUpdates)
+          }
+          if (typeof latest.lastUpdateCheck === 'number') {
+            setLastUpdateCheck(latest.lastUpdateCheck)
+          }
           if (latest.theme && latest.theme !== theme) {
             setTheme(latest.theme, false)
           }
@@ -216,7 +239,15 @@ export function SettingsPanel({
                 typeof latest.driveSyncEnabled === 'boolean'
                   ? latest.driveSyncEnabled
                   : lastSavedSettingsRef.current.driveSyncEnabled,
-              theme: latest.theme || lastSavedSettingsRef.current.theme
+              theme: latest.theme || lastSavedSettingsRef.current.theme,
+              autoCheckUpdates:
+                typeof latest.autoCheckUpdates === 'boolean'
+                  ? latest.autoCheckUpdates
+                  : lastSavedSettingsRef.current.autoCheckUpdates,
+              autoDownloadUpdates:
+                typeof latest.autoDownloadUpdates === 'boolean'
+                  ? latest.autoDownloadUpdates
+                  : lastSavedSettingsRef.current.autoDownloadUpdates
             }
           }
         }
@@ -242,7 +273,9 @@ export function SettingsPanel({
       last.showWidget !== showWidget ||
       last.syncProvider !== syncProvider ||
       last.driveSyncEnabled !== driveSyncEnabled ||
-      last.theme !== theme
+      last.theme !== theme ||
+      last.autoCheckUpdates !== autoCheckUpdates ||
+      last.autoDownloadUpdates !== autoDownloadUpdates
 
     if (!isDifferent) return
 
@@ -251,7 +284,9 @@ export function SettingsPanel({
       last.showWidget !== showWidget ||
       last.syncProvider !== syncProvider ||
       last.driveSyncEnabled !== driveSyncEnabled ||
-      last.theme !== theme
+      last.theme !== theme ||
+      last.autoCheckUpdates !== autoCheckUpdates ||
+      last.autoDownloadUpdates !== autoDownloadUpdates
 
     lastSavedSettingsRef.current = {
       interval,
@@ -260,7 +295,9 @@ export function SettingsPanel({
       showWidget,
       syncProvider,
       driveSyncEnabled,
-      theme
+      theme,
+      autoCheckUpdates,
+      autoDownloadUpdates
     }
 
     if (last.interval !== interval) {
@@ -278,6 +315,9 @@ export function SettingsPanel({
         if (last.theme !== theme) patch.theme = theme
         if (last.syncProvider !== syncProvider) patch.syncProvider = syncProvider
         if (last.driveSyncEnabled !== driveSyncEnabled) patch.driveSyncEnabled = driveSyncEnabled
+        if (last.autoCheckUpdates !== autoCheckUpdates) patch.autoCheckUpdates = autoCheckUpdates
+        if (last.autoDownloadUpdates !== autoDownloadUpdates)
+          patch.autoDownloadUpdates = autoDownloadUpdates
 
         if (window.api?.settings?.patch) {
           await window.api.settings.patch(patch)
@@ -312,6 +352,8 @@ export function SettingsPanel({
     syncProvider,
     driveSyncEnabled,
     theme,
+    autoCheckUpdates,
+    autoDownloadUpdates,
     loaded,
     onSettingsSaved,
     onIntervalChange
@@ -518,6 +560,14 @@ export function SettingsPanel({
             onDriveDisconnect={handleDriveDisconnect}
           />
         </div>
+
+        <UpdateSettingsSection
+          autoCheckUpdates={autoCheckUpdates}
+          setAutoCheckUpdates={setAutoCheckUpdates}
+          autoDownloadUpdates={autoDownloadUpdates}
+          setAutoDownloadUpdates={setAutoDownloadUpdates}
+          lastUpdateCheck={lastUpdateCheck}
+        />
 
         <DiagnosticsSection onOpenGitHubIssues={handleOpenGitHubIssues} />
 

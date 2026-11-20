@@ -22,7 +22,9 @@ export const DEFAULT_SETTINGS: AppSettings = {
     in_progress: false,
     done: false
   },
-  customShortcuts: {}
+  customShortcuts: {},
+  autoCheckUpdates: true,
+  autoDownloadUpdates: false
 }
 
 export class SettingsRepository {

@@ -117,4 +117,24 @@ describe('TimelineList Component Rendering & Virtualization', () => {
     // Session card should still be rendered
     expect(screen.getByText('Task 1')).toBeDefined()
   })
+
+  it('displays productive minutes and idle deducted time when clock span exceeds productive focus', () => {
+    const logs: LogEntry[] = [
+      {
+        id: 'log-idle',
+        timestamp: '2026-11-01T20:13:00.000Z',
+        startedAt: '2026-11-01T19:15:00.000Z',
+        endedAt: '2026-11-01T20:13:00.000Z',
+        durationMinutes: 58,
+        productiveMinutes: 30,
+        productivity: 'productive',
+        goalTitle: 'Namaste Js',
+        text: 'Namaste Js'
+      }
+    ]
+
+    render(<TimelineList logs={logs} />)
+    expect(screen.getAllByText(/30m/).length).toBeGreaterThanOrEqual(2)
+    expect(screen.getByText('(28m idle)')).toBeDefined()
+  })
 })

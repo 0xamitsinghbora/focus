@@ -102,21 +102,12 @@ describe('useFocusSessionAudio', () => {
     expect(mockPlayFocusChime).toHaveBeenCalledWith('complete')
   })
 
-  it('starts ambient audio if not already playing and user has not paused', () => {
+  it('does NOT start ambient audio on startAmbient; sounds only played manually', () => {
     mockUserPaused = false
-    mockPlay.mockClear()
-    const { result } = renderHook(() => useFocusSessionAudio())
-    result.current.startAmbient()
-    expect(mockPlay).toHaveBeenCalled()
-  })
-
-  it('does NOT start ambient audio if user paused songs', () => {
-    mockUserPaused = true
     mockPlay.mockClear()
     const { result } = renderHook(() => useFocusSessionAudio())
     result.current.startAmbient()
     expect(mockPlay).not.toHaveBeenCalled()
-    mockUserPaused = false
   })
 
   it('controls play and pause on ambient audio', () => {

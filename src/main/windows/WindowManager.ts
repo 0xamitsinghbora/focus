@@ -159,7 +159,7 @@ export class WindowManager {
       webPreferences: {
         preload: join(__dirname, '../preload/index.js'),
         sandbox: true,
-        backgroundThrottling: true,
+        backgroundThrottling: false,
         autoplayPolicy: 'no-user-gesture-required'
       }
     })

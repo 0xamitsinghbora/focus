@@ -1558,9 +1558,7 @@ class AmbientAudioEngine {
     }).catch(() => {})
 
     this.setNoiseType('custom')
-    if (!this._playing) {
-      this.play()
-    } else {
+    if (this._playing) {
       this.crossfadeToNoise('custom')
     }
     this.notify()
@@ -1577,9 +1575,7 @@ class AmbientAudioEngine {
     }
 
     this.setNoiseType('custom')
-    if (!this._playing) {
-      this.play()
-    } else {
+    if (this._playing) {
       this.crossfadeToNoise('custom')
     }
     this.notify()

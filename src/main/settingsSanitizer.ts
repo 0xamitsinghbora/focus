@@ -19,7 +19,11 @@ const KNOWN_SETTING_KEYS = new Set<string>([
   'dailyFocusTargetMinutes',
   'lastMorningRitualDate',
   'enableBreakNudges',
-  'hasCompletedOnboarding'
+  'hasCompletedOnboarding',
+  'autoCheckUpdates',
+  'autoDownloadUpdates',
+  'lastUpdateCheck',
+  'lastRunVersion'
 ])
 
 export function sanitizeSettings(settings: Partial<AppSettings>): Record<string, unknown> {

@@ -44,18 +44,8 @@ export function useFocusSessionAudio(): FocusSessionAudioControls {
   }, [systemPause, rawPauseAudio])
 
   const startAmbient = useCallback(() => {
-    // If user paused songs one time, remember it and don't play again and again until user manually plays them
-    if (userPaused) {
-      return
-    }
-    if (!audioPlaying) {
-      try {
-        playAudio()
-      } catch {
-        // ignore
-      }
-    }
-  }, [audioPlaying, playAudio, userPaused])
+    // Autoplay disabled: sounds must only be manually played/paused
+  }, [])
 
   const playChime = useCallback((type: 'start' | 'break' | 'complete') => {
     try {

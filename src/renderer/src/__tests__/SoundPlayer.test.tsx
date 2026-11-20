@@ -64,7 +64,7 @@ describe('CompactSoundPlayer', () => {
     expect(screen.queryByRole('button', { name: /^nature$/i })).toBeNull()
   })
 
-  it('allows selecting presets and starts playback if idle', () => {
+  it('allows selecting presets without autoplaying playback when idle', () => {
     render(<CompactSoundPlayer />)
 
     fireEvent.click(screen.getByRole('button', { name: /ambient soundscape/i }))
@@ -77,7 +77,7 @@ describe('CompactSoundPlayer', () => {
     fireEvent.click(cocoonPreset)
 
     expect(mockAudioEngine.setNoiseType).toHaveBeenCalledWith('cocoon')
-    expect(mockAudioEngine.play).toHaveBeenCalled()
+    expect(mockAudioEngine.play).not.toHaveBeenCalled()
   })
 
   it('does not render duplicate prev/play/next buttons in popover', () => {
@@ -137,7 +137,7 @@ describe('CompactSoundPlayer', () => {
     fireEvent.click(tokyoPreset)
 
     expect(mockAudioEngine.setNoiseType).toHaveBeenCalledWith('city-tokyo')
-    expect(mockAudioEngine.play).toHaveBeenCalled()
+    expect(mockAudioEngine.play).not.toHaveBeenCalled()
   })
 
   it('does not display play or pause text inside the play button', () => {
@@ -239,7 +239,7 @@ describe('SoundPlayerCard', () => {
     fireEvent.click(rainPreset)
 
     expect(mockAudioEngine.setNoiseType).toHaveBeenCalledWith('rain')
-    expect(mockAudioEngine.play).toHaveBeenCalled()
+    expect(mockAudioEngine.play).not.toHaveBeenCalled()
   })
 
   it('closes popover on Escape key', () => {
@@ -376,7 +376,7 @@ describe('SoundPlayerCard', () => {
     fireEvent.click(nextBtn)
 
     expect(mockAudioEngine.setNoiseType).toHaveBeenCalledWith('rain')
-    expect(mockAudioEngine.play).toHaveBeenCalled()
+    expect(mockAudioEngine.play).not.toHaveBeenCalled()
 
     const prevBtn = screen.getByRole('button', { name: /previous soundscape/i })
     fireEvent.click(prevBtn)

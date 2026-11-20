@@ -5,7 +5,9 @@ import {
   SyncTarget,
   ThemeMode,
   SessionQuickActionType,
-  BreakNudgePayload
+  BreakNudgePayload,
+  UpdateState,
+  UpdateDownloadProgress
 } from '../shared/types'
 import { FocusAPI } from '../shared/api'
 
@@ -187,6 +189,17 @@ export const api: FocusAPI = {
       return 'system'
     },
     onThemeUpdated: createSubscriber<ThemeMode>(IpcChannels.ThemeUpdated)
+  },
+
+  updater: {
+    checkForUpdates: () => ipcRenderer.invoke(IpcChannels.UpdateCheck),
+    downloadUpdate: () => ipcRenderer.invoke(IpcChannels.UpdateDownload),
+    cancelDownload: () => ipcRenderer.invoke(IpcChannels.UpdateCancelDownload),
+    installUpdate: (options) => ipcRenderer.invoke(IpcChannels.UpdateInstall, options),
+    getState: () => ipcRenderer.invoke(IpcChannels.UpdateGetState),
+    cleanCache: () => ipcRenderer.invoke(IpcChannels.UpdateCleanCache),
+    onStatusChange: createSubscriber<UpdateState>(IpcChannels.UpdateStatusChanged),
+    onDownloadProgress: createSubscriber<UpdateDownloadProgress>(IpcChannels.UpdateDownloadProgress)
   }
 }
 

@@ -631,7 +631,6 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
     customTracks = [],
     activeCustomTrackId,
     spatialAudio = true,
-    play,
     toggle,
     setVolume,
     setNoiseType,
@@ -698,8 +697,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
     } else {
       setNoiseType(next.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const handlePrevTrack = useCallback(() => {
     const list = getPlayableSequence(customTracks)
@@ -717,8 +715,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
     } else {
       setNoiseType(prev.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const customPreset: PresetInfo = {
     key: 'custom',
@@ -750,16 +747,13 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
 
   const handleSelectPreset = useCallback(
     (presetKey: NoiseType) => {
-      if (noiseType === presetKey && playing) {
+      if (noiseType === presetKey) {
         toggle()
       } else {
         setNoiseType(presetKey)
-        if (!playing) {
-          play()
-        }
       }
     },
-    [noiseType, playing, play, toggle, setNoiseType]
+    [noiseType, toggle, setNoiseType]
   )
 
   // Close popover when clicking outside or pressing Escape
@@ -932,7 +926,6 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
     customAudioName,
     customTracks = [],
     activeCustomTrackId,
-    play,
     toggle,
     setVolume,
     setNoiseType,
@@ -999,8 +992,7 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
     } else {
       setNoiseType(next.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const handlePrevTrack = useCallback(() => {
     const list = getPlayableSequence(customTracks)
@@ -1018,8 +1010,7 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
     } else {
       setNoiseType(prev.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const customPreset: PresetInfo = {
     key: 'custom',
@@ -1051,16 +1042,13 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
 
   const handleSelectPreset = useCallback(
     (presetKey: NoiseType) => {
-      if (noiseType === presetKey && playing) {
+      if (noiseType === presetKey) {
         toggle()
       } else {
         setNoiseType(presetKey)
-        if (!playing) {
-          play()
-        }
       }
     },
-    [noiseType, playing, play, toggle, setNoiseType]
+    [noiseType, toggle, setNoiseType]
   )
 
   useEffect(() => {
@@ -1292,7 +1280,6 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
     customAudioName,
     customTracks = [],
     activeCustomTrackId,
-    play,
     toggle,
     setVolume,
     setNoiseType,
@@ -1359,8 +1346,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
     } else {
       setNoiseType(next.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const handlePrevTrack = useCallback(() => {
     const list = getPlayableSequence(customTracks)
@@ -1378,8 +1364,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
     } else {
       setNoiseType(prev.type)
     }
-    if (!playing) play()
-  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType, playing, play])
+  }, [customTracks, noiseType, activeCustomTrackId, selectCustomAudio, setNoiseType])
 
   const customPreset: PresetInfo = {
     key: 'custom',
@@ -1411,16 +1396,13 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
 
   const handleSelectPreset = useCallback(
     (presetKey: NoiseType) => {
-      if (noiseType === presetKey && playing) {
+      if (noiseType === presetKey) {
         toggle()
       } else {
         setNoiseType(presetKey)
-        if (!playing) {
-          play()
-        }
       }
     },
-    [noiseType, playing, play, toggle, setNoiseType]
+    [noiseType, toggle, setNoiseType]
   )
 
   useEffect(() => {

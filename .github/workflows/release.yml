@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Linux Build Dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libarchive-tools libopenjp2-7 libgl1-mesa-glx xvfb libx11-xcb1 libxss1 libasound2 libnss3 libatk-bridge2.0-0 libgtk-3-0
+
+      - name: Install NPM Dependencies
+        run: npm ci
+
+      - name: Compile and Bundle Application
+        run: npm run build
+
+      - name: Build and Publish Release to GitHub
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            npm run rebuild:electron && npx electron-builder --win --publish always
+          elif [ "${{ runner.os }}" = "macOS" ]; then
+            npm run rebuild:electron && npx electron-builder --mac --publish always
+          else
+            npm run rebuild:electron && npx electron-builder --linux --publish always
+          fi
+        shell: bash

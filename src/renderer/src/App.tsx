@@ -129,6 +129,45 @@ function App(): React.JSX.Element {
     onTabChange: (targetTab) => tabChangeHandlerRef.current?.(targetTab)
   })
 
+  // Listen for software update availability and ready-to-install notifications
+  useEffect(() => {
+    if (!window.api?.updater?.onStatusChange) return
+    let lastNotifiedVersion = ''
+    const cleanup = window.api.updater.onStatusChange((updateState) => {
+      if (updateState.status === 'available' && updateState.availableUpdate?.version) {
+        const ver = updateState.availableUpdate.version
+        if (ver !== lastNotifiedVersion) {
+          lastNotifiedVersion = ver
+          toastRef.current.show(`Focus v${ver} is now available.`, {
+            title: 'Update Available',
+            type: 'info',
+            action: {
+              label: 'View in Settings',
+              onClick: () => setTab('settings')
+            }
+          })
+        }
+      } else if (updateState.status === 'downloaded' && updateState.availableUpdate?.version) {
+        toastRef.current.show(
+          `Focus v${updateState.availableUpdate.version} is ready to install.`,
+          {
+            title: 'Update Ready',
+            type: 'success',
+            action: {
+              label: 'Restart & Install',
+              onClick: () => {
+                window.api.updater.installUpdate().catch(() => {})
+              }
+            }
+          }
+        )
+      }
+    })
+    return () => {
+      cleanup?.()
+    }
+  }, [setTab])
+
   const {
     loading,
     tabLoading,

@@ -16,7 +16,11 @@ import {
   SessionQuickActionType,
   BreakNudgePayload,
   LearningTrack,
-  LearningStage
+  LearningStage,
+  UpdateState,
+  UpdateDownloadProgress,
+  CleanCacheResult,
+  InstallUpdateOptions
 } from './types'
 
 export interface FocusAPI {
@@ -176,5 +180,17 @@ export interface FocusAPI {
     onNavigateTab: (
       callback: (tab: 'today' | 'goals' | 'review' | 'settings') => void
     ) => () => void
+  }
+
+  // --- Software Updates (GitHub Releases) ---
+  updater: {
+    checkForUpdates: () => Promise<UpdateState>
+    downloadUpdate: () => Promise<boolean>
+    cancelDownload: () => Promise<boolean>
+    installUpdate: (options?: InstallUpdateOptions) => Promise<boolean>
+    getState: () => Promise<UpdateState>
+    cleanCache: () => Promise<CleanCacheResult>
+    onStatusChange: (callback: (state: UpdateState) => void) => () => void
+    onDownloadProgress: (callback: (progress: UpdateDownloadProgress) => void) => () => void
   }
 }

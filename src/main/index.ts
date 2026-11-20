@@ -23,8 +23,10 @@ import {
   SystemIpcController,
   SessionIpcController,
   SettingsIpcController,
-  LearningIpcController
+  LearningIpcController,
+  UpdateIpcController
 } from './ipc'
+import { UpdateService } from './services/UpdateService'
 import { GlobalShortcutManager } from './services/GlobalShortcutManager'
 import { DriveOAuthServer } from './driveOAuthServer'
 
@@ -365,6 +367,36 @@ if (!gotTheLock) {
     })
     learningController.register()
 
+    const updateService = new UpdateService({
+      settingsRepo: dataManager.settingsRepo,
+      broadcast: (ch, payload) => windowManager.broadcast(ch, payload),
+      prepareForExit: async () => {
+        isQuitting = true
+        try {
+          scheduler.stopTimer()
+          taskbarManager?.destroy()
+          syncManager?.destroy()
+          windowManager.destroyAllWindows()
+          dataManager.close()
+        } catch {
+          // ignore
+        }
+      },
+      quitApp: () => {
+        isQuitting = true
+        app.exit(0)
+      }
+    })
+    updateService.handlePostUpdateCleanup()
+    updateService.startAutoCheckTimer()
+
+    const updateController = new UpdateIpcController({
+      updateService,
+      security,
+      isQuitting: () => isQuitting
+    })
+    updateController.register()
+
     if (process.platform === 'win32') {
       const taskbarIconPath = app.isPackaged ? process.execPath : path.resolve(iconIco)
       app.setUserTasks([
@@ -532,6 +564,7 @@ if (!gotTheLock) {
         scheduler.stopTimer()
         taskbarManager?.destroy()
         syncManager?.destroy()
+        updateService.destroy()
       } catch (err) {
         logger.error('main', 'Error stopping background services on quit:', err)
       }
@@ -543,6 +576,7 @@ if (!gotTheLock) {
         sessionController.destroy()
         systemController.destroy()
         settingsController.destroy()
+        updateController.destroy()
       } catch (err) {
         logger.error('main', 'Error destroying IPC controllers on quit:', err)
       }
