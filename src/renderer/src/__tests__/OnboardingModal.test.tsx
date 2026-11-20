@@ -15,24 +15,26 @@ describe('OnboardingModal Component', () => {
     expect(screen.queryByRole('dialog')).toBeNull()
   })
 
-  it('renders Step 1 (The Daily Planner) with column explanations and goal input', () => {
+  it('renders Step 1 (The Daily Planner) with column workflow and app overview', () => {
     render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
 
     expect(screen.getByRole('dialog')).toBeDefined()
     expect(screen.getByRole('heading', { name: /The Daily Planner/i })).toBeDefined()
     expect(screen.getByText(/Step 1 of 3/i)).toBeDefined()
-    expect(screen.getByText('Planned')).toBeDefined()
-    expect(screen.getByText('In Progress')).toBeDefined()
-    expect(screen.getByText('Done')).toBeDefined()
-    expect(screen.getByPlaceholderText(/e\.g\. Finish database migration/i)).toBeDefined()
+    expect(screen.getByText(/Planned/i)).toBeDefined()
+    expect(screen.getByText(/In Progress/i)).toBeDefined()
+    expect(screen.getByText(/Done/i)).toBeDefined()
+    expect(screen.getByText(/How Tasks Move Through Your Day/i)).toBeDefined()
+    expect(screen.getByText(/What Focus Does For You/i)).toBeDefined()
+    expect(screen.getByText(/Rhythmic Focus Sessions & Floating Timer/i)).toBeDefined()
+    expect(screen.getByText(/100% Private & Stored Locally/i)).toBeDefined()
+    // Goal input area should be removed
+    expect(screen.queryByPlaceholderText(/e\.g\. Finish database migration/i)).toBeNull()
+    expect(screen.queryByText(/What is your primary focus or task for today\?/i)).toBeNull()
   })
 
   it('navigates through steps 1, 2, and 3 with Back and Continue', () => {
     render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
-
-    // Type a primary goal
-    const goalInput = screen.getByPlaceholderText(/e\.g\. Finish database migration/i)
-    fireEvent.change(goalInput, { target: { value: 'Launch Apollo Mission' } })
 
     // Step 1 -> Step 2
     fireEvent.click(screen.getByRole('button', { name: /Continue →/i }))
@@ -51,21 +53,19 @@ describe('OnboardingModal Component', () => {
 
     expect(screen.getByRole('heading', { name: /Self-Awareness & Break Guard/i })).toBeDefined()
     expect(screen.getByText(/Step 3 of 3/i)).toBeDefined()
-    expect(screen.getByText(/Focus Quality Self-Rating \(1–5\)/i)).toBeDefined()
+    expect(screen.queryByText(/Focus Quality Self-Rating/i)).toBeNull()
     expect(screen.getByText(/Escalating Break Nudges/i)).toBeDefined()
-    expect(screen.getByText(/Morning Planning Ritual/i)).toBeDefined()
+    expect(screen.queryByText(/Morning Planning Ritual/i)).toBeNull()
 
     // Test Back button: Step 3 -> Step 2
     fireEvent.click(screen.getByRole('button', { name: /Back/i }))
     expect(screen.getByRole('heading', { name: /Session Timing & Daily Target/i })).toBeDefined()
   })
 
-  it('completes onboarding setup and invokes onComplete with user selections and initial goal', async () => {
+  it('completes onboarding setup and invokes onComplete with user selections', async () => {
     render(<OnboardingModal isOpen={true} onClose={mockOnClose} onComplete={mockOnComplete} />)
 
-    // Step 1: Type goal
-    const goalInput = screen.getByPlaceholderText(/e\.g\. Finish database migration/i)
-    fireEvent.change(goalInput, { target: { value: 'Deep Engine Optimization' } })
+    // Step 1 -> Step 2
     fireEvent.click(screen.getByRole('button', { name: /Continue →/i }))
 
     // Step 2: Choose 60m interval and 8 Hours
@@ -80,8 +80,7 @@ describe('OnboardingModal Component', () => {
     await waitFor(() => {
       expect(mockOnComplete).toHaveBeenCalledWith({
         intervalMinutes: 60,
-        dailyTargetMinutes: 480,
-        initialGoalTitle: 'Deep Engine Optimization'
+        dailyTargetMinutes: 480
       })
     })
   })

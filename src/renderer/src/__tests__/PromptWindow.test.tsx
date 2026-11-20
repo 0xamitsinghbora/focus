@@ -407,7 +407,7 @@ describe('PromptWindow Component', () => {
     })
   })
 
-  it('allows rating focus quality and saves rating with the log entry', async () => {
+  it('does not render focus quality rating in prompt detail and submits cleanly', async () => {
     render(<PromptWindow />)
 
     await waitFor(() => {
@@ -417,9 +417,9 @@ describe('PromptWindow Component', () => {
     // Select first task
     fireEvent.keyDown(window, { key: 'Enter' })
 
-    // Find 5 - Deep Flow rating button
-    const deepFlowBtn = await screen.findByRole('radio', { name: /5 - Deep Flow/i })
-    fireEvent.click(deepFlowBtn)
+    // Verify Focus Quality rating is NOT rendered
+    expect(screen.queryByRole('radiogroup', { name: /Focus Quality Rating/i })).toBeNull()
+    expect(screen.queryByText(/Deep Flow/i)).toBeNull()
 
     // Submit with enter
     const input = await screen.findByPlaceholderText(/What did you work on/i)
@@ -429,7 +429,7 @@ describe('PromptWindow Component', () => {
       expect(appendLogMock).toHaveBeenCalled()
       const calls = appendLogMock.mock.calls
       const lastCall = calls[calls.length - 1]
-      expect(lastCall[1].focusQuality).toBe(5)
+      expect(lastCall[1].focusQuality).toBeUndefined()
     })
   })
 
@@ -499,7 +499,7 @@ describe('PromptWindow Component', () => {
     }
   })
 
-  it('marks task as completed when "Mark task as completed" checkbox is checked', async () => {
+  it('does not render "Mark task as completed" checkbox in detail step', async () => {
     render(<PromptWindow />)
 
     await waitFor(() => {
@@ -509,25 +509,14 @@ describe('PromptWindow Component', () => {
     // Click on the task to go to detail step
     fireEvent.click(screen.getByText('Active Code Review Task'))
 
-    // In detail step, check the checkbox
-    const checkbox = await screen.findByRole('checkbox', { name: /Mark task as completed/i })
-    expect(checkbox).toBeDefined()
-    fireEvent.click(checkbox)
-    expect((checkbox as HTMLInputElement).checked).toBe(true)
+    // In detail step, verify checkbox is absent
+    expect(screen.queryByRole('checkbox', { name: /Mark task as completed/i })).toBeNull()
 
     // Submit
     const submitBtn = screen.getByRole('button', { name: /Submit/i })
     fireEvent.click(submitBtn)
 
     await waitFor(() => {
-      expect(updateGoalMock).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          id: mockInProgressGoal.id,
-          status: 'done',
-          completedAt: expect.any(String)
-        })
-      )
       expect(appendLogMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
@@ -540,10 +529,7 @@ describe('PromptWindow Component', () => {
     })
   })
 
-  it('adds task to planner when choosing Something Else and checking "Add as task to planner"', async () => {
-    const addGoalMock = vi.fn().mockResolvedValue({ id: 'new-g', title: 'Ad-hoc debugging' })
-    ;(window.api.goals as any).add = addGoalMock
-
+  it('submits Something Else and logs session without rendering "Add as task to planner" checkbox', async () => {
     render(<PromptWindow />)
 
     await waitFor(() => {
@@ -553,26 +539,18 @@ describe('PromptWindow Component', () => {
     // Click Something Else
     fireEvent.click(screen.getByText('Something Else'))
 
+    // Verify "Add as task to planner" checkbox is absent
+    expect(screen.queryByRole('checkbox', { name: /Add as task to planner/i })).toBeNull()
+
     // In detail step, type description
     const input = await screen.findByPlaceholderText(/What did you do/i)
     fireEvent.change(input, { target: { value: 'Ad-hoc debugging' } })
-
-    // Check "Add as task to planner"
-    const checkbox = screen.getByRole('checkbox', { name: /Add as task to planner/i })
-    fireEvent.click(checkbox)
-    expect((checkbox as HTMLInputElement).checked).toBe(true)
 
     // Submit
     const submitBtn = screen.getByRole('button', { name: /Submit/i })
     fireEvent.click(submitBtn)
 
     await waitFor(() => {
-      expect(addGoalMock).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Ad-hoc debugging',
-          status: 'planned'
-        })
-      )
       expect(appendLogMock).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({

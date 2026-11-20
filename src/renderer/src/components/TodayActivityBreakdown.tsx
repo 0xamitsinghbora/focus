@@ -44,6 +44,7 @@ export function TodayActivityBreakdown({
         groupTag?: string
         groupColor?: string
         isBreak: boolean
+        isMeditation: boolean
         isTask: boolean
       }
     >()
@@ -51,9 +52,14 @@ export function TodayActivityBreakdown({
     let totalMins = 0
 
     for (const log of logs) {
+      const isMeditation =
+        Boolean(log.didDotReset) ||
+        /\b(meditation|trataka)\b/i.test(log.text || '') ||
+        /\b(meditation|trataka)\b/i.test(log.note || '')
       const isBreak =
-        log.productivity === 'break' ||
-        (log.productivity !== 'productive' && /\bbreak\b/i.test(log.text || ''))
+        !isMeditation &&
+        (log.productivity === 'break' ||
+          (log.productivity !== 'productive' && /\bbreak\b/i.test(log.text || '')))
       const mins =
         typeof log.productiveMinutes === 'number' ? log.productiveMinutes : log.durationMinutes || 0
 
@@ -64,7 +70,9 @@ export function TodayActivityBreakdown({
       let key: string
       let matchedGoal: DailyGoal | undefined
 
-      if (isBreak) {
+      if (isMeditation) {
+        key = '__meditation__'
+      } else if (isBreak) {
         key = '__break__'
       } else {
         matchedGoal =
@@ -82,7 +90,11 @@ export function TodayActivityBreakdown({
       const existing = map.get(key)
       if (existing) {
         existing.minutes += effectiveMins
-        if (!existing.isTask && (matchedGoal || log.goalId || log.goalTitle)) {
+        if (
+          !existing.isTask &&
+          !existing.isMeditation &&
+          (matchedGoal || log.goalId || log.goalTitle)
+        ) {
           existing.isTask = true
           if (matchedGoal?.title || log.goalTitle) {
             existing.title = matchedGoal?.title || log.goalTitle!
@@ -95,15 +107,19 @@ export function TodayActivityBreakdown({
         const groupColor =
           matchedGoal?.groupColor || (groupTag ? getPreferredGroupColor(groupTag) : undefined)
 
-        const isTask = Boolean(matchedGoal || log.goalId || log.goalTitle)
+        const isTask =
+          !isMeditation && !isBreak && Boolean(matchedGoal || log.goalId || log.goalTitle)
         map.set(key, {
-          title: isBreak
-            ? 'Break Time'
-            : matchedGoal?.title || log.goalTitle || log.text || 'Other',
+          title: isMeditation
+            ? 'Meditation'
+            : isBreak
+              ? 'Break Time'
+              : matchedGoal?.title || log.goalTitle || log.text || 'Other',
           minutes: effectiveMins,
           groupTag,
           groupColor,
           isBreak,
+          isMeditation,
           isTask
         })
       }
@@ -116,6 +132,24 @@ export function TodayActivityBreakdown({
     for (const [key, val] of map.entries()) {
       const percentageWidth = totalMins > 0 ? (val.minutes / totalMins) * 100 : 0
       const percentage = Math.round(percentageWidth)
+
+      if (val.isMeditation) {
+        result.push({
+          key,
+          title: 'Meditation',
+          minutes: val.minutes,
+          percentage,
+          percentageWidth,
+          colorClass: 'bg-white',
+          dotClass:
+            'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)] border border-black/20 dark:border-transparent',
+          badgeText: 'text-foreground dark:text-white',
+          badgeBg: 'bg-white/80 dark:bg-white/10',
+          badgeBorder: 'border-border/60 dark:border-white/30',
+          isBreak: false
+        })
+        continue
+      }
 
       if (val.isBreak) {
         result.push({

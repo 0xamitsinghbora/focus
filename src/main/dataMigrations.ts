@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3'
 
-export const CURRENT_SCHEMA_VERSION = 3
+export const CURRENT_SCHEMA_VERSION = 4
 
 export interface Migration {
   version: number
@@ -218,7 +218,7 @@ const MIGRATIONS: Migration[] = [
     }
   },
   {
-    version: 3,
+    version: 4,
     description: 'Add goalType to daily_goals and goalType, audioMode, didDotReset to logs',
     up: (db: Database.Database): void => {
       const goalCols = db.prepare("PRAGMA table_info('daily_goals')").all() as { name: string }[]
@@ -270,9 +270,8 @@ function setSchemaVersion(db: Database.Database, version: number): void {
 export function runSchemaMigrations(db: Database.Database): void {
   registerCustomSqliteFunctions(db)
 
-  const currentVersion = getSchemaVersion(db)
-
   for (const migration of MIGRATIONS) {
+    const currentVersion = getSchemaVersion(db)
     if (migration.version > currentVersion) {
       db.transaction(() => {
         migration.up(db)

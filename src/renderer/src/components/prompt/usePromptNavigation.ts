@@ -13,7 +13,6 @@ export interface UsePromptNavigationProps {
   onSnooze: () => void
   onSubmit: () => void
   onReturnAfk?: () => void
-  onSetFocusQuality?: (quality: number) => void
   detailInputRef: React.RefObject<HTMLInputElement | null>
   promptAppearedAtRef?: React.MutableRefObject<number>
 }
@@ -35,7 +34,6 @@ export function usePromptNavigation({
   onSnooze,
   onSubmit,
   onReturnAfk,
-  onSetFocusQuality,
   detailInputRef,
   promptAppearedAtRef
 }: UsePromptNavigationProps): PromptNavigationResult {
@@ -131,12 +129,6 @@ export function usePromptNavigation({
           return
         }
       } else if (step === 'detail') {
-        if (e.altKey && ['1', '2', '3', '4', '5'].includes(e.key)) {
-          e.preventDefault()
-          onSetFocusQuality?.(parseInt(e.key, 10))
-          return
-        }
-
         if (e.key === 'Escape') {
           e.preventDefault()
           setStep('select')
@@ -162,7 +154,6 @@ export function usePromptNavigation({
       setStep,
       onSubmit,
       onReturnAfk,
-      onSetFocusQuality,
       promptAppearedAtRef
     ]
   )

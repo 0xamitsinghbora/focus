@@ -17,8 +17,6 @@ interface SettingsPanelProps {
   onSyncComplete: () => Promise<void>
   onIntervalChange: (n: number) => void
   onOpenShortcuts?: () => void
-  onOpenOnboarding?: () => void
-  onOpenMorningRitual?: () => void
 }
 
 export function SettingsPanel({
@@ -27,9 +25,7 @@ export function SettingsPanel({
   onSettingsSaved,
   onSyncComplete,
   onIntervalChange,
-  onOpenShortcuts,
-  onOpenOnboarding,
-  onOpenMorningRitual
+  onOpenShortcuts
 }: SettingsPanelProps): React.JSX.Element {
   const toast = useToast()
   const toastRef = useRef(toast)
@@ -59,6 +55,7 @@ export function SettingsPanel({
   const [autoCheckUpdates, setAutoCheckUpdates] = useState(true)
   const [autoDownloadUpdates, setAutoDownloadUpdates] = useState(false)
   const [lastUpdateCheck, setLastUpdateCheck] = useState<number | undefined>(undefined)
+  const [tratakaDuration, setTratakaDuration] = useState(60)
   const [loaded, setLoaded] = useState(false)
 
   const lastSavedSettingsRef = useRef<{
@@ -71,6 +68,7 @@ export function SettingsPanel({
     theme: ThemeMode
     autoCheckUpdates: boolean
     autoDownloadUpdates: boolean
+    tratakaDuration: number
   } | null>(null)
 
   const pendingSaveRef = useRef<(() => Promise<void>) | null>(null)
@@ -134,6 +132,7 @@ export function SettingsPanel({
         const loadedAutoCheck = settings.autoCheckUpdates !== false
         const loadedAutoDownload = settings.autoDownloadUpdates || false
         const loadedLastCheck = settings.lastUpdateCheck
+        const loadedTrataka = settings.tratakaDurationSeconds || 60
 
         setInterval_(loadedInterval)
         setDailyFocusTarget(loadedDailyTarget)
@@ -144,6 +143,7 @@ export function SettingsPanel({
         setAutoCheckUpdates(loadedAutoCheck)
         setAutoDownloadUpdates(loadedAutoDownload)
         setLastUpdateCheck(loadedLastCheck)
+        setTratakaDuration(loadedTrataka)
         onIntervalChange(loadedInterval)
 
         lastSavedSettingsRef.current = {
@@ -155,7 +155,8 @@ export function SettingsPanel({
           driveSyncEnabled: loadedSync,
           theme: loadedTheme,
           autoCheckUpdates: loadedAutoCheck,
-          autoDownloadUpdates: loadedAutoDownload
+          autoDownloadUpdates: loadedAutoDownload,
+          tratakaDuration: loadedTrataka
         }
         setLoaded(true)
       })
@@ -211,6 +212,9 @@ export function SettingsPanel({
           if (typeof latest.lastUpdateCheck === 'number') {
             setLastUpdateCheck(latest.lastUpdateCheck)
           }
+          if (typeof latest.tratakaDurationSeconds === 'number') {
+            setTratakaDuration(latest.tratakaDurationSeconds)
+          }
           if (latest.theme && latest.theme !== theme) {
             setTheme(latest.theme, false)
           }
@@ -247,7 +251,11 @@ export function SettingsPanel({
               autoDownloadUpdates:
                 typeof latest.autoDownloadUpdates === 'boolean'
                   ? latest.autoDownloadUpdates
-                  : lastSavedSettingsRef.current.autoDownloadUpdates
+                  : lastSavedSettingsRef.current.autoDownloadUpdates,
+              tratakaDuration:
+                typeof latest.tratakaDurationSeconds === 'number'
+                  ? latest.tratakaDurationSeconds
+                  : lastSavedSettingsRef.current.tratakaDuration
             }
           }
         }
@@ -275,7 +283,8 @@ export function SettingsPanel({
       last.driveSyncEnabled !== driveSyncEnabled ||
       last.theme !== theme ||
       last.autoCheckUpdates !== autoCheckUpdates ||
-      last.autoDownloadUpdates !== autoDownloadUpdates
+      last.autoDownloadUpdates !== autoDownloadUpdates ||
+      last.tratakaDuration !== tratakaDuration
 
     if (!isDifferent) return
 
@@ -286,7 +295,8 @@ export function SettingsPanel({
       last.driveSyncEnabled !== driveSyncEnabled ||
       last.theme !== theme ||
       last.autoCheckUpdates !== autoCheckUpdates ||
-      last.autoDownloadUpdates !== autoDownloadUpdates
+      last.autoDownloadUpdates !== autoDownloadUpdates ||
+      last.tratakaDuration !== tratakaDuration
 
     lastSavedSettingsRef.current = {
       interval,
@@ -297,7 +307,8 @@ export function SettingsPanel({
       driveSyncEnabled,
       theme,
       autoCheckUpdates,
-      autoDownloadUpdates
+      autoDownloadUpdates,
+      tratakaDuration
     }
 
     if (last.interval !== interval) {
@@ -318,6 +329,7 @@ export function SettingsPanel({
         if (last.autoCheckUpdates !== autoCheckUpdates) patch.autoCheckUpdates = autoCheckUpdates
         if (last.autoDownloadUpdates !== autoDownloadUpdates)
           patch.autoDownloadUpdates = autoDownloadUpdates
+        if (last.tratakaDuration !== tratakaDuration) patch.tratakaDurationSeconds = tratakaDuration
 
         if (window.api?.settings?.patch) {
           await window.api.settings.patch(patch)
@@ -354,6 +366,7 @@ export function SettingsPanel({
     theme,
     autoCheckUpdates,
     autoDownloadUpdates,
+    tratakaDuration,
     loaded,
     onSettingsSaved,
     onIntervalChange
@@ -543,13 +556,13 @@ export function SettingsPanel({
             setInterval={setInterval_}
             dailyFocusTarget={dailyFocusTarget}
             setDailyFocusTarget={setDailyFocusTarget}
+            tratakaDuration={tratakaDuration}
+            setTratakaDuration={setTratakaDuration}
             openAtLogin={openAtLogin}
             setOpenAtLogin={setOpenAtLogin}
             showWidget={showWidget}
             setShowWidget={setShowWidget}
             onOpenShortcuts={onOpenShortcuts}
-            onOpenOnboarding={onOpenOnboarding}
-            onOpenMorningRitual={onOpenMorningRitual}
           />
 
           <CloudSyncSection
@@ -561,13 +574,7 @@ export function SettingsPanel({
           />
         </div>
 
-        <UpdateSettingsSection
-          autoCheckUpdates={autoCheckUpdates}
-          setAutoCheckUpdates={setAutoCheckUpdates}
-          autoDownloadUpdates={autoDownloadUpdates}
-          setAutoDownloadUpdates={setAutoDownloadUpdates}
-          lastUpdateCheck={lastUpdateCheck}
-        />
+        <UpdateSettingsSection lastUpdateCheck={lastUpdateCheck} />
 
         <DiagnosticsSection onOpenGitHubIssues={handleOpenGitHubIssues} />
 

@@ -28,7 +28,12 @@ export const TimelineSessionCard = React.memo(function TimelineSessionCard({
   setRef
 }: TimelineSessionCardProps): React.JSX.Element {
   const config = getLogThemeConfig(log, goals)
-  const isBreak = log.productivity === 'break' || log.text?.toLowerCase().includes('break')
+  const isMeditation =
+    Boolean(log.didDotReset) ||
+    /\b(meditation|trataka)\b/i.test(log.text || '') ||
+    /\b(meditation|trataka)\b/i.test(log.note || '')
+  const isBreak =
+    !isMeditation && (log.productivity === 'break' || log.text?.toLowerCase().includes('break'))
   const isTask = Boolean(log.goalId || log.goalTitle)
   const displayMinutes =
     !isBreak && typeof log.productiveMinutes === 'number' && log.productiveMinutes > 0
@@ -109,32 +114,6 @@ export const TimelineSessionCard = React.memo(function TimelineSessionCard({
             )}
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
-            {typeof log.focusQuality === 'number' && log.focusQuality >= 1 && !isBreak && (
-              <span
-                className={cn(
-                  'text-[9.5px] px-1.5 py-0.2 rounded-md font-medium shrink-0 border inline-flex items-center gap-1 select-none',
-                  log.focusQuality >= 4
-                    ? 'border-apple-green/30 bg-apple-green/10 text-apple-green'
-                    : log.focusQuality === 3
-                      ? 'border-primary/30 bg-primary/10 text-primary'
-                      : 'border-apple-amber/30 bg-apple-amber/10 text-apple-amber'
-                )}
-                title={`Focus Quality: ${log.focusQuality} / 5`}
-              >
-                <span aria-hidden="true">
-                  {log.focusQuality === 5
-                    ? '🚀'
-                    : log.focusQuality === 4
-                      ? '⚡'
-                      : log.focusQuality === 3
-                        ? '🎯'
-                        : log.focusQuality === 2
-                          ? '🌧️'
-                          : '🥱'}
-                </span>
-                <span>{log.focusQuality}/5</span>
-              </span>
-            )}
             <span
               className={cn(
                 'text-[10px] px-2 py-0.5 rounded-full font-semibold shrink-0 border inline-flex items-center gap-1.5 shadow-2xs',

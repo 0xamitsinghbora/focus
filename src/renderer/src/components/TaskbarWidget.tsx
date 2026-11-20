@@ -362,13 +362,7 @@ export function TaskbarWidget(): React.JSX.Element {
     }
 
     const handleDocumentMouseLeave = (): void => {
-      if (
-        !isDraggingRef.current &&
-        typeof window !== 'undefined' &&
-        window.api?.widget?.setIgnoreMouseEvents
-      ) {
-        window.api.widget.setIgnoreMouseEvents(true)
-      }
+      // Keep widget responsive and clickable; do not ignore mouse events so widget never becomes click-through
     }
 
     window.addEventListener('mousemove', handleWindowMouseMove)
@@ -649,7 +643,7 @@ export function TaskbarWidget(): React.JSX.Element {
   const isSlightlyLong = timerText.length === 6 // e.g. "+02:05"
 
   let fontSizeClass = 'text-[14.5px]'
-  let paddingClass = 'pl-1 pr-2'
+  let paddingClass = 'px-1.5'
   let trackingClass = 'tracking-tight'
   let ringSize = 22
   let buttonSize = 'w-[18px] h-[18px]'
@@ -671,14 +665,14 @@ export function TaskbarWidget(): React.JSX.Element {
     iconSize = 9
   } else if (isMedium) {
     fontSizeClass = 'text-[13px]'
-    paddingClass = 'pl-1 pr-1.5'
+    paddingClass = 'px-1.5'
     trackingClass = 'tracking-tight'
     ringSize = 20
     buttonSize = 'w-[18px] h-[18px]'
     iconSize = 9
   } else if (isSlightlyLong) {
     fontSizeClass = 'text-[14px]'
-    paddingClass = 'pl-1 pr-2'
+    paddingClass = 'px-1.5'
     trackingClass = 'tracking-tight'
     ringSize = 22
     buttonSize = 'w-[18px] h-[18px]'
@@ -711,13 +705,7 @@ export function TaskbarWidget(): React.JSX.Element {
         }
       }}
       onMouseLeave={() => {
-        if (
-          !isDraggingRef.current &&
-          typeof window !== 'undefined' &&
-          window.api?.widget?.setIgnoreMouseEvents
-        ) {
-          window.api.widget.setIgnoreMouseEvents(true)
-        }
+        // Keep widget responsive and clickable; do not forward/ignore mouse events
       }}
       style={{ width: outerWidth, height: outerHeight, maxHeight: outerHeight }}
       className="relative overflow-hidden flex items-center justify-center select-none bg-transparent cursor-pointer"
@@ -860,28 +848,13 @@ export function TaskbarWidget(): React.JSX.Element {
           </button>
         </div>
 
-        {/* Timer + optional task name */}
-        <div className="flex-1 flex items-center justify-center gap-1 min-w-0 overflow-hidden">
+        {/* Timer */}
+        <div className="flex-1 flex items-center justify-center min-w-0 overflow-hidden">
           <span
             className={`font-mono ${fontSizeClass} ${trackingClass} font-bold tabular-nums leading-none select-none whitespace-nowrap shrink-0 ${timerColorClass}`}
           >
             {timerText}
           </span>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation()
-              if (typeof window !== 'undefined' && window.api?.session?.quickAction) {
-                window.api.session.quickAction('dot-reset')
-              }
-            }}
-            onMouseDown={(e) => e.stopPropagation()}
-            className="h-3.5 w-3.5 rounded-full flex items-center justify-center text-amber-500/80 hover:text-amber-500 transition-all hover:scale-110 active:scale-95 cursor-pointer shrink-0 opacity-50 hover:opacity-100"
-            title="90s Mind Reset (Trataka)"
-            aria-label="90s Mind Reset"
-          >
-            <span className="text-[10px] leading-none">◉</span>
-          </button>
         </div>
 
         {/* Daily target progress bar — thin bottom edge strip */}

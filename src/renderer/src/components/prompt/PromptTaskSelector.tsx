@@ -9,10 +9,8 @@ export interface PromptTaskSelectorProps {
   itemRefs: React.MutableRefObject<(HTMLButtonElement | null)[]>
   status: 'idle' | 'saving' | 'error'
   onSelectOption: (index: number) => void
-  onQuickDone?: (index: number) => void
   onSnooze: () => void
   snoozeCount?: number
-  onStartDotReset?: () => void
 }
 
 export function PromptTaskSelector({
@@ -21,10 +19,8 @@ export function PromptTaskSelector({
   itemRefs,
   status,
   onSelectOption,
-  onQuickDone,
   onSnooze,
-  snoozeCount,
-  onStartDotReset
+  snoozeCount
 }: PromptTaskSelectorProps): React.JSX.Element {
   return (
     <>
@@ -113,32 +109,6 @@ export function PromptTaskSelector({
                   >
                     {goal.status === 'in_progress' ? 'In Progress' : 'Planned'}
                   </span>
-                  {onQuickDone && (
-                    <button
-                      type="button"
-                      title={`Mark "${goal.title}" done & save`}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        onQuickDone(idx)
-                      }}
-                      className="h-6 px-2 rounded-lg bg-apple-green/15 hover:bg-apple-green/25 text-apple-green border border-apple-green/30 text-[11px] font-semibold flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs"
-                    >
-                      <svg
-                        width="10"
-                        height="10"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="3.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <polyline points="20 6 9 17 4 12" />
-                      </svg>
-                      <span>Done</span>
-                    </button>
-                  )}
                 </div>
               </div>
             )
@@ -250,22 +220,6 @@ export function PromptTaskSelector({
               Esc
             </kbd>
           </button>
-
-          {onStartDotReset && (
-            <button
-              type="button"
-              disabled={status === 'saving'}
-              onClick={(e) => {
-                e.stopPropagation()
-                onStartDotReset()
-              }}
-              className="px-2.5 py-1.5 text-[12px] font-medium text-foreground bg-card hover:bg-secondary border border-border/80 hover:border-border transition-all rounded-xl shadow-apple-subtle hover:shadow-apple-card flex items-center gap-1.5 cursor-pointer active:scale-95 disabled:opacity-40"
-              title="90-second Trataka Mind Reset — decompress and break out of distraction"
-            >
-              <span className="text-apple-amber text-[11px] leading-none">◉</span>
-              <span>90s Dot Reset</span>
-            </button>
-          )}
         </div>
 
         <button

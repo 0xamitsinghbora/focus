@@ -33,7 +33,7 @@ describe('TratakaModal Component', () => {
   })
 
   it('renders fullscreen reset view with centered dot and guidance cue when isOpen is true', () => {
-    render(<TratakaModal isOpen={true} onClose={vi.fn()} initialDurationSeconds={90} />)
+    render(<TratakaModal isOpen={true} onClose={vi.fn()} />)
 
     expect(screen.getByRole('dialog')).toBeDefined()
     expect(screen.getByTestId('trataka-dot')).toBeDefined()
@@ -45,7 +45,7 @@ describe('TratakaModal Component', () => {
   })
 
   it('fades out the eye strain guidance cue after 4.5 seconds', () => {
-    render(<TratakaModal isOpen={true} onClose={vi.fn()} initialDurationSeconds={90} />)
+    render(<TratakaModal isOpen={true} onClose={vi.fn()} />)
 
     const cue = screen.getByText(
       /Rest your eyes softly on the dot\. Blink naturally\. Let the noise settle\./i
@@ -59,21 +59,28 @@ describe('TratakaModal Component', () => {
     expect(cue?.className).toContain('opacity-0')
   })
 
-  it('allows switching duration presets (60s, 90s, 2m, 5m)', () => {
-    render(<TratakaModal isOpen={true} onClose={vi.fn()} initialDurationSeconds={90} />)
+  it('defaults to 60s and allows switching duration presets (30s, 60s, 90s, 2m, 5m)', () => {
+    render(<TratakaModal isOpen={true} onClose={vi.fn()} />)
 
+    const preset30 = screen.getByText('30s')
     const preset60 = screen.getByText('60s')
     const preset90 = screen.getByText('90s')
     const preset5m = screen.getByText('5m')
 
-    expect(preset60).toBeDefined()
-    expect(preset90.className).toContain('font-semibold')
-
-    // Click 60s preset
-    act(() => {
-      fireEvent.click(preset60)
-    })
+    expect(preset30).toBeDefined()
     expect(preset60.className).toContain('font-semibold')
+
+    // Click 30s preset
+    act(() => {
+      fireEvent.click(preset30)
+    })
+    expect(preset30.className).toContain('font-semibold')
+
+    // Click 90s preset
+    act(() => {
+      fireEvent.click(preset90)
+    })
+    expect(preset90.className).toContain('font-semibold')
 
     // Click 5m preset
     act(() => {
@@ -105,12 +112,30 @@ describe('TratakaModal Component', () => {
 
   it('closes when pressing Escape key', () => {
     const handleClose = vi.fn()
-    render(<TratakaModal isOpen={true} onClose={handleClose} initialDurationSeconds={90} />)
+    render(<TratakaModal isOpen={true} onClose={handleClose} />)
 
     act(() => {
       fireEvent.keyDown(window, { key: 'Escape' })
     })
 
+    expect(handleClose).toHaveBeenCalled()
+  })
+
+  it('calls onComplete with elapsed seconds on early exit if elapsed >= 10s', () => {
+    const handleClose = vi.fn()
+    const handleComplete = vi.fn()
+    render(<TratakaModal isOpen={true} onClose={handleClose} onComplete={handleComplete} />)
+
+    act(() => {
+      vi.advanceTimersByTime(15000)
+    })
+
+    const exitBtn = screen.getByRole('button', { name: 'Exit' })
+    act(() => {
+      fireEvent.click(exitBtn)
+    })
+
+    expect(handleComplete).toHaveBeenCalledWith(15)
     expect(handleClose).toHaveBeenCalled()
   })
 

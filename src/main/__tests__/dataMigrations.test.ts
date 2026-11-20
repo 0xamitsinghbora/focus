@@ -71,6 +71,12 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(cols.some((c) => c.name === 'effectiveDate')).toBe(true)
     expect(cols.some((c) => c.name === 'learningTrackId')).toBe(true)
     expect(cols.some((c) => c.name === 'learningStage')).toBe(true)
+    expect(cols.some((c) => c.name === 'goalType')).toBe(true)
+
+    const logCols = db.pragma('table_info(logs)') as { name: string }[]
+    expect(logCols.some((c) => c.name === 'goalType')).toBe(true)
+    expect(logCols.some((c) => c.name === 'audioMode')).toBe(true)
+    expect(logCols.some((c) => c.name === 'didDotReset')).toBe(true)
   })
 
   it('is idempotent when run multiple times', () => {
@@ -78,6 +84,40 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(() => runSchemaMigrations(db)).not.toThrow()
 
     expect(getSchemaVersion(db)).toBe(CURRENT_SCHEMA_VERSION)
+  })
+
+  it('forward migrates existing v3 schema to v4 by adding goalType, audioMode, and didDotReset', () => {
+    // Simulate a database migrated up to schema v3 without goalType on logs/daily_goals
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS daily_goals (
+        id TEXT PRIMARY KEY NOT NULL,
+        date TEXT NOT NULL DEFAULT '',
+        title TEXT NOT NULL DEFAULT '',
+        status TEXT NOT NULL DEFAULT 'planned',
+        learningTrackId TEXT,
+        learningStage INTEGER
+      );
+      CREATE TABLE IF NOT EXISTS logs (
+        id TEXT PRIMARY KEY NOT NULL,
+        date TEXT NOT NULL DEFAULT '',
+        text TEXT NOT NULL DEFAULT '',
+        focusQuality INTEGER
+      );
+    `)
+    db.pragma('user_version = 3')
+    expect(getSchemaVersion(db)).toBe(3)
+
+    // Run migrations from v3
+    runSchemaMigrations(db)
+
+    expect(getSchemaVersion(db)).toBe(4)
+    const goalCols = db.pragma('table_info(daily_goals)') as { name: string }[]
+    expect(goalCols.some((c) => c.name === 'goalType')).toBe(true)
+
+    const logCols = db.pragma('table_info(logs)') as { name: string }[]
+    expect(logCols.some((c) => c.name === 'goalType')).toBe(true)
+    expect(logCols.some((c) => c.name === 'audioMode')).toBe(true)
+    expect(logCols.some((c) => c.name === 'didDotReset')).toBe(true)
   })
 
   it('forward migrates older schema versions sequentially inside transactions', () => {

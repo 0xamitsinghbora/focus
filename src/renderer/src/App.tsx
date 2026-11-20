@@ -26,11 +26,11 @@ import { TodayMetricsRow } from './components/TodayMetricsRow'
 import { ReviewDateNavigator } from './components/ReviewDateNavigator'
 import { WeeklyInsightsPanel } from './components/WeeklyInsightsPanel'
 import { useWeeklyInsights } from './hooks/useWeeklyInsights'
-import { MorningRitualModal } from './components/MorningRitualModal'
 import { BreakRecoveryModal } from './components/BreakRecoveryModal'
 import { OnboardingModal, OnboardingConfig } from './components/OnboardingModal'
 import { TratakaModal } from './components/TratakaModal'
-import { BreakNudgePayload, AppSettings } from '../../shared/types'
+import { BreakNudgePayload, AppSettings, LogEntry } from '../../shared/types'
+import { useFocusSessionStore } from './context/focusSessionStore'
 import { playFocusChime } from './lib/audioEngine'
 
 function App(): React.JSX.Element {
@@ -46,12 +46,9 @@ function App(): React.JSX.Element {
   }, [toast])
 
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false)
-  const [isMorningRitualOpen, setIsMorningRitualOpen] = useState(false)
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false)
-  const [lastMorningRitualDate, setLastMorningRitualDate] = useState<string>('')
   const [activeBreakNudge, setActiveBreakNudge] = useState<BreakNudgePayload | null>(null)
   const [isTratakaOpen, setIsTratakaOpen] = useState(false)
-  const ritualCheckDoneRef = useRef(false)
   const onboardingCheckDoneRef = useRef(false)
 
   // Listen for remote quick actions (such as dot-reset from widget or prompt)
@@ -194,6 +191,8 @@ function App(): React.JSX.Element {
     interval,
     setInterval_,
     dailyFocusTargetMinutes,
+    tratakaDurationSeconds,
+    setTratakaDurationSeconds,
     persistedLoggedMinutesMap,
     loadLogs,
     loadHeatmap,
@@ -215,16 +214,14 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     rolloverHandlerRef.current = () => {
-      ritualCheckDoneRef.current = false
       onboardingCheckDoneRef.current = false
-      setLastMorningRitualDate('')
       loadTodayData()
       loadLogs()
       loadHeatmap()
     }
   }, [loadTodayData, loadLogs, loadHeatmap])
 
-  // Automatic detection of onboarding or first daily open for morning planning ritual
+  // Automatic detection of onboarding
   useEffect(() => {
     if (loading || onboardingCheckDoneRef.current) return
     onboardingCheckDoneRef.current = true
@@ -232,7 +229,6 @@ function App(): React.JSX.Element {
     window.api.settings
       .get()
       .then((settings) => {
-        setLastMorningRitualDate(settings?.lastMorningRitualDate || '')
         const hasLogs = logs.length > 0
         const hasGoals = todayGoals.length > 0
         const hasHeatmap = heatmapData && Object.keys(heatmapData).length > 0
@@ -247,27 +243,10 @@ function App(): React.JSX.Element {
           if (!settings?.hasCompletedOnboarding) {
             window.api.settings.patch({ hasCompletedOnboarding: true }).catch(() => {})
           }
-          // Only check morning ritual if onboarding is not active
-          const today = getTodayStr()
-          if (settings && settings.lastMorningRitualDate !== today) {
-            setIsMorningRitualOpen(true)
-          }
         }
       })
       .catch(() => {})
-  }, [loading, logs.length, todayGoals.length, heatmapData, getTodayStr, setTab])
-
-  const handleUpdateTargetMinutes = useCallback(
-    async (minutes: number) => {
-      try {
-        await window.api.settings.patch({ dailyFocusTargetMinutes: minutes })
-        await loadTodayData()
-      } catch (err) {
-        console.error('Failed to update target minutes:', err)
-      }
-    },
-    [loadTodayData]
-  )
+  }, [loading, logs.length, todayGoals.length, heatmapData, setTab])
 
   const tabChangeSeqRef = useRef(0)
   const handleTabChange = useCallback(
@@ -363,10 +342,13 @@ function App(): React.JSX.Element {
       if (typeof settings?.reminderIntervalMinutes === 'number') {
         setInterval_(settings.reminderIntervalMinutes)
       }
+      if (typeof settings?.tratakaDurationSeconds === 'number') {
+        setTratakaDurationSeconds(settings.tratakaDurationSeconds)
+      }
     } catch (e) {
       console.error('Failed to reload settings after save:', e)
     }
-  }, [updateCutoffHour, setInterval_])
+  }, [updateCutoffHour, setInterval_, setTratakaDurationSeconds])
 
   const handleSyncComplete = useCallback(async () => {
     await loadTodayData()
@@ -377,6 +359,50 @@ function App(): React.JSX.Element {
       setInterval_(n)
     },
     [setInterval_]
+  )
+
+  const handleTratakaComplete = useCallback(
+    async (elapsedSeconds?: number) => {
+      const sec = elapsedSeconds && elapsedSeconds > 0 ? elapsedSeconds : tratakaDurationSeconds
+      const durationMinutes = Math.max(1, Math.round(sec / 60))
+      const now = Date.now()
+      const startMs = now - sec * 1000
+      const startedAt = new Date(startMs).toISOString()
+      const endedAt = new Date(now).toISOString()
+
+      // Reset emptyInProgressStartEpoch so Trataka time is never counted as break
+      useFocusSessionStore.setState({ emptyInProgressStartEpoch: 0 })
+
+      const entry: LogEntry = {
+        id: crypto.randomUUID(),
+        timestamp: endedAt,
+        startedAt,
+        endedAt,
+        text: 'Meditation',
+        productivity: 'productive',
+        didDotReset: true,
+        durationMinutes,
+        productiveMinutes: durationMinutes
+      }
+
+      try {
+        if (window.api?.logs?.append) {
+          const dateStr = getTodayStr()
+          await window.api.logs.append(dateStr, entry, false)
+        }
+        if (window.api?.scheduler?.submit) {
+          window.api.scheduler.submit()
+        }
+        await loadTodayData()
+        toastRef.current.show('Meditation recorded.', {
+          title: 'Meditation Recorded',
+          type: 'success'
+        })
+      } catch (err) {
+        console.error('Failed to log trataka meditation:', err)
+      }
+    },
+    [tratakaDurationSeconds, getTodayStr, loadTodayData]
   )
 
   const handleCompleteOnboarding = useCallback(
@@ -503,12 +529,7 @@ function App(): React.JSX.Element {
           />
         )}
 
-        <AppHeader
-          onOpenMorningRitual={
-            lastMorningRitualDate !== todayDateStr ? () => setIsMorningRitualOpen(true) : undefined
-          }
-          onOpenTrataka={() => setIsTratakaOpen(true)}
-        />
+        <AppHeader onOpenTrataka={() => setIsTratakaOpen(true)} />
 
         <div id="main-content" role="main" className="relative z-10 min-h-0 flex-1 overflow-hidden">
           {tabLoading && (
@@ -634,11 +655,7 @@ function App(): React.JSX.Element {
                     <MetricCard
                       label="Focus Sessions"
                       value={`${reviewLogs.length} ${reviewLogs.length === 1 ? 'session' : 'sessions'}`}
-                      hint={
-                        selectedDayReview?.averageFocusQuality
-                          ? `⚡ ${selectedDayReview.averageFocusQuality}/5 quality · ${reviewSessionsHint}`
-                          : reviewSessionsHint
-                      }
+                      hint={reviewSessionsHint}
                     />
                     <MetricCard
                       label="Current Streak"
@@ -695,8 +712,6 @@ function App(): React.JSX.Element {
                   onSyncComplete={handleSyncComplete}
                   onIntervalChange={handleIntervalChange}
                   onOpenShortcuts={() => setIsShortcutsOpen(true)}
-                  onOpenOnboarding={() => setIsOnboardingOpen(true)}
-                  onOpenMorningRitual={() => setIsMorningRitualOpen(true)}
                 />
               </ErrorBoundary>
             )}
@@ -707,21 +722,6 @@ function App(): React.JSX.Element {
         isOpen={isShortcutsOpen}
         onClose={() => setIsShortcutsOpen(false)}
         isMac={isMac}
-      />
-      <MorningRitualModal
-        isOpen={isMorningRitualOpen}
-        onClose={() => setIsMorningRitualOpen(false)}
-        todayStr={todayDateStr}
-        todayGoals={todayGoals}
-        dailyFocusTargetMinutes={dailyFocusTargetMinutes}
-        onUpdateTargetMinutes={handleUpdateTargetMinutes}
-        onCarryGoal={handleCarryGoal}
-        onPromoteGoal={handlePromoteGoal}
-        onAddGoal={handleAddGoal}
-        onRitualCompleted={async () => {
-          setLastMorningRitualDate(todayDateStr)
-          await loadTodayData()
-        }}
       />
       <BreakRecoveryModal
         nudge={activeBreakNudge}
@@ -746,7 +746,12 @@ function App(): React.JSX.Element {
         defaultDailyTargetMinutes={dailyFocusTargetMinutes}
         onComplete={handleCompleteOnboarding}
       />
-      <TratakaModal isOpen={isTratakaOpen} onClose={() => setIsTratakaOpen(false)} />
+      <TratakaModal
+        isOpen={isTratakaOpen}
+        onClose={() => setIsTratakaOpen(false)}
+        initialDurationSeconds={tratakaDurationSeconds}
+        onComplete={handleTratakaComplete}
+      />
     </FocusSessionProvider>
   )
 }

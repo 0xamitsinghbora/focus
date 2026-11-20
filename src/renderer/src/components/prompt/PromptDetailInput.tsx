@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react'
-import { AudioMode } from '../../../../shared/types'
 import { PromptOption } from './types'
 import { cn } from '../../lib/utils'
 import { getGroupTheme, getPreferredGroupColor } from '../../lib/groupTheme'
@@ -8,18 +7,10 @@ export interface PromptDetailInputProps {
   currentOption?: PromptOption
   note: string
   setNote: (note: string) => void
-  focusQuality?: number
-  setFocusQuality?: (quality: number) => void
-  audioMode?: AudioMode | null
-  setAudioMode?: (mode: AudioMode | null) => void
   validationError: string | null
   setValidationError: (err: string | null) => void
   status: 'idle' | 'saving' | 'error'
   detailInputRef: React.RefObject<HTMLInputElement | null>
-  markCompleted?: boolean
-  setMarkCompleted?: (val: boolean) => void
-  addToPlanner?: boolean
-  setAddToPlanner?: (val: boolean) => void
   onBack: () => void
   onSubmit: () => void
   onKeyDown: (e: React.KeyboardEvent) => void
@@ -29,18 +20,10 @@ export function PromptDetailInput({
   currentOption,
   note,
   setNote,
-  focusQuality = 4,
-  setFocusQuality,
-  audioMode,
-  setAudioMode,
   validationError,
   setValidationError,
   status,
   detailInputRef,
-  markCompleted,
-  setMarkCompleted,
-  addToPlanner,
-  setAddToPlanner,
   onBack,
   onSubmit,
   onKeyDown
@@ -165,11 +148,11 @@ export function PromptDetailInput({
           <span
             className={isDetailRequired ? 'text-foreground font-semibold' : 'text-muted-foreground'}
           >
-            {isDetailRequired ? 'Detail (required)' : 'Detail (optional)'}
+            Detail
           </span>
-          {isDetailRequired && !note.trim() && (
-            <span className="text-[10px] text-muted-foreground/70">Required</span>
-          )}
+          <span className="text-[10px] text-muted-foreground/70">
+            {isDetailRequired ? 'Required' : 'Optional'}
+          </span>
         </div>
         <div className="relative">
           <input
@@ -196,143 +179,6 @@ export function PromptDetailInput({
             className="text-[11px] font-medium text-apple-red px-0.5 animate-in fade-in"
           >
             {validationError}
-          </div>
-        )}
-
-        {currentOption?.type === 'goal' && (
-          <label className="flex items-center gap-2 pt-0.5 text-[12px] font-medium text-foreground cursor-pointer select-none">
-            <input
-              type="checkbox"
-              aria-label="Mark task as completed"
-              checked={Boolean(markCompleted)}
-              onChange={(e) => setMarkCompleted?.(e.target.checked)}
-              disabled={status === 'saving'}
-              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/60 cursor-pointer accent-primary"
-            />
-            <span>Mark task as completed</span>
-          </label>
-        )}
-
-        {currentOption?.type === 'other' && (
-          <label className="flex items-center gap-2 pt-0.5 text-[12px] font-medium text-foreground cursor-pointer select-none">
-            <input
-              type="checkbox"
-              aria-label="Add as task to planner"
-              checked={Boolean(addToPlanner)}
-              onChange={(e) => setAddToPlanner?.(e.target.checked)}
-              disabled={status === 'saving'}
-              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/60 cursor-pointer accent-primary"
-            />
-            <span>Add as task to planner</span>
-          </label>
-        )}
-
-        {currentOption?.type !== 'break' && (
-          <div className="space-y-1 pt-1 border-t border-border/50">
-            <div className="flex items-center justify-between text-[11px] font-medium px-0.5">
-              <span className="text-muted-foreground">Focus Quality</span>
-              <span className="text-[10.5px] font-medium text-foreground/85">
-                {focusQuality === 1 && '🥱 1 · Daydreaming / Wandering'}
-                {focusQuality === 2 && '🌧️ 2 · Low Focus'}
-                {focusQuality === 3 && '🎯 3 · Moderate'}
-                {focusQuality === 4 && '⚡ 4 · Good Focus'}
-                {focusQuality === 5 && '🚀 5 · Deep Flow'}
-              </span>
-            </div>
-            <div
-              className="grid grid-cols-5 gap-1.5"
-              role="radiogroup"
-              aria-label="Focus Quality Rating"
-            >
-              {[
-                { val: 1, label: 'Daydreaming', icon: '🥱' },
-                { val: 2, label: 'Low', icon: '🌧️' },
-                { val: 3, label: 'Moderate', icon: '🎯' },
-                { val: 4, label: 'Good', icon: '⚡' },
-                { val: 5, label: 'Deep Flow', icon: '🚀' }
-              ].map(({ val, label, icon }) => {
-                const isSelected = focusQuality === val
-                return (
-                  <button
-                    key={val}
-                    type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    aria-label={`${val} - ${label}`}
-                    onClick={() => setFocusQuality?.(val)}
-                    disabled={status === 'saving'}
-                    className={cn(
-                      'flex flex-col items-center justify-center py-1.5 px-1 rounded-xl border text-[11px] font-medium transition-all duration-150 cursor-pointer select-none',
-                      isSelected
-                        ? 'bg-primary/15 border-primary text-primary font-semibold shadow-2xs scale-[1.02]'
-                        : 'bg-card hover:bg-secondary/70 border-border/70 text-muted-foreground hover:text-foreground'
-                    )}
-                    title={`Rate ${val}: ${label}`}
-                  >
-                    <span className="text-[13px] leading-none mb-0.5" aria-hidden="true">
-                      {icon}
-                    </span>
-                    <span className="text-[9.5px] tracking-tight">{val}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Audio Mode Pill Selector */}
-        {currentOption?.type !== 'break' && (
-          <div className="space-y-1.5 pt-1 border-t border-border/50">
-            <div className="flex items-center justify-between text-[11px] font-medium px-0.5">
-              <span className="text-muted-foreground">Soundtrack</span>
-              {audioMode && (
-                <span className="text-[10px] text-muted-foreground/75 font-mono capitalize">
-                  {audioMode === 'focus_sound' ? 'Focus Sounds' : audioMode}
-                </span>
-              )}
-            </div>
-            <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Audio Mode">
-              {[
-                { id: 'silence' as const, label: 'Silence', icon: '🔇' },
-                { id: 'focus_sound' as const, label: 'Focus Sound', icon: '🎧' },
-                { id: 'music' as const, label: 'Music', icon: '🎵' }
-              ].map((m) => {
-                const isSelected = audioMode === m.id
-                return (
-                  <button
-                    key={m.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={isSelected}
-                    onClick={() => setAudioMode?.(isSelected ? null : m.id)}
-                    disabled={status === 'saving'}
-                    className={cn(
-                      'flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-xl border text-[11px] font-medium transition-all duration-150 cursor-pointer select-none',
-                      isSelected
-                        ? 'bg-primary/15 border-primary text-primary font-semibold shadow-2xs'
-                        : 'bg-card hover:bg-secondary/70 border-border/70 text-muted-foreground hover:text-foreground'
-                    )}
-                  >
-                    <span className="text-[12px]">{m.icon}</span>
-                    <span>{m.label}</span>
-                  </button>
-                )
-              })}
-            </div>
-
-            {/* Gentle Nudge when feeling scattered / distracted while listening to music on deep task */}
-            {currentOption?.type === 'goal' &&
-              (currentOption.goal.goalType || 'deep') === 'deep' &&
-              audioMode === 'music' &&
-              (focusQuality ?? 4) <= 2 && (
-                <div className="mt-1.5 p-2.5 rounded-xl bg-apple-amber/10 border border-apple-amber/30 text-foreground text-[11px] leading-relaxed flex items-start gap-2 animate-in fade-in duration-200">
-                  <span className="text-[13px] shrink-0">💡</span>
-                  <span>
-                    Feeling scattered? Try pausing lyrics and switching to Rain or Silence for the
-                    next 20 minutes.
-                  </span>
-                </div>
-              )}
           </div>
         )}
       </div>

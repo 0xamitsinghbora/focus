@@ -39,6 +39,8 @@ export interface AppDataOrchestratorResult {
   interval: number
   setInterval_: React.Dispatch<React.SetStateAction<number>>
   dailyFocusTargetMinutes: number
+  tratakaDurationSeconds: number
+  setTratakaDurationSeconds: React.Dispatch<React.SetStateAction<number>>
   persistedLoggedMinutesMap: Record<string, number>
   loadLogs: () => Promise<void>
   loadHeatmap: () => Promise<void>
@@ -69,6 +71,7 @@ export function useAppDataOrchestrator({
   const [selectedDayReview, setSelectedDayReview] = useState<DayReviewData | null>(null)
   const [interval, setInterval_] = useState(45)
   const [dailyFocusTargetMinutes, setDailyFocusTargetMinutes] = useState(480)
+  const [tratakaDurationSeconds, setTratakaDurationSeconds] = useState(60)
   const [persistedLoggedMinutesMap, setPersistedLoggedMinutesMap] = useState<
     Record<string, number>
   >({})
@@ -186,6 +189,7 @@ export function useAppDataOrchestrator({
             setTheme(settings.theme, false)
           }
           setInterval_(settings.reminderIntervalMinutes || 45)
+          setTratakaDurationSeconds(settings.tratakaDurationSeconds || 60)
           setDailyFocusTargetMinutes(
             typeof settings.dailyFocusTargetMinutes === 'number'
               ? settings.dailyFocusTargetMinutes
@@ -383,6 +387,8 @@ export function useAppDataOrchestrator({
     interval,
     setInterval_,
     dailyFocusTargetMinutes,
+    tratakaDurationSeconds,
+    setTratakaDurationSeconds,
     persistedLoggedMinutesMap,
     loadLogs,
     loadHeatmap,

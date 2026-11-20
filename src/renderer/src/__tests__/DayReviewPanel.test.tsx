@@ -287,7 +287,7 @@ describe('DayReviewPanel Component', () => {
     )
   })
 
-  it('renders audio correlation insights when 3+ sessions with audio logged exist', () => {
+  it('does not render gimmicky audio correlation insights card in day review', () => {
     const mockReview: DayReviewData = {
       date: '2026-10-28',
       logs: [
@@ -371,14 +371,7 @@ describe('DayReviewPanel Component', () => {
 
     render(<DayReviewPanel review={mockReview} today="2026-10-28" />)
 
-    expect(screen.getByText(/Audio & Deep Focus Correlation/i)).toBeDefined()
-    expect(screen.getByText(/3 audio-tracked sessions/i)).toBeDefined()
-    expect(
-      screen.getByText(
-        /You completed 100% of deep focus goals when listening to rain\/silence, compared to 0% with music\./i
-      )
-    ).toBeDefined()
-    expect(screen.getByText(/Silence & Focus Sounds/i)).toBeDefined()
-    expect(screen.getByText(/🎵 Music/i)).toBeDefined()
+    expect(screen.queryByText(/Audio & Deep Focus Correlation/i)).toBeNull()
+    expect(screen.queryByText(/audio-tracked sessions/i)).toBeNull()
   })
 })

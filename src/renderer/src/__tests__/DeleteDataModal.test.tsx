@@ -35,7 +35,7 @@ describe('DeleteDataModal Component', () => {
     // Step 1: Initial state
     expect(screen.getByRole('heading', { name: 'Delete All Data' })).toBeDefined()
     expect(screen.getByText(/permanently delete all your Focus session logs/i)).toBeDefined()
-    const step1Btn = screen.getByRole('button', { name: 'Yes, delete my data (1/3)' })
+    const step1Btn = screen.getByRole('button', { name: 'Yes, delete my data' })
     expect(step1Btn).toBeDefined()
     expect(mockConfirmDelete).not.toHaveBeenCalled()
 
@@ -45,12 +45,12 @@ describe('DeleteDataModal Component', () => {
     // Step 2: Warning state & swapped layout button
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
+        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' })
       ).toBeDefined()
     })
     expect(screen.getByText(/Caution: Once deleted, this action cannot be undone/i)).toBeDefined()
     const step2Btn = screen.getByRole('button', {
-      name: 'Yes, I understand this cannot be undone (2/3)'
+      name: 'Yes, I understand this cannot be undone'
     })
 
     // Click step 2
@@ -59,12 +59,12 @@ describe('DeleteDataModal Component', () => {
     // Step 3: Final confirmation button
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
+        screen.getByRole('button', { name: 'Yes, permanently delete everything now' })
       ).toBeDefined()
     })
     expect(screen.getByText(/Final Confirmation \(Step 3 of 3\)/i)).toBeDefined()
     const step3Btn = screen.getByRole('button', {
-      name: 'Yes, permanently delete everything now (3/3)'
+      name: 'Yes, permanently delete everything now'
     })
 
     // Click step 3
@@ -88,13 +88,13 @@ describe('DeleteDataModal Component', () => {
     )
 
     // Advance to step 2
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data (1/3)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data' }))
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Cancel (Abort)' })).toBeDefined()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeDefined()
     })
 
     // Click Cancel
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel (Abort)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(mockClose).toHaveBeenCalledTimes(1)
   })
 
@@ -190,7 +190,7 @@ describe('DeleteDataModal Component', () => {
 
     const cancelBtn = screen.getByRole('button', { name: 'Cancel' })
     expect(cancelBtn).toHaveProperty('disabled', true)
-    const step1Btn = screen.getByRole('button', { name: 'Yes, delete my data (1/3)' })
+    const step1Btn = screen.getByRole('button', { name: 'Yes, delete my data' })
     expect(step1Btn).toHaveProperty('disabled', true)
   })
 })

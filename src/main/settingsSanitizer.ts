@@ -23,7 +23,8 @@ const KNOWN_SETTING_KEYS = new Set<string>([
   'autoCheckUpdates',
   'autoDownloadUpdates',
   'lastUpdateCheck',
-  'lastRunVersion'
+  'lastRunVersion',
+  'tratakaDurationSeconds'
 ])
 
 export function sanitizeSettings(settings: Partial<AppSettings>): Record<string, unknown> {
@@ -66,6 +67,9 @@ export function sanitizeSettings(settings: Partial<AppSettings>): Record<string,
         }
         sanitized[k] = shortcuts
       }
+    } else if (k === 'tratakaDurationSeconds') {
+      const num = typeof v === 'number' ? Math.round(v) : NaN
+      sanitized[k] = !isNaN(num) && num >= 10 ? Math.min(600, num) : 60
     } else {
       sanitized[k] = v
     }

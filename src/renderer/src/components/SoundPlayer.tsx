@@ -325,8 +325,6 @@ function SoundPresetPopover({
   onRemoveCustomTrack,
   onChooseCustomFile,
   onClearCustomFile,
-  isFadingToSilence,
-  onToggleFadeToSilence,
   className,
   gridClassName
 }: {
@@ -347,8 +345,6 @@ function SoundPresetPopover({
   onRemoveCustomTrack?: (id: string) => void
   onChooseCustomFile: () => void
   onClearCustomFile?: () => void
-  isFadingToSilence?: boolean
-  onToggleFadeToSilence?: () => void
   className?: string
   gridClassName?: string
 }): React.JSX.Element {
@@ -364,7 +360,7 @@ function SoundPresetPopover({
   return (
     <div
       className={cn(
-        'absolute left-0 top-full mt-2 z-50 w-[320px] rounded-2xl border border-border/70 bg-card/95 dark:bg-[#16161a]/95 backdrop-blur-2xl p-3 shadow-apple-popover apple-glass animate-in fade-in zoom-in-95 duration-150 select-none text-foreground',
+        'absolute left-0 top-full mt-2 z-50 w-[320px] rounded-2xl border border-border/80 dark:border-white/10 bg-card dark:bg-[#18181c] p-3 shadow-2xl shadow-black/50 dark:shadow-black/80 animate-in fade-in zoom-in-95 duration-150 select-none text-foreground',
         className
       )}
     >
@@ -484,7 +480,7 @@ function SoundPresetPopover({
                       }
                     }}
                     className={cn(
-                      'group/track flex items-center justify-between gap-1 px-2 py-1 rounded-xl text-left border transition-all active:scale-[0.98] cursor-pointer min-w-0 h-[32px]',
+                      'group/track flex items-center justify-between gap-1 px-2 py-1 rounded-xl text-left border transition-all active:scale-[0.98] cursor-pointer min-w-0 h-8',
                       isSelected
                         ? 'bg-foreground text-background font-semibold border-foreground shadow-2xs'
                         : 'bg-surface/60 border-border/60 hover:bg-surface hover:border-border text-foreground/85'
@@ -501,14 +497,14 @@ function SoundPresetPopover({
                         )}
                       >
                         {isSelected && playing ? (
-                          <div className="flex items-end gap-[1px] h-2.5">
-                            <span className="w-[1px] h-1.5 rounded-full bg-current animate-pulse" />
+                          <div className="flex items-end gap-px h-2.5">
+                            <span className="w-px h-1.5 rounded-full bg-current animate-pulse" />
                             <span
-                              className="w-[1px] h-2.5 rounded-full bg-current animate-pulse"
+                              className="w-px h-2.5 rounded-full bg-current animate-pulse"
                               style={{ animationDelay: '150ms' }}
                             />
                             <span
-                              className="w-[1px] h-1 rounded-full bg-current animate-pulse"
+                              className="w-px h-1 rounded-full bg-current animate-pulse"
                               style={{ animationDelay: '300ms' }}
                             />
                           </div>
@@ -594,7 +590,7 @@ function SoundPresetPopover({
                 type="button"
                 onClick={() => onSelectPreset(p.key)}
                 className={cn(
-                  'flex items-center gap-2 p-2 rounded-xl text-left border transition-all active:scale-[0.98] cursor-pointer min-w-0 h-[44px]',
+                  'flex items-center gap-2 p-2 rounded-xl text-left border transition-all duration-150 active:scale-[0.98] cursor-pointer min-w-0 h-[46px]',
                   isSelected
                     ? 'bg-foreground text-background font-semibold border-foreground shadow-2xs'
                     : 'bg-surface/60 border-border/60 hover:bg-surface hover:border-border text-foreground/85'
@@ -622,15 +618,22 @@ function SoundPresetPopover({
                       />
                     </div>
                   ) : (
-                    p.icon('shrink-0')
+                    p.icon('shrink-0 w-3.5 h-3.5')
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-[11.5px] font-medium leading-none truncate">{p.label}</div>
                   <div
                     className={cn(
-                      'text-[9.5px] mt-1 leading-none truncate',
-                      isSelected ? 'text-background/70' : 'text-muted-foreground'
+                      'text-[11.5px] font-medium leading-none truncate',
+                      isSelected ? 'text-inherit font-semibold' : 'text-foreground'
+                    )}
+                  >
+                    {p.label}
+                  </div>
+                  <div
+                    className={cn(
+                      'text-[9.5px] mt-1 leading-none truncate font-normal',
+                      isSelected ? 'text-inherit/70' : 'text-muted-foreground'
                     )}
                   >
                     {p.sublabel}
@@ -640,24 +643,6 @@ function SoundPresetPopover({
             )
           })
         )}
-      </div>
-
-      {/* Fade to Silence (5m) Toggle */}
-      <div className="mt-2.5 pt-2 border-t border-border/40 flex items-center justify-between px-1">
-        <span className="text-[11px] text-muted-foreground font-medium">Fade to Silence (5m)</span>
-        <button
-          type="button"
-          onClick={onToggleFadeToSilence}
-          className={cn(
-            'px-2 py-0.5 rounded-lg text-[10.5px] font-medium transition-all cursor-pointer border',
-            isFadingToSilence
-              ? 'bg-apple-amber/20 text-apple-amber border-apple-amber/40 font-semibold'
-              : 'bg-secondary/70 text-muted-foreground hover:text-foreground border-border/60'
-          )}
-          title="Gradually fade audio to true silence over 5 minutes once in flow"
-        >
-          {isFadingToSilence ? 'Fading (5m)...' : 'Fade in 5m'}
-        </button>
       </div>
     </div>
   )
@@ -683,10 +668,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio,
-    isFadingToSilence,
-    startFadeToSilence,
-    cancelFadeToSilence
+    clearCustomAudio
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -850,7 +832,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
             title="Click to pause soundscape"
             aria-label="Pause soundscape"
           >
-            <div className="flex items-end gap-[2px] h-3">
+            <div className="flex items-end gap-0.5 h-3">
               <span className="w-[1.5px] h-2 rounded-full bg-apple-green animate-pulse" />
               <span
                 className="w-[1.5px] h-3 rounded-full bg-apple-green animate-pulse"
@@ -861,7 +843,7 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
                 style={{ animationDelay: '300ms' }}
               />
             </div>
-            <span className="text-[11.5px] font-semibold truncate max-w-[120px]">
+            <span className="text-[11.5px] font-semibold truncate max-w-30">
               {activePreset.label}
             </span>
             {spatialAudio && (
@@ -956,11 +938,6 @@ export function CompactSoundPlayer({ className }: { className?: string }): React
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
-          isFadingToSilence={isFadingToSilence}
-          onToggleFadeToSilence={() => {
-            if (isFadingToSilence) cancelFadeToSilence()
-            else startFadeToSilence(300)
-          }}
         />
       )}
     </div>
@@ -986,10 +963,7 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio,
-    isFadingToSilence,
-    startFadeToSilence,
-    cancelFadeToSilence
+    clearCustomAudio
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -1172,7 +1146,7 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
             <div className="flex items-center gap-1.5">
               <span
                 className={cn(
-                  'text-[15px] sm:text-[16px] font-bold tracking-[-0.025em] leading-tight truncate',
+                  'text-[15px] sm:text-[16px] font-bold tracking-tight leading-tight truncate',
                   playing ? 'text-foreground' : 'text-foreground/90'
                 )}
               >
@@ -1312,12 +1286,7 @@ export function SoundPlayerCard({ className }: { className?: string }): React.JS
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
-          isFadingToSilence={isFadingToSilence}
-          onToggleFadeToSilence={() => {
-            if (isFadingToSilence) cancelFadeToSilence()
-            else startFadeToSilence(300)
-          }}
-          className="w-[320px] sm:w-[340px]"
+          className="w-[320px] sm:w-85"
         />
       )}
     </div>
@@ -1348,10 +1317,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
     selectCustomAudio,
     removeCustomAudio,
     loadCustomAudio,
-    clearCustomAudio,
-    isFadingToSilence,
-    startFadeToSilence,
-    cancelFadeToSilence
+    clearCustomAudio
   } = useAudioEngine()
 
   const [isOpen, setIsOpen] = useState(false)
@@ -1512,7 +1478,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
         onChange={handleFileChange}
       />
 
-      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 lg:gap-6 min-h-[56px] sm:min-h-[60px]">
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4 lg:gap-6 min-h-14 sm:min-h-15">
         {/* LEFT: Artwork & Track Meta (Clicking opens soundscape presets) */}
         <div
           onClick={() => setIsOpen((prev) => !prev)}
@@ -1640,7 +1606,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
                 viewBox="0 0 24 24"
                 fill="currentColor"
                 aria-hidden="true"
-                className="translate-x-[1px]"
+                className="translate-x-px"
               >
                 <path d="M7 4.88v14.24a1.2 1.2 0 0 0 1.83 1.02l11.4-7.12a1.2 1.2 0 0 0 0-2.04L8.83 3.86A1.2 1.2 0 0 0 7 4.88z" />
               </svg>
@@ -1682,7 +1648,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
           }
           className="relative flex items-center justify-end h-11 sm:h-12 w-full md:w-auto md:max-w-[calc(50%-100px)] cursor-pointer group/wave select-none px-2 ml-auto"
         >
-          <div className="flex items-center justify-center gap-[3px] sm:gap-[3.5px] h-9 sm:h-10 flex-1 overflow-hidden">
+          <div className="flex items-center justify-center gap-0.75 sm:gap-[3.5px] h-9 sm:h-10 flex-1 overflow-hidden">
             {MODERN_WAVE_BARS.map((h, i) => {
               const speed = 0.75 + ((i * 7) % 8) * 0.1
               const delay = ((i * 3) % 10) * 80
@@ -1691,7 +1657,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
                 <span
                   key={i}
                   className={cn(
-                    'w-[2.5px] sm:w-[3px] rounded-full transition-all duration-300',
+                    'w-[2.5px] sm:w-0.75 rounded-full transition-all duration-300',
                     playing
                       ? 'bg-foreground/85 dark:bg-white/90 animate-sound-wave'
                       : 'bg-muted-foreground/25 group-hover/wave:bg-muted-foreground/45'
@@ -1730,12 +1696,7 @@ export function ModernAudioPlayer({ className }: { className?: string }): React.
           onRemoveCustomTrack={removeCustomAudio}
           onChooseCustomFile={handleChooseCustomFile}
           onClearCustomFile={clearCustomAudio}
-          isFadingToSilence={isFadingToSilence}
-          onToggleFadeToSilence={() => {
-            if (isFadingToSilence) cancelFadeToSilence()
-            else startFadeToSilence(300)
-          }}
-          className="w-[340px] sm:w-[370px] left-0 sm:left-2 top-full mt-2.5 z-50 shadow-apple-popover"
+          className="w-85 sm:w-92.5 left-0 sm:left-2 top-full mt-2.5 z-50 shadow-apple-popover"
           gridClassName="h-[185px] sm:h-[205px]"
         />
       )}

@@ -59,6 +59,12 @@ export function FocusSessionProvider({
   const pauseStartEpochRef = useRef<number>(0)
   const emptyInProgressStartEpochRef = useRef<number>(0)
   const accumulatedPausedMsRef = useRef<number>(0)
+
+  useEffect(() => {
+    return useFocusSessionStore.subscribe((state) => {
+      emptyInProgressStartEpochRef.current = state.emptyInProgressStartEpoch || 0
+    })
+  }, [])
   const targetSecondsRef = useRef<number>((defaultIntervalMinutes || 45) * 60)
   const secondsRemainingRef = useRef<number>((defaultIntervalMinutes || 45) * 60)
   const secondsElapsedRef = useRef<number>(0)
@@ -1694,6 +1700,46 @@ export function FocusSessionProvider({
     return isActive && activeGoal?.id === goalId
   }, [])
 
+  const logMeditation = useCallback(async (seconds?: number): Promise<void> => {
+    const durationSec = seconds && seconds > 0 ? seconds : 60
+    const durationMins = Math.max(1, Math.round(durationSec / 60))
+    const now = Date.now()
+    const startMs = now - durationSec * 1000
+    const startedAt = new Date(startMs).toISOString()
+    const endedAt = new Date(now).toISOString()
+
+    // Reset emptyInProgressStartEpoch so Trataka time is not counted as break
+    emptyInProgressStartEpochRef.current = 0
+    useFocusSessionStore.setState({ emptyInProgressStartEpoch: 0 })
+
+    const entry: LogEntry = {
+      id: crypto.randomUUID(),
+      timestamp: endedAt,
+      startedAt,
+      endedAt,
+      text: 'Meditation',
+      productivity: 'productive',
+      didDotReset: true,
+      durationMinutes: durationMins,
+      productiveMinutes: durationMins
+    }
+
+    try {
+      if (window.api?.logs?.append) {
+        const dateStr = localDateStr(new Date(now), dayCutoffHourRef.current)
+        await window.api.logs.append(dateStr, entry, false)
+      }
+      if (window.api?.scheduler?.submit) {
+        window.api.scheduler.submit()
+      }
+      if (onDataRefreshRef.current) {
+        await onDataRefreshRef.current()
+      }
+    } catch (err) {
+      console.error('Failed to log meditation:', err)
+    }
+  }, [])
+
   const actionsValue = useMemo<FocusSessionActions>(
     () => ({
       startFocus,
@@ -1711,7 +1757,8 @@ export function FocusSessionProvider({
       completeTask,
       endSession,
       isGoalFocused,
-      restartSession
+      restartSession,
+      logMeditation
     }),
     [
       startFocus,
@@ -1729,7 +1776,8 @@ export function FocusSessionProvider({
       completeTask,
       endSession,
       isGoalFocused,
-      restartSession
+      restartSession,
+      logMeditation
     ]
   )
 

@@ -124,4 +124,33 @@ describe('GeneralSettingsSection Component - Daily Focus Target', () => {
     expect(screen.queryByText(/Escalating Break Nudges/i)).toBeNull()
     expect(screen.queryByLabelText(/Escalating Break Nudges/i)).toBeNull()
   })
+
+  it('renders Meditation Duration (Trataka) setting and responds to preset clicks', () => {
+    const setTratakaDuration = vi.fn()
+    render(
+      <GeneralSettingsSection
+        theme="system"
+        setTheme={vi.fn()}
+        interval={45}
+        setInterval={vi.fn()}
+        dailyFocusTarget={240}
+        setDailyFocusTarget={vi.fn()}
+        tratakaDuration={60}
+        setTratakaDuration={setTratakaDuration}
+        openAtLogin={true}
+        setOpenAtLogin={vi.fn()}
+        showWidget={true}
+        setShowWidget={vi.fn()}
+      />
+    )
+
+    expect(screen.getByText('Meditation Duration (Trataka)')).toBeDefined()
+    const preset30 = screen.getByRole('radio', { name: '30s' })
+    const preset60 = screen.getByRole('radio', { name: '60s' })
+    expect(preset30).toBeDefined()
+    expect(preset60).toBeDefined()
+
+    fireEvent.click(preset30)
+    expect(setTratakaDuration).toHaveBeenCalledWith(30)
+  })
 })

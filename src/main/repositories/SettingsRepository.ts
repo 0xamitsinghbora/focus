@@ -24,7 +24,8 @@ export const DEFAULT_SETTINGS: AppSettings = {
   },
   customShortcuts: {},
   autoCheckUpdates: true,
-  autoDownloadUpdates: false
+  autoDownloadUpdates: false,
+  tratakaDurationSeconds: 60
 }
 
 export class SettingsRepository {

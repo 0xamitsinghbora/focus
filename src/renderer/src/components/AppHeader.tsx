@@ -119,12 +119,10 @@ const HeaderFocusStatusIndicator = memo(
 )
 
 export interface AppHeaderProps {
-  onOpenMorningRitual?: () => void
   onOpenTrataka?: () => void
 }
 
 export const AppHeader = memo(function AppHeader({
-  onOpenMorningRitual,
   onOpenTrataka
 }: AppHeaderProps = {}): React.JSX.Element {
   return (
@@ -145,30 +143,14 @@ export const AppHeader = memo(function AppHeader({
               type="button"
               onClick={onOpenTrataka}
               className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium border border-border/70 bg-card hover:bg-secondary text-foreground transition-all cursor-pointer select-none shadow-2xs"
-              title="90s Mind Reset (Trataka) — zero-input visual decompression"
-              aria-label="90s Mind Reset"
+              title="Meditation (Trataka) — zero-input visual decompression"
+              aria-label="Meditation"
             >
-              <span className="text-apple-amber text-[12px] leading-none" aria-hidden="true">
+              <span className="text-white text-[12px] leading-none" aria-hidden="true">
                 ◉
               </span>
               <span className="hidden md:inline font-semibold text-[11px] leading-none tracking-tight">
-                Reset
-              </span>
-            </button>
-          )}
-          {onOpenMorningRitual && (
-            <button
-              type="button"
-              onClick={onOpenMorningRitual}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20 transition-all cursor-pointer select-none shadow-2xs"
-              title="Morning Planning Ritual — set intention, carry forward, and commit"
-              aria-label="Morning Planning Ritual"
-            >
-              <span className="text-[12px] leading-none" aria-hidden="true">
-                🌅
-              </span>
-              <span className="hidden md:inline font-semibold text-[11px] leading-none tracking-tight">
-                Ritual
+                Meditation
               </span>
             </button>
           )}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ThemeMode } from '../../../../shared/types'
 import { Switch } from '../ui/switch'
-import { Input } from '../ui/input'
+import { Button } from '../ui/button'
 import { cn } from '../../lib/utils'
 
 export interface GeneralSettingsSectionProps {
@@ -11,13 +11,13 @@ export interface GeneralSettingsSectionProps {
   setInterval: (mins: number) => void
   dailyFocusTarget: number
   setDailyFocusTarget: (mins: number) => void
+  tratakaDuration?: number
+  setTratakaDuration?: (seconds: number) => void
   openAtLogin: boolean
   setOpenAtLogin: (open: boolean) => void
   showWidget: boolean
   setShowWidget: (show: boolean) => void
   onOpenShortcuts?: () => void
-  onOpenOnboarding?: () => void
-  onOpenMorningRitual?: () => void
 }
 
 const presets = [15, 30, 45, 60]
@@ -30,13 +30,13 @@ export function GeneralSettingsSection({
   setInterval,
   dailyFocusTarget,
   setDailyFocusTarget,
+  tratakaDuration = 60,
+  setTratakaDuration,
   openAtLogin,
   setOpenAtLogin,
   showWidget,
   setShowWidget,
-  onOpenShortcuts,
-  onOpenOnboarding,
-  onOpenMorningRitual
+  onOpenShortcuts
 }: GeneralSettingsSectionProps): React.JSX.Element {
   const [hoursInput, setHoursInput] = useState<string>(() =>
     dailyFocusTarget > 0 ? String(+(dailyFocusTarget / 60).toFixed(2)) : '0'
@@ -152,18 +152,75 @@ export function GeneralSettingsSection({
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-1.5 pl-1">
-            <Input
-              type="number"
-              min={1}
-              max={480}
-              value={interval}
-              onChange={(e) =>
-                setInterval(Math.max(1, Math.min(480, parseInt(e.target.value) || 1)))
-              }
-              className="w-16 h-8 text-center text-[12px] tabular-nums"
-            />
-            <span className="text-[11px] text-muted-foreground">min</span>
+          <div className="flex items-center pl-1">
+            <div className="flex items-center rounded-xl border border-border/70 bg-card hover:border-border transition-all duration-150 px-2.5 h-8 shadow-apple-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
+              <input
+                type="number"
+                min={1}
+                max={480}
+                value={interval}
+                onChange={(e) =>
+                  setInterval(Math.max(1, Math.min(480, parseInt(e.target.value) || 1)))
+                }
+                className="w-10 bg-transparent font-sans text-[13px] font-bold text-foreground text-center tabular-nums focus:outline-none tracking-tight [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                aria-label="Session duration in minutes"
+              />
+              <span className="text-[12px] font-semibold text-muted-foreground/75 select-none pl-1">
+                min
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Meditation Duration (Trataka) */}
+      <div className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="h-9 w-9 rounded-xl bg-white/10 text-white flex items-center justify-center shrink-0 shadow-2xs border border-white/20">
+            <span className="text-[13px] leading-none" aria-hidden="true">
+              ◉
+            </span>
+          </div>
+          <div className="min-w-0">
+            <div className="text-[14px] font-semibold tracking-[-0.015em] text-foreground">
+              Meditation Duration (Trataka)
+            </div>
+            <div className="text-[12px] text-muted-foreground/85 leading-relaxed tracking-[-0.005em]">
+              Length of visual decompression meditation (default 60s). Counted automatically as
+              meditation in white.
+            </div>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 self-start md:self-auto">
+          <div
+            className="flex items-center gap-1 rounded-xl bg-secondary/60 dark:bg-surface/70 p-0.5 border border-border/40 shadow-2xs"
+            role="radiogroup"
+            aria-label="Meditation Duration"
+          >
+            {[
+              { label: '30s', val: 30 },
+              { label: '60s', val: 60 },
+              { label: '90s', val: 90 },
+              { label: '2m', val: 120 },
+              { label: '5m', val: 300 }
+            ].map((p) => (
+              <button
+                key={p.val}
+                type="button"
+                role="radio"
+                aria-checked={tratakaDuration === p.val}
+                onClick={() => setTratakaDuration?.(p.val)}
+                className={cn(
+                  'px-2.5 py-1 rounded-lg text-[12px] font-semibold transition-all duration-150 cursor-pointer tracking-[-0.01em]',
+                  tratakaDuration === p.val
+                    ? 'bg-card text-foreground shadow-xs ring-1 ring-border/30'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -214,30 +271,34 @@ export function GeneralSettingsSection({
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-1.5 pl-1">
-            <Input
-              type="number"
-              min={0}
-              max={24}
-              step={0.5}
-              value={hoursInput}
-              onChange={(e) => {
-                const val = e.target.value
-                setHoursInput(val)
-                const parsed = parseFloat(val)
-                const clamped = Math.max(0, Math.min(24, isNaN(parsed) ? 0 : parsed))
-                setDailyFocusTarget(Math.round(clamped * 60))
-              }}
-              onBlur={() => {
-                if (hoursInput === '' || isNaN(parseFloat(hoursInput))) {
-                  setHoursInput('0')
-                  setDailyFocusTarget(0)
-                }
-              }}
-              className="w-16 h-8 text-center text-[12px] tabular-nums"
-              aria-label="Daily focus target in hours"
-            />
-            <span className="text-[11px] text-muted-foreground">h</span>
+          <div className="flex items-center pl-1">
+            <div className="flex items-center rounded-xl border border-border/70 bg-card hover:border-border transition-all duration-150 px-2.5 h-8 shadow-apple-subtle focus-within:ring-2 focus-within:ring-primary/20 focus-within:border-primary/50">
+              <input
+                type="number"
+                min={0}
+                max={24}
+                step={0.5}
+                value={hoursInput}
+                onChange={(e) => {
+                  const val = e.target.value
+                  setHoursInput(val)
+                  const parsed = parseFloat(val)
+                  const clamped = Math.max(0, Math.min(24, isNaN(parsed) ? 0 : parsed))
+                  setDailyFocusTarget(Math.round(clamped * 60))
+                }}
+                onBlur={() => {
+                  if (hoursInput === '' || isNaN(parseFloat(hoursInput))) {
+                    setHoursInput('0')
+                    setDailyFocusTarget(0)
+                  }
+                }}
+                className="w-10 bg-transparent font-sans text-[13px] font-bold text-foreground text-center tabular-nums focus:outline-none tracking-tight [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                aria-label="Daily focus target in hours"
+              />
+              <span className="text-[12px] font-semibold text-muted-foreground/75 select-none pl-1">
+                h
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -318,79 +379,52 @@ export function GeneralSettingsSection({
 
       {/* 5. Keyboard Shortcuts */}
       {onOpenShortcuts && (
-        <div className="p-4 flex items-center justify-between border-b border-border/50">
+        <div className="p-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-xl bg-apple-purple/10 text-apple-purple flex items-center justify-center shrink-0">
-              <span className="text-base">⌨️</span>
+            <div className="h-9 w-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 shadow-2xs">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="M6 8h.001" />
+                <path d="M10 8h.001" />
+                <path d="M14 8h.001" />
+                <path d="M18 8h.001" />
+                <path d="M6 12h.001" />
+                <path d="M10 12h.001" />
+                <path d="M14 12h.001" />
+                <path d="M18 12h.001" />
+                <path d="M7 16h10" />
+              </svg>
             </div>
             <div className="min-w-0">
-              <div className="text-[13.5px] font-semibold text-foreground">Keyboard Shortcuts</div>
-              <div className="text-[12px] text-muted-foreground">
-                Customize or disable global desktop hotkeys to prevent collisions with other apps.
+              <div className="text-[14px] font-semibold tracking-[-0.015em] text-foreground">
+                Keyboard Shortcuts
+              </div>
+              <div className="text-[12px] text-muted-foreground/85 leading-relaxed tracking-[-0.005em]">
+                Customize shortcuts to prevent collisions with other apps.
               </div>
             </div>
           </div>
-          <button
-            type="button"
+          <Button
+            variant="outline"
+            size="sm"
             onClick={onOpenShortcuts}
-            className="px-3 py-1.5 rounded-xl border border-border/70 bg-surface hover:bg-secondary text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs shrink-0"
+            className="text-[12px] font-semibold cursor-pointer shrink-0 gap-1.5 shadow-2xs"
           >
-            Customize Shortcuts
-          </button>
-        </div>
-      )}
-
-      {/* 6. Setup & Onboarding Tour */}
-      {onOpenOnboarding && (
-        <div className="p-4 flex items-center justify-between border-b border-border/50">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-              <span className="text-base">🚀</span>
-            </div>
-            <div className="min-w-0">
-              <div className="text-[13.5px] font-semibold text-foreground">
-                Welcome & Setup Tour
-              </div>
-              <div className="text-[12px] text-muted-foreground">
-                Reopen the interactive setup guide explaining the planner, focus sessions, and
-                check-ins.
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onOpenOnboarding}
-            className="px-3 py-1.5 rounded-xl border border-border/70 bg-surface hover:bg-secondary text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs shrink-0"
-          >
-            Replay Setup Tour
-          </button>
-        </div>
-      )}
-
-      {/* 7. Morning Planning Ritual */}
-      {onOpenMorningRitual && (
-        <div className="p-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="h-9 w-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
-              <span className="text-base">🌅</span>
-            </div>
-            <div className="min-w-0">
-              <div className="text-[13.5px] font-semibold text-foreground">
-                Morning Planning Ritual
-              </div>
-              <div className="text-[12px] text-muted-foreground">
-                Re-adjust today&apos;s daily focus target, review carried goals, or set your anchor
-                task.
-              </div>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={onOpenMorningRitual}
-            className="px-3 py-1.5 rounded-xl border border-border/70 bg-surface hover:bg-secondary text-xs font-semibold text-foreground transition-all cursor-pointer shadow-2xs shrink-0"
-          >
-            Open Ritual
-          </button>
+            <span>Customize Shortcuts</span>
+            <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-mono font-medium text-muted-foreground/80 bg-secondary/80 rounded border border-border/50">
+              ?
+            </kbd>
+          </Button>
         </div>
       )}
     </>

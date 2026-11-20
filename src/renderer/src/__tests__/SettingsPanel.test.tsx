@@ -94,7 +94,7 @@ describe('SettingsPanel Component', () => {
     )
 
     await waitFor(() => {
-      expect(screen.getByText('Report Bug / Issue')).toBeDefined()
+      expect(screen.getByText(/Report Bug/i)).toBeDefined()
     })
 
     // Both Report Bug and Delete Data are directly visible without collapsible toggles
@@ -143,28 +143,28 @@ describe('SettingsPanel Component', () => {
     })
 
     // Step 1: Click first Yes button
-    const step1Button = screen.getByRole('button', { name: 'Yes, delete my data (1/3)' })
+    const step1Button = screen.getByRole('button', { name: 'Yes, delete my data' })
     fireEvent.click(step1Button)
 
     // Step 2: Changing button appears
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
+        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' })
       ).toBeDefined()
     })
     const step2Button = screen.getByRole('button', {
-      name: 'Yes, I understand this cannot be undone (2/3)'
+      name: 'Yes, I understand this cannot be undone'
     })
     fireEvent.click(step2Button)
 
     // Step 3: Changing button appears
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
+        screen.getByRole('button', { name: 'Yes, permanently delete everything now' })
       ).toBeDefined()
     })
     const step3Button = screen.getByRole('button', {
-      name: 'Yes, permanently delete everything now (3/3)'
+      name: 'Yes, permanently delete everything now'
     })
     fireEvent.click(step3Button)
 
@@ -306,23 +306,19 @@ describe('SettingsPanel Component', () => {
       expect(screen.getByRole('heading', { name: 'Delete All Data' })).toBeDefined()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data (1/3)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
+        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
+        screen.getByRole('button', { name: 'Yes, permanently delete everything now' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, permanently delete everything now' }))
 
     await waitFor(() => {
       expect((window as any).api.settings.deleteAllData).toHaveBeenCalled()
@@ -358,23 +354,19 @@ describe('SettingsPanel Component', () => {
       expect(screen.getByRole('heading', { name: 'Delete All Data' })).toBeDefined()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data (1/3)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
+        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
+        screen.getByRole('button', { name: 'Yes, permanently delete everything now' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, permanently delete everything now' }))
 
     await waitFor(() => {
       expect((window as any).api.settings.deleteAllData).toHaveBeenCalled()
@@ -409,23 +401,19 @@ describe('SettingsPanel Component', () => {
       expect(screen.getByRole('heading', { name: 'Delete All Data' })).toBeDefined()
     })
 
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data (1/3)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
+        screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, I understand this cannot be undone (2/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, I understand this cannot be undone' }))
     await waitFor(() => {
       expect(
-        screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
+        screen.getByRole('button', { name: 'Yes, permanently delete everything now' })
       ).toBeDefined()
     })
-    fireEvent.click(
-      screen.getByRole('button', { name: 'Yes, permanently delete everything now (3/3)' })
-    )
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, permanently delete everything now' }))
 
     await waitFor(() => {
       expect((window as any).api.settings.deleteAllData).toHaveBeenCalled()
@@ -462,13 +450,13 @@ describe('SettingsPanel Component', () => {
     })
 
     // Advance to step 2
-    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data (1/3)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Yes, delete my data' }))
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: 'Cancel (Abort)' })).toBeDefined()
+      expect(screen.getByRole('button', { name: 'Cancel' })).toBeDefined()
     })
 
     // Cancel at step 2
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel (Abort)' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
 
     await waitFor(() => {
       expect(screen.queryByRole('dialog')).toBeNull()

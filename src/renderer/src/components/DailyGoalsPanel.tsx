@@ -251,23 +251,6 @@ function DailyGoalsPanelComponent({
                               {goal.groupTag}
                             </span>
                           ) : null}
-
-                          {/* Goal Type Badge */}
-                          {goal.goalType === 'routine' ? (
-                            <span
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[9.5px] border shadow-2xs bg-secondary/80 text-muted-foreground border-border/60 shrink-0"
-                              title="Routine Task — music keeps your pace up"
-                            >
-                              <span>⚡ Routine</span>
-                            </span>
-                          ) : (
-                            <span
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[9.5px] border shadow-2xs bg-primary/10 text-primary border-primary/20 shrink-0"
-                              title="Deep Focus Task — silence or rain recommended"
-                            >
-                              <span>🎯 Deep</span>
-                            </span>
-                          )}
                         </div>
 
                         {/* Logged time & Deadline */}
@@ -411,21 +394,6 @@ function DailyGoalsPanelComponent({
                               {goal.groupTag}
                             </span>
                           ) : null}
-                          {goal.goalType === 'routine' ? (
-                            <span
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[9.5px] border shadow-2xs bg-secondary/80 text-muted-foreground border-border/60 shrink-0"
-                              title="Routine Task — music keeps your pace up"
-                            >
-                              <span>⚡ Routine</span>
-                            </span>
-                          ) : (
-                            <span
-                              className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[9.5px] border shadow-2xs bg-primary/10 text-primary border-primary/20 shrink-0"
-                              title="Deep Focus Task — silence or rain recommended"
-                            >
-                              <span>🎯 Deep</span>
-                            </span>
-                          )}
                         </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           {loggedMinutes > 0 && (

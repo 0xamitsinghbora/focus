@@ -6,8 +6,7 @@ import {
   SyncTarget,
   localDateStr,
   DEFAULT_SORT_ORDER,
-  LogEntry,
-  AudioMode
+  LogEntry
 } from '../../../shared/types'
 import { formatTime } from '../lib/utils'
 import { FocusLogo } from './FocusLogo'
@@ -31,10 +30,6 @@ export function PromptWindow(): React.JSX.Element {
   const [status, setStatus] = useState<'idle' | 'saving' | 'error'>('idle')
   const [afkSecondsLeft, setAfkSecondsLeft] = useState<number>(40)
   const [afkBreakSeconds, setAfkBreakSeconds] = useState<number>(0)
-  const [markCompleted, setMarkCompleted] = useState<boolean>(false)
-  const [addToPlanner, setAddToPlanner] = useState<boolean>(false)
-  const [focusQuality, setFocusQuality] = useState<number>(4)
-  const [audioMode, setAudioMode] = useState<AudioMode | null>(null)
 
   const detailInputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
@@ -46,7 +41,6 @@ export function PromptWindow(): React.JSX.Element {
   const noteRef = useRef(note)
   const statusRef = useRef(status)
   const afkSecondsLeftRef = useRef<number>(afkSecondsLeft)
-  const focusQualityRef = useRef<number>(focusQuality)
   const loadRequestIdRef = useRef(0)
   const isMountedRef = useRef(true)
   const promptAppearedAtRef = useRef<number>(
@@ -60,7 +54,6 @@ export function PromptWindow(): React.JSX.Element {
   noteRef.current = note
   statusRef.current = status
   afkSecondsLeftRef.current = afkSecondsLeft
-  focusQualityRef.current = focusQuality
 
   useEffect(() => {
     isMountedRef.current = true
@@ -109,10 +102,6 @@ export function PromptWindow(): React.JSX.Element {
     setSelectedIndex(0)
     setNote('')
     setValidationError(null)
-    setMarkCompleted(false)
-    setAddToPlanner(false)
-    setFocusQuality(4)
-    setAudioMode(null)
     setAfkSecondsLeft(40)
     afkBreakStartEpochRef.current = 0
     setAfkBreakSeconds(0)
@@ -252,11 +241,7 @@ export function PromptWindow(): React.JSX.Element {
   }, [goals])
 
   const submitOption = useCallback(
-    async (
-      optIndex: number,
-      customNote: string = '',
-      optionsOverride?: { markCompleted?: boolean; addToPlanner?: boolean }
-    ): Promise<void> => {
+    async (optIndex: number, customNote: string = ''): Promise<void> => {
       if (status === 'saving') return
 
       const opt = options[optIndex]
@@ -271,10 +256,6 @@ export function PromptWindow(): React.JSX.Element {
 
       const isBreak = opt?.type === 'break'
       const finalProductivity: ProductivityLevel = isBreak ? 'break' : 'productive'
-      const shouldMarkCompleted =
-        optionsOverride?.markCompleted !== undefined ? optionsOverride.markCompleted : markCompleted
-      const shouldAddToPlanner =
-        optionsOverride?.addToPlanner !== undefined ? optionsOverride.addToPlanner : addToPlanner
 
       let text = ''
       let goalId: string | undefined
@@ -315,12 +296,10 @@ export function PromptWindow(): React.JSX.Element {
           goalId,
           goalTitle,
           goalType: opt?.type === 'goal' ? opt.goal.goalType : undefined,
-          audioMode: audioMode ?? undefined,
           note: trimmedNote || undefined,
           productivity: finalProductivity,
           durationMinutes: durationMins,
-          productiveMinutes: isBreak ? 0 : durationMins,
-          focusQuality: isBreak ? undefined : focusQualityRef.current
+          productiveMinutes: isBreak ? 0 : durationMins
         }
 
         const cutoff = reminderStatus?.dayCutoffHour || 0
@@ -332,19 +311,7 @@ export function PromptWindow(): React.JSX.Element {
         await window.api.logs.append(sessionEffectiveDate, entry, true)
 
         if (opt?.type === 'goal') {
-          if (shouldMarkCompleted) {
-            // Prompt offers quick checkbox: "Mark task as completed" to move task to completed section without manual dragging
-            try {
-              await window.api.goals.update(opt.goal.date || sessionEffectiveDate, {
-                ...opt.goal,
-                status: 'done',
-                completedAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-              })
-            } catch (updateErr) {
-              console.warn('Failed to mark task as completed:', updateErr)
-            }
-          } else if (opt.goal.status === 'planned') {
+          if (opt.goal.status === 'planned') {
             // If user logged work to a planned goal, automatically promote it to in_progress
             try {
               const inProgressGoals = goalsRef.current.filter((g) => g.status === 'in_progress')
@@ -387,19 +354,6 @@ export function PromptWindow(): React.JSX.Element {
               console.warn('Failed to set picked task as active in-progress task:', reorderErr)
             }
           }
-        } else if (opt?.type === 'other' && shouldAddToPlanner) {
-          // Prompt offers optional checkbox: "Add as task to planner" so spontaneous work is captured
-          try {
-            if (window.api?.goals?.add) {
-              await window.api.goals.add({
-                date: today,
-                title: trimmedNote,
-                status: 'planned'
-              })
-            }
-          } catch (addErr) {
-            console.warn('Failed to add spontaneous work to planner:', addErr)
-          }
         }
 
         inFlightEntryIdRef.current = null
@@ -412,7 +366,7 @@ export function PromptWindow(): React.JSX.Element {
         setTimeout(() => setStatus('idle'), 2000)
       }
     },
-    [options, status, resetPrompt, reminderStatus, markCompleted, addToPlanner, audioMode]
+    [options, status, resetPrompt, reminderStatus]
   )
 
   const handleSelectOption = useCallback(
@@ -434,12 +388,6 @@ export function PromptWindow(): React.JSX.Element {
     window.api.session?.quickAction?.('restart-session')
     resetPrompt()
   }, [resetPrompt, reminderStatus?.intervalMinutes])
-
-  const handleStartDotReset = useCallback((): void => {
-    window.api.scheduler.snooze(2)
-    window.api.session?.quickAction?.('dot-reset')
-    resetPrompt()
-  }, [resetPrompt])
 
   // 1. AFK 40s countdown effect (only while in select step and not saving)
   useEffect(() => {
@@ -625,7 +573,6 @@ export function PromptWindow(): React.JSX.Element {
     onSnooze: handleSnooze,
     onSubmit: handleSubmit,
     onReturnAfk: handleReturnFromAfk,
-    onSetFocusQuality: setFocusQuality,
     detailInputRef,
     promptAppearedAtRef
   })
@@ -677,10 +624,8 @@ export function PromptWindow(): React.JSX.Element {
           itemRefs={itemRefs}
           status={status}
           onSelectOption={handleSelectOption}
-          onQuickDone={(idx) => submitOption(idx, '', { markCompleted: true })}
           onSnooze={handleSnooze}
           snoozeCount={reminderStatus?.snoozeCount}
-          onStartDotReset={handleStartDotReset}
         />
       )}
 
@@ -689,18 +634,10 @@ export function PromptWindow(): React.JSX.Element {
           currentOption={currentOption}
           note={note}
           setNote={setNote}
-          focusQuality={focusQuality}
-          setFocusQuality={setFocusQuality}
-          audioMode={audioMode}
-          setAudioMode={setAudioMode}
           validationError={validationError}
           setValidationError={setValidationError}
           status={status}
           detailInputRef={detailInputRef}
-          markCompleted={markCompleted}
-          setMarkCompleted={setMarkCompleted}
-          addToPlanner={addToPlanner}
-          setAddToPlanner={setAddToPlanner}
           onBack={() => setStep('select')}
           onSubmit={handleSubmit}
           onKeyDown={handleKeyDown}

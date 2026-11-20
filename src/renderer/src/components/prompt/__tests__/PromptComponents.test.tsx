@@ -45,9 +45,8 @@ describe('PromptTaskSelector', () => {
     expect(onSnooze).toHaveBeenCalled()
   })
 
-  it('triggers onQuickDone when Done button on task is clicked', () => {
+  it('does not render Done button on task in selector', () => {
     const onSelectOption = vi.fn()
-    const onQuickDone = vi.fn()
     const onSnooze = vi.fn()
     const itemRefs = { current: [] }
 
@@ -58,15 +57,11 @@ describe('PromptTaskSelector', () => {
         itemRefs={itemRefs}
         status="idle"
         onSelectOption={onSelectOption}
-        onQuickDone={onQuickDone}
         onSnooze={onSnooze}
       />
     )
 
-    const doneBtn = screen.getByRole('button', { name: /done/i })
-    expect(doneBtn).toBeDefined()
-    fireEvent.click(doneBtn)
-    expect(onQuickDone).toHaveBeenCalledWith(0)
+    expect(screen.queryByRole('button', { name: /done/i })).toBeNull()
   })
 
   it('renders Something Else and Break options', () => {
@@ -88,8 +83,7 @@ describe('PromptTaskSelector', () => {
     expect(screen.getByText('Break')).toBeDefined()
   })
 
-  it('renders ◉ 90s Dot Reset button and handles click', () => {
-    const onStartDotReset = vi.fn()
+  it('does not render 90s Dot Reset button in selector footer', () => {
     const itemRefs = { current: [] }
 
     render(
@@ -100,14 +94,10 @@ describe('PromptTaskSelector', () => {
         status="idle"
         onSelectOption={vi.fn()}
         onSnooze={vi.fn()}
-        onStartDotReset={onStartDotReset}
       />
     )
 
-    const dotResetBtn = screen.getByRole('button', { name: /dot reset/i })
-    expect(dotResetBtn).toBeDefined()
-    fireEvent.click(dotResetBtn)
-    expect(onStartDotReset).toHaveBeenCalled()
+    expect(screen.queryByRole('button', { name: /dot reset/i })).toBeNull()
   })
 })
 
@@ -158,9 +148,8 @@ describe('PromptDetailInput', () => {
     expect(onSubmit).toHaveBeenCalled()
   })
 
-  it('renders mark task completed checkbox for goal option and handles change', () => {
+  it('does not render mark task completed checkbox for goal option', () => {
     const detailInputRef = React.createRef<HTMLInputElement>()
-    const setMarkCompleted = vi.fn()
 
     render(
       <PromptDetailInput
@@ -171,24 +160,17 @@ describe('PromptDetailInput', () => {
         setValidationError={vi.fn()}
         status="idle"
         detailInputRef={detailInputRef}
-        markCompleted={false}
-        setMarkCompleted={setMarkCompleted}
         onBack={vi.fn()}
         onSubmit={vi.fn()}
         onKeyDown={vi.fn()}
       />
     )
 
-    const checkbox = screen.getByRole('checkbox', { name: /mark task as completed/i })
-    expect(checkbox).toBeDefined()
-    expect((checkbox as HTMLInputElement).checked).toBe(false)
-    fireEvent.click(checkbox)
-    expect(setMarkCompleted).toHaveBeenCalledWith(true)
+    expect(screen.queryByRole('checkbox', { name: /mark task as completed/i })).toBeNull()
   })
 
-  it('renders add as task to planner checkbox for other option and handles change', () => {
+  it('does not render add as task to planner checkbox for other option', () => {
     const detailInputRef = React.createRef<HTMLInputElement>()
-    const setAddToPlanner = vi.fn()
 
     render(
       <PromptDetailInput
@@ -199,23 +181,16 @@ describe('PromptDetailInput', () => {
         setValidationError={vi.fn()}
         status="idle"
         detailInputRef={detailInputRef}
-        addToPlanner={false}
-        setAddToPlanner={setAddToPlanner}
         onBack={vi.fn()}
         onSubmit={vi.fn()}
         onKeyDown={vi.fn()}
       />
     )
 
-    const checkbox = screen.getByRole('checkbox', { name: /add as task to planner/i })
-    expect(checkbox).toBeDefined()
-    expect((checkbox as HTMLInputElement).checked).toBe(false)
-    fireEvent.click(checkbox)
-    expect(setAddToPlanner).toHaveBeenCalledWith(true)
+    expect(screen.queryByRole('checkbox', { name: /add as task to planner/i })).toBeNull()
   })
 
-  it('renders audio mode pill selector and allows toggling soundtrack', () => {
-    const setAudioMode = vi.fn()
+  it('does not render soundtrack options in prompt detail', () => {
     render(
       <PromptDetailInput
         currentOption={currentGoalOption}
@@ -225,24 +200,18 @@ describe('PromptDetailInput', () => {
         setValidationError={vi.fn()}
         status="idle"
         detailInputRef={React.createRef()}
-        audioMode="silence"
-        setAudioMode={setAudioMode}
         onBack={vi.fn()}
         onSubmit={vi.fn()}
         onKeyDown={vi.fn()}
       />
     )
 
-    expect(screen.getByText('Soundtrack')).toBeDefined()
-    expect(screen.getByRole('radio', { name: /Silence/i })).toBeDefined()
-    expect(screen.getByRole('radio', { name: /Focus Sound/i })).toBeDefined()
-    expect(screen.getByRole('radio', { name: /Music/i })).toBeDefined()
-
-    fireEvent.click(screen.getByRole('radio', { name: /Music/i }))
-    expect(setAudioMode).toHaveBeenCalledWith('music')
+    expect(screen.queryByText('Soundtrack')).toBeNull()
+    expect(screen.queryByRole('radio', { name: /Silence/i })).toBeNull()
+    expect(screen.queryByRole('radio', { name: /Music/i })).toBeNull()
   })
 
-  it('renders gentle nudge alert when focusQuality <= 2 while playing Music on a Deep Focus goal', () => {
+  it('does not render focus quality rating or feeling scattered warning in detail step', () => {
     render(
       <PromptDetailInput
         currentOption={{
@@ -251,8 +220,6 @@ describe('PromptDetailInput', () => {
         }}
         note=""
         setNote={vi.fn()}
-        focusQuality={2}
-        audioMode="music"
         validationError={null}
         setValidationError={vi.fn()}
         status="idle"
@@ -263,11 +230,8 @@ describe('PromptDetailInput', () => {
       />
     )
 
-    expect(
-      screen.getByText(
-        /Feeling scattered\? Try pausing lyrics and switching to Rain or Silence for the next 20 minutes\./i
-      )
-    ).toBeDefined()
+    expect(screen.queryByText(/Focus Quality/i)).toBeNull()
+    expect(screen.queryByText(/Feeling scattered/i)).toBeNull()
   })
 })
 

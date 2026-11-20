@@ -163,4 +163,26 @@ describe('getLogThemeConfig', () => {
     const pausedConfig = getLogThemeConfig(pausedBreakLog, [doneTask])
     expect(pausedConfig.bar).toBe('bg-apple-red')
   })
+
+  it('returns white color scheme for meditation and didDotReset logs', () => {
+    const tratakaLog: LogEntry = {
+      id: 'log-dot',
+      timestamp: new Date().toISOString(),
+      text: 'Meditation',
+      didDotReset: true
+    }
+    const config1 = getLogThemeConfig(tratakaLog)
+    expect(config1.bar).toBe('bg-white')
+    expect(config1.dot).toContain('bg-white')
+    expect(config1.label).toBe('Meditation')
+
+    const meditationLog: LogEntry = {
+      id: 'log-meditation',
+      timestamp: new Date().toISOString(),
+      text: 'Meditation'
+    }
+    const config2 = getLogThemeConfig(meditationLog)
+    expect(config2.bar).toBe('bg-white')
+    expect(config2.label).toBe('Meditation')
+  })
 })

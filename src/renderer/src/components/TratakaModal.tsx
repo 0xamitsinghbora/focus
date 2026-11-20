@@ -6,10 +6,11 @@ export interface TratakaModalProps {
   isOpen: boolean
   onClose: () => void
   initialDurationSeconds?: number
-  onComplete?: () => void
+  onComplete?: (elapsedSeconds?: number) => void
 }
 
 const PRESET_DURATIONS = [
+  { label: '30s', seconds: 30 },
   { label: '60s', seconds: 60 },
   { label: '90s', seconds: 90 },
   { label: '2m', seconds: 120 },
@@ -19,7 +20,7 @@ const PRESET_DURATIONS = [
 export function TratakaModal({
   isOpen,
   onClose,
-  initialDurationSeconds = 90,
+  initialDurationSeconds = 60,
   onComplete
 }: TratakaModalProps): React.JSX.Element | null {
   const [duration, setDuration] = useState<number>(initialDurationSeconds)
@@ -27,6 +28,11 @@ export function TratakaModal({
   const wasAudioPlayingRef = useRef(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
   const cueTimerRef = useRef<NodeJS.Timeout | null>(null)
+  const startedAtRef = useRef<number>(Date.now())
+
+  useEffect(() => {
+    setDuration(initialDurationSeconds)
+  }, [initialDurationSeconds])
 
   const handleFinish = useCallback(() => {
     try {
@@ -34,7 +40,16 @@ export function TratakaModal({
     } catch {
       // ignore
     }
-    onComplete?.()
+    const elapsed = Math.max(duration, Math.round((Date.now() - startedAtRef.current) / 1000))
+    onComplete?.(elapsed)
+    onClose()
+  }, [duration, onComplete, onClose])
+
+  const handleExit = useCallback(() => {
+    const elapsed = Math.round((Date.now() - startedAtRef.current) / 1000)
+    if (elapsed >= 10) {
+      onComplete?.(elapsed)
+    }
     onClose()
   }, [onComplete, onClose])
 
@@ -42,6 +57,7 @@ export function TratakaModal({
   useEffect(() => {
     if (!isOpen) return
 
+    startedAtRef.current = Date.now()
     setShowCue(true)
 
     // Audio handoff: fade out active focus sound to true silence during reset
@@ -78,7 +94,7 @@ export function TratakaModal({
       if (e.key === 'Escape') {
         e.preventDefault()
         e.stopPropagation()
-        onClose()
+        handleExit()
       }
     }
 
@@ -86,7 +102,7 @@ export function TratakaModal({
     return () => {
       window.removeEventListener('keydown', handleKeyDown, { capture: true })
     }
-  }, [isOpen, onClose])
+  }, [isOpen, handleExit])
 
   if (!isOpen) return null
 
@@ -94,7 +110,7 @@ export function TratakaModal({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Trataka Mind Reset"
+      aria-label="Trataka Meditation"
       className="fixed inset-0 z-[99999] bg-[#0E0E0E] flex flex-col items-center justify-center select-none text-white overflow-hidden animate-in fade-in duration-300"
     >
       {/* Guiding Cue - Fades out after 4 seconds to leave zero visual stimulation */}
@@ -151,7 +167,7 @@ export function TratakaModal({
       <div className="absolute bottom-4 right-5 text-[11px] text-[#706D66] flex items-center gap-1.5 opacity-50 hover:opacity-100 transition-opacity">
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleExit}
           className="hover:text-white transition-colors cursor-pointer"
         >
           Exit

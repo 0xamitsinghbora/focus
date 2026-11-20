@@ -33,6 +33,7 @@ export interface FocusSessionActions {
   endSession: (noteOverride?: string) => Promise<void>
   isGoalFocused: (goalId: string) => boolean
   restartSession?: () => Promise<void>
+  logMeditation?: (seconds?: number) => Promise<void>
 }
 
 export interface FocusSessionContextType extends FocusSessionState, FocusSessionActions {}

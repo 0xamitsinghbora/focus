@@ -416,7 +416,7 @@ export function DeleteDataModal({
                 disabled={isDeleting}
                 className="border-destructive/40 text-destructive hover:bg-destructive/10 cursor-pointer"
               >
-                Yes, delete my data (1/3)
+                Yes, delete my data
               </Button>
             </div>
           )}
@@ -430,7 +430,7 @@ export function DeleteDataModal({
                 disabled={isDeleting}
                 className="text-muted-foreground cursor-pointer"
               >
-                Cancel (Abort)
+                Cancel
               </Button>
               <Button
                 variant="outline"
@@ -439,7 +439,7 @@ export function DeleteDataModal({
                 disabled={isDeleting}
                 className="border-destructive bg-destructive/10 text-destructive font-semibold hover:bg-destructive/20 cursor-pointer"
               >
-                Yes, I understand this cannot be undone (2/3)
+                Yes, I understand this cannot be undone
               </Button>
             </div>
           )}
@@ -455,7 +455,7 @@ export function DeleteDataModal({
               >
                 {isDeleting
                   ? 'Permanently deleting data from local & Google Drive...'
-                  : 'Yes, permanently delete everything now (3/3)'}
+                  : 'Yes, permanently delete everything now'}
               </Button>
               <Button
                 variant="ghost"

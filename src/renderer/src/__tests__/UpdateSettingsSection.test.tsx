@@ -71,30 +71,24 @@ describe('UpdateSettingsSection Component', () => {
     }
   })
 
-  it('renders software updates header and current version', async () => {
-    render(
-      <UpdateSettingsSection
-        autoCheckUpdates={true}
-        setAutoCheckUpdates={vi.fn()}
-        autoDownloadUpdates={false}
-        setAutoDownloadUpdates={vi.fn()}
-      />
-    )
+  it('renders software updates header, current version, and last checked status badge', async () => {
+    render(<UpdateSettingsSection />)
 
     expect(screen.getByText('Software Updates')).toBeDefined()
     expect(screen.getByText('v1.0.0')).toBeDefined()
+    expect(screen.getByText('Last checked: Never')).toBeDefined()
     expect(screen.getByRole('button', { name: 'Check for Updates' })).toBeDefined()
   })
 
+  it('renders relative last checked timestamp when lastUpdateCheck prop is provided', () => {
+    const twentyMinsAgo = Date.now() - 20 * 60 * 1000
+    render(<UpdateSettingsSection lastUpdateCheck={twentyMinsAgo} />)
+
+    expect(screen.getByText('Last checked: 20m ago')).toBeDefined()
+  })
+
   it('triggers update check and displays available update card', async () => {
-    render(
-      <UpdateSettingsSection
-        autoCheckUpdates={true}
-        setAutoCheckUpdates={vi.fn()}
-        autoDownloadUpdates={false}
-        setAutoDownloadUpdates={vi.fn()}
-      />
-    )
+    render(<UpdateSettingsSection />)
 
     const checkBtn = screen.getByRole('button', { name: 'Check for Updates' })
     fireEvent.click(checkBtn)
@@ -112,14 +106,7 @@ describe('UpdateSettingsSection Component', () => {
   })
 
   it('triggers download when Download Update button is clicked', async () => {
-    render(
-      <UpdateSettingsSection
-        autoCheckUpdates={true}
-        setAutoCheckUpdates={vi.fn()}
-        autoDownloadUpdates={false}
-        setAutoDownloadUpdates={vi.fn()}
-      />
-    )
+    render(<UpdateSettingsSection />)
 
     // First check
     fireEvent.click(screen.getByRole('button', { name: 'Check for Updates' }))
@@ -132,53 +119,11 @@ describe('UpdateSettingsSection Component', () => {
     expect(window.api.updater.downloadUpdate).toHaveBeenCalled()
   })
 
-  it('renders clean cache button and triggers cache cleanup', async () => {
-    render(
-      <UpdateSettingsSection
-        autoCheckUpdates={true}
-        setAutoCheckUpdates={vi.fn()}
-        autoDownloadUpdates={false}
-        setAutoDownloadUpdates={vi.fn()}
-      />
-    )
+  it('does not render auto-update toggles or clean cache button for minimalist settings', () => {
+    render(<UpdateSettingsSection />)
 
-    const cleanBtn = screen.getByRole('button', { name: 'Clean Cache' })
-    expect(cleanBtn).toBeDefined()
-    fireEvent.click(cleanBtn)
-
-    await waitFor(() => {
-      expect(window.api.updater.cleanCache).toHaveBeenCalledTimes(1)
-      expect(mockToast.success).toHaveBeenCalledWith(
-        expect.stringContaining('Reclaimed'),
-        'Cache Cleaned'
-      )
-    })
-  })
-
-  it('toggles auto update preferences', () => {
-    const setAutoCheck = vi.fn()
-    const setAutoDownload = vi.fn()
-
-    render(
-      <UpdateSettingsSection
-        autoCheckUpdates={true}
-        setAutoCheckUpdates={setAutoCheck}
-        autoDownloadUpdates={false}
-        setAutoDownloadUpdates={setAutoDownload}
-      />
-    )
-
-    const autoCheckSwitch = screen.getByRole('switch', {
-      name: 'Automatically check for updates'
-    })
-    const autoDownloadSwitch = screen.getByRole('switch', {
-      name: 'Automatically download updates'
-    })
-
-    fireEvent.click(autoCheckSwitch)
-    expect(setAutoCheck).toHaveBeenCalledWith(false)
-
-    fireEvent.click(autoDownloadSwitch)
-    expect(setAutoDownload).toHaveBeenCalledWith(true)
+    expect(screen.queryByRole('switch', { name: 'Automatically check for updates' })).toBeNull()
+    expect(screen.queryByRole('switch', { name: 'Automatically download updates' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Clean Cache' })).toBeNull()
   })
 })

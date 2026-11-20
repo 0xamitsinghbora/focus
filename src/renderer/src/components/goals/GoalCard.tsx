@@ -394,23 +394,6 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
               </span>
             )}
 
-            {/* Goal Type Badge */}
-            {goal.goalType === 'routine' ? (
-              <span
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[10px] border shadow-2xs bg-secondary/80 text-muted-foreground border-border/60"
-                title="Routine Task — music keeps your pace up"
-              >
-                <span>⚡ Routine</span>
-              </span>
-            ) : (
-              <span
-                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md font-medium text-[10px] border shadow-2xs bg-primary/10 text-primary border-primary/20"
-                title="Deep Focus Task — silence or rain recommended"
-              >
-                <span>🎯 Deep</span>
-              </span>
-            )}
-
             {(goal.deadline || isOverduePlanned) && (
               <div className="inline-flex items-center gap-1.5 flex-wrap">
                 <span

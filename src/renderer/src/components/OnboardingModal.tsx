@@ -40,7 +40,6 @@ export function OnboardingModal({
   const [step, setStep] = useState<number>(0)
   const [intervalMinutes, setIntervalMinutes] = useState<number>(defaultIntervalMinutes)
   const [dailyTargetMinutes, setDailyTargetMinutes] = useState<number>(defaultDailyTargetMinutes)
-  const [initialGoalTitle, setInitialGoalTitle] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const initialFocusRef = useRef<HTMLButtonElement | null>(null)
@@ -56,13 +55,12 @@ export function OnboardingModal({
     try {
       await onComplete({
         intervalMinutes,
-        dailyTargetMinutes,
-        initialGoalTitle: initialGoalTitle.trim() || undefined
+        dailyTargetMinutes
       })
     } finally {
       setIsSubmitting(false)
     }
-  }, [isSubmitting, onComplete, intervalMinutes, dailyTargetMinutes, initialGoalTitle])
+  }, [isSubmitting, onComplete, intervalMinutes, dailyTargetMinutes])
 
   const handleSkip = useCallback(async () => {
     if (isSubmitting) return
@@ -127,73 +125,167 @@ export function OnboardingModal({
 
         {/* Step Content */}
         <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar p-6 space-y-5">
-          {/* STEP 0: The Daily Planner */}
+          {/* STEP 0: The Daily Planner & Overview */}
           {step === 0 && (
             <div className="space-y-4 animate-in fade-in duration-150">
               <p className="text-[13px] text-muted-foreground leading-relaxed">
-                Focus organizes your workday through a distraction-free daily planner. Keep your
-                attention locked onto one priority at a time.
+                Focus is your distraction-free daily companion. It combines a 3-stage visual planner
+                with rhythmic focus timers to keep you anchored on one priority at a time.
               </p>
 
-              {/* 3 Kanban Columns Explanation */}
-              <div className="grid grid-cols-3 gap-2.5">
-                <div className="p-3 rounded-xl border border-border/70 bg-surface/40 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
-                    <span>🕒</span> Planned
-                  </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    Tasks queued for today. Add tasks anytime with{' '}
-                    <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">Ctrl+N</kbd>
-                    .
-                  </p>
+              {/* 3-Stage Daily Workflow */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-[11px] font-medium text-muted-foreground px-0.5">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    How Tasks Move Through Your Day
+                  </span>
+                  <span className="text-[11px] text-muted-foreground/75 flex items-center gap-1">
+                    <span>3-Stage Workflow</span>
+                    <span>→</span>
+                  </span>
                 </div>
 
-                <div className="p-3 rounded-xl border border-primary/40 bg-primary/5 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
-                    <span>⚡</span> In Progress
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {/* Stage 1: Planned */}
+                  <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex flex-col justify-between space-y-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-secondary text-muted-foreground text-[10px] font-bold">
+                            1
+                          </span>
+                          <span>🕒 Planned</span>
+                        </div>
+                        <span className="text-[9.5px] px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">
+                          Queue
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-snug">
+                        Tasks queued for today. Add tasks anytime with{' '}
+                        <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted text-foreground border border-border/50">
+                          Ctrl+N
+                        </kbd>
+                        .
+                      </p>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground/80 font-medium flex items-center gap-1 pt-1.5 border-t border-border/40">
+                      <span>Drag to activate</span>
+                      <span>→</span>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    Your single active anchor. Moving a task here starts your focus countdown.
-                  </p>
-                </div>
 
-                <div className="p-3 rounded-xl border border-border/70 bg-surface/40 space-y-1">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
-                    <span>✅</span> Done
+                  {/* Stage 2: In Progress */}
+                  <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex flex-col justify-between space-y-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-secondary text-muted-foreground text-[10px] font-bold">
+                            2
+                          </span>
+                          <span>⚡ In Progress</span>
+                        </div>
+                        <span className="text-[9.5px] px-1.5 py-0.5 rounded-md bg-amber-500/10 text-amber-500 border border-amber-500/20 font-medium">
+                          Active Anchor
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-snug">
+                        Your single active anchor. Locking in one task starts your focus countdown.
+                      </p>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground/80 font-medium flex items-center gap-1 pt-1.5 border-t border-border/40">
+                      <span>Complete to finish</span>
+                      <span>→</span>
+                    </div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    Completed tasks automatically feed your heatmap and day review.
-                  </p>
+
+                  {/* Stage 3: Done */}
+                  <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex flex-col justify-between space-y-2">
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                          <span className="flex items-center justify-center w-4 h-4 rounded-full bg-secondary text-muted-foreground text-[10px] font-bold">
+                            3
+                          </span>
+                          <span>✅ Done</span>
+                        </div>
+                        <span className="text-[9.5px] px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-medium">
+                          Accomplished
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-snug">
+                        Completed tasks automatically record focus time and feed your day review.
+                      </p>
+                    </div>
+                    <div className="text-[10px] text-emerald-500/80 font-medium flex items-center gap-1 pt-1.5 border-t border-border/40">
+                      <span>✓ Saved to history</span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Interactive First Task Entry */}
-              <div className="p-4 rounded-xl border border-border/60 bg-surface/30 space-y-2 mt-2">
-                <label
-                  htmlFor="onboarding-first-goal"
-                  className="block text-[12px] font-semibold text-foreground"
-                >
-                  What is your primary focus or task for today?{' '}
-                  <span className="text-muted-foreground font-normal">(optional)</span>
-                </label>
-                <input
-                  id="onboarding-first-goal"
-                  type="text"
-                  value={initialGoalTitle}
-                  onChange={(e) => setInitialGoalTitle(e.target.value)}
-                  placeholder="e.g. Finish database migration, review PR #42..."
-                  className="w-full h-9 px-3 text-[13px] rounded-lg border border-border bg-background text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:ring-1 focus:ring-primary shadow-2xs"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      setStep(1)
-                    }
-                  }}
-                />
-                <p className="text-[11px] text-muted-foreground">
-                  Entering a task here will automatically place it in your Planner as your active
-                  Anchor Task.
-                </p>
+              {/* App Overview Features */}
+              <div className="space-y-2 pt-1">
+                <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-0.5">
+                  What Focus Does For You
+                </div>
+
+                <div className="grid grid-cols-1 gap-2">
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl border border-border/60 bg-surface/30">
+                    <div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 text-sm mt-0.5">
+                      ⏱️
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="text-[12px] font-semibold text-foreground">
+                        Rhythmic Focus Sessions & Floating Timer
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        Work in timed intervals with automated break nudges. A floating desktop
+                        widget keeps your timer in sight without switching windows.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl border border-border/60 bg-surface/30">
+                    <div className="h-7 w-7 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 text-sm mt-0.5">
+                      🔔
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="text-[12px] font-semibold text-foreground">
+                        Mindful Check-Ins
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        Periodic quiet popups check what you worked on and prevent break drift.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3 p-2.5 rounded-xl border border-border/60 bg-surface/30">
+                    <div className="h-7 w-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 text-sm mt-0.5">
+                      🛡️
+                    </div>
+                    <div className="space-y-0.5">
+                      <div className="text-[12px] font-semibold text-foreground">
+                        100% Private & Stored Locally
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-relaxed">
+                        All notes, heatmaps, and stats remain strictly on your computer. Zero
+                        surveillance, no keystroke logging, and no screenshots.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick tip */}
+              <div className="flex items-center gap-2 p-2.5 rounded-xl border border-border/50 bg-surface/20 text-[11px] text-muted-foreground">
+                <span className="text-sm shrink-0">💡</span>
+                <span>
+                  Press{' '}
+                  <kbd className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-muted text-foreground border border-border/60 font-semibold">
+                    Ctrl+N
+                  </kbd>{' '}
+                  anytime in the app to quickly add a task.
+                </span>
               </div>
             </div>
           )}
@@ -306,26 +398,7 @@ export function OnboardingModal({
               </p>
 
               <div className="space-y-3">
-                {/* 1. Quality rating */}
-                <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 text-base">
-                    ⚡
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="text-[12.5px] font-bold text-foreground">
-                      Focus Quality Self-Rating (1–5)
-                    </div>
-                    <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-                      At each prompt check-in, rate your focus quality (with hotkeys{' '}
-                      <kbd className="font-mono text-[10px] px-1 py-0.5 rounded bg-muted">
-                        Alt+1..5
-                      </kbd>
-                      ). This catches desk daydreaming and builds clear trend data.
-                    </p>
-                  </div>
-                </div>
-
-                {/* 2. Break nudges */}
+                {/* Break nudges */}
                 <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex items-start gap-3">
                   <div className="h-8 w-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center shrink-0 text-base">
                     🛡️
@@ -337,22 +410,6 @@ export function OnboardingModal({
                     <p className="text-[11.5px] text-muted-foreground leading-relaxed">
                       Prevents break drift. If you are idle or away past 2x your session interval,
                       Focus gently surfaces quick 5-minute micro-focus jumpstarts.
-                    </p>
-                  </div>
-                </div>
-
-                {/* 3. Morning ritual */}
-                <div className="p-3.5 rounded-xl border border-border/70 bg-surface/40 flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 text-base">
-                    🌅
-                  </div>
-                  <div className="space-y-0.5">
-                    <div className="text-[12.5px] font-bold text-foreground">
-                      Morning Planning Ritual
-                    </div>
-                    <p className="text-[11.5px] text-muted-foreground leading-relaxed">
-                      Every morning on first open, Focus guides you to carry forward unfinished
-                      tasks, set your daily target, and commit your day&apos;s anchor task.
                     </p>
                   </div>
                 </div>

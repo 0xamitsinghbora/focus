@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react'
 import { UpdateState, UpdateDownloadProgress } from '../../../../shared/types'
 import { Button } from '../ui/button'
-import { Switch } from '../ui/switch'
 import { useToast } from '../../lib/useToast'
 import { cn } from '../../lib/utils'
 
 export interface UpdateSettingsSectionProps {
-  autoCheckUpdates: boolean
-  setAutoCheckUpdates: (enabled: boolean) => void
-  autoDownloadUpdates: boolean
-  setAutoDownloadUpdates: (enabled: boolean) => void
   lastUpdateCheck?: number
 }
 
@@ -29,8 +24,7 @@ function formatSpeed(bytesPerSec?: number): string {
 function formatRelativeTime(timestamp?: number): string {
   if (!timestamp) return 'Never'
   const diffSec = Math.floor((Date.now() - timestamp) / 1000)
-  if (diffSec < 10) return 'Just now'
-  if (diffSec < 60) return `${diffSec} seconds ago`
+  if (diffSec < 45) return 'Just now'
   const diffMin = Math.floor(diffSec / 60)
   if (diffMin < 60) return `${diffMin}m ago`
   const diffHours = Math.floor(diffMin / 60)
@@ -44,12 +38,8 @@ function formatRelativeTime(timestamp?: number): string {
 }
 
 export function UpdateSettingsSection({
-  autoCheckUpdates,
-  setAutoCheckUpdates,
-  autoDownloadUpdates,
-  setAutoDownloadUpdates,
   lastUpdateCheck
-}: UpdateSettingsSectionProps): React.JSX.Element {
+}: UpdateSettingsSectionProps = {}): React.JSX.Element {
   const toast = useToast()
   const [updateState, setUpdateState] = useState<UpdateState>({
     status: 'idle',
@@ -62,9 +52,7 @@ export function UpdateSettingsSection({
   const [isChecking, setIsChecking] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
   const [isInstalling, setIsInstalling] = useState(false)
-  const [isCleaning, setIsCleaning] = useState(false)
   const [showNotes, setShowNotes] = useState(false)
-  const [cleanFeedback, setCleanFeedback] = useState<string | null>(null)
 
   const isMountedRef = useRef(true)
   useEffect(() => {
@@ -125,7 +113,6 @@ export function UpdateSettingsSection({
   const handleCheckForUpdates = useCallback(async () => {
     if (isChecking || !window.api?.updater) return
     setIsChecking(true)
-    setCleanFeedback(null)
     try {
       const state = await window.api.updater.checkForUpdates()
       if (isMountedRef.current && state) {
@@ -193,31 +180,6 @@ export function UpdateSettingsSection({
     }
   }, [isInstalling, toast])
 
-  const handleCleanCache = useCallback(async () => {
-    if (isCleaning || !window.api?.updater) return
-    setIsCleaning(true)
-    try {
-      const result = await window.api.updater.cleanCache()
-      if (isMountedRef.current) {
-        if (result && result.freedBytes > 0) {
-          const msg = `Reclaimed ${formatBytes(result.freedBytes)} across ${result.cleanedFiles.length} cached file(s).`
-          setCleanFeedback(msg)
-          toast.success(msg, 'Cache Cleaned')
-        } else {
-          setCleanFeedback('Cache is already clean. No old installer files found.')
-          toast.info('No cached update files to clean.', 'Cache Clean')
-        }
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err)
-      toast.error(msg, 'Clean Cache Failed')
-    } finally {
-      if (isMountedRef.current) {
-        setIsCleaning(false)
-      }
-    }
-  }, [isCleaning, toast])
-
   const status = updateState.status
   const available = updateState.availableUpdate
   const progress = updateState.progress
@@ -247,17 +209,31 @@ export function UpdateSettingsSection({
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-2">
-              <span className="text-[13.5px] font-semibold tracking-[-0.015em] text-foreground">
+              <span className="text-[14px] font-semibold tracking-[-0.015em] text-foreground">
                 Software Updates
               </span>
-              <span className="text-[11px] font-medium text-muted-foreground/80 px-2 py-0.5 rounded-md bg-secondary/60 border border-border/40">
+              <span className="text-[11px] font-medium text-muted-foreground/80 px-2 py-0.5 rounded-md bg-secondary/60 border border-border/40 tabular-nums">
                 v{updateState.currentVersion}
               </span>
             </div>
-            <div className="text-[12px] text-muted-foreground mt-0.5 flex items-center gap-1.5 flex-wrap">
-              <span>Checks GitHub Releases for updates.</span>
-              <span>·</span>
-              <span>Last checked: {formatRelativeTime(effectiveLastChecked)}</span>
+            <div className="mt-1 flex items-center">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-medium border border-border/50 bg-secondary/40 text-muted-foreground/80 select-none shadow-2xs">
+                <span
+                  className={cn(
+                    'h-1.5 w-1.5 rounded-full shrink-0',
+                    isChecking
+                      ? 'bg-blue-500 animate-pulse'
+                      : effectiveLastChecked
+                        ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.4)]'
+                        : 'bg-muted-foreground/40'
+                  )}
+                />
+                <span className="tabular-nums">
+                  {isChecking
+                    ? 'Checking for updates…'
+                    : `Last checked: ${formatRelativeTime(effectiveLastChecked)}`}
+                </span>
+              </span>
             </div>
           </div>
         </div>
@@ -513,63 +489,6 @@ export function UpdateSettingsSection({
           </div>
         </div>
       )}
-
-      {/* 6. Settings Toggles */}
-      <div className="border-t border-border/50 divide-y divide-border/40">
-        <div className="p-4 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-[13px] font-medium text-foreground">
-              Automatically check for updates
-            </div>
-            <div className="text-[11.5px] text-muted-foreground">
-              Periodically check GitHub Releases in the background.
-            </div>
-          </div>
-          <Switch
-            checked={autoCheckUpdates}
-            onCheckedChange={setAutoCheckUpdates}
-            aria-label="Automatically check for updates"
-          />
-        </div>
-
-        <div className="p-4 flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-[13px] font-medium text-foreground">
-              Automatically download updates
-            </div>
-            <div className="text-[11.5px] text-muted-foreground">
-              Download new releases in the background when available.
-            </div>
-          </div>
-          <Switch
-            checked={autoDownloadUpdates}
-            onCheckedChange={setAutoDownloadUpdates}
-            aria-label="Automatically download updates"
-          />
-        </div>
-
-        {/* 7. Cache Cleanup Row */}
-        <div className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="min-w-0">
-            <div className="text-[13px] font-medium text-foreground">Clean update cache</div>
-            <div className="text-[11.5px] text-muted-foreground">
-              Remove old installer packages and incomplete downloads from disk.
-            </div>
-            {cleanFeedback && (
-              <div className="text-[11px] text-primary font-medium mt-1">{cleanFeedback}</div>
-            )}
-          </div>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleCleanCache}
-            disabled={isCleaning}
-            className="text-[12px] shrink-0"
-          >
-            {isCleaning ? 'Cleaning...' : 'Clean Cache'}
-          </Button>
-        </div>
-      </div>
     </div>
   )
 }

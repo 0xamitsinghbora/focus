@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { render, screen, act } from '@testing-library/react'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { render, screen, act, fireEvent } from '@testing-library/react'
 import { AppHeader } from '../components/AppHeader'
 import { Tabs } from '../components/ui/tabs'
 import { FocusSessionActionsContext, FocusSessionActions } from '../context/FocusSessionContext'
@@ -45,6 +45,25 @@ describe('AppHeader Component', () => {
 
     expect(screen.getByRole('heading', { name: 'Focus' })).toBeDefined()
     expect(screen.getByText('Ready')).toBeDefined()
+  })
+
+  it('renders Meditation button when onOpenTrataka is provided and fires callback on click', () => {
+    const onOpenTrataka = vi.fn()
+    render(
+      <FocusSessionActionsContext.Provider value={mockActions}>
+        <Tabs defaultValue="today">
+          <AppHeader onOpenTrataka={onOpenTrataka} />
+        </Tabs>
+      </FocusSessionActionsContext.Provider>
+    )
+
+    const meditationBtn = screen.getByRole('button', { name: 'Meditation' })
+    expect(meditationBtn).toBeDefined()
+    expect(meditationBtn.getAttribute('title')).toBe(
+      'Meditation (Trataka) — zero-input visual decompression'
+    )
+    fireEvent.click(meditationBtn)
+    expect(onOpenTrataka).toHaveBeenCalledTimes(1)
   })
 
   it('does not render duplicate header soundscape player', () => {

@@ -10,6 +10,21 @@ interface LogThemeConfig {
 }
 
 export const getLogThemeConfig = (log: LogEntry, goals?: DailyGoal[]): LogThemeConfig => {
+  // 0. Meditation (Trataka) -> White
+  const isMeditation =
+    Boolean(log.didDotReset) ||
+    /\b(meditation|trataka)\b/i.test(log.text || '') ||
+    /\b(meditation|trataka)\b/i.test(log.note || '')
+  if (isMeditation) {
+    return {
+      bar: 'bg-white',
+      badge:
+        'text-foreground dark:text-white bg-white/80 dark:bg-white/10 border-border/60 dark:border-white/30',
+      dot: 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)] border border-black/20 dark:border-transparent',
+      label: 'Meditation'
+    }
+  }
+
   // 1. Break -> Red
   const isBreak =
     log.productivity === 'break' ||

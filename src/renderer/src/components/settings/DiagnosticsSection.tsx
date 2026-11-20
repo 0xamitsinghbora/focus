@@ -49,8 +49,7 @@ export function DiagnosticsSection({
               {title}
             </div>
             <div className="text-[12px] text-muted-foreground mt-0.5">
-              Send a bug report via Gmail. File Explorer will also reveal focus.log so you can drag
-              & drop to attach it.
+              File Explorer will open the logs directory so you can drag and drop to attach it.
             </div>
           </div>
         </div>

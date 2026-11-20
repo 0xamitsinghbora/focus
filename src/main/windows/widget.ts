@@ -68,6 +68,9 @@ let boundMainWindow: BrowserWindow | null = null
 let onBlurListener: (() => void) | null = null
 let onMinimizeListener: (() => void) | null = null
 let onHideListener: (() => void) | null = null
+let onFocusListener: (() => void) | null = null
+let onShowListener: (() => void) | null = null
+let onRestoreListener: (() => void) | null = null
 
 export function rebindWidgetMainWindow(newMain?: BrowserWindow | null): void {
   const targetWin =
@@ -90,6 +93,15 @@ export function rebindWidgetMainWindow(newMain?: BrowserWindow | null): void {
       if (onHideListener && typeof boundMainWindow.removeListener === 'function') {
         boundMainWindow.removeListener('hide', onHideListener)
       }
+      if (onFocusListener && typeof boundMainWindow.removeListener === 'function') {
+        boundMainWindow.removeListener('focus', onFocusListener)
+      }
+      if (onShowListener && typeof boundMainWindow.removeListener === 'function') {
+        boundMainWindow.removeListener('show', onShowListener)
+      }
+      if (onRestoreListener && typeof boundMainWindow.removeListener === 'function') {
+        boundMainWindow.removeListener('restore', onRestoreListener)
+      }
     } catch {
       // ignore
     }
@@ -99,6 +111,9 @@ export function rebindWidgetMainWindow(newMain?: BrowserWindow | null): void {
   onBlurListener = null
   onMinimizeListener = null
   onHideListener = null
+  onFocusListener = null
+  onShowListener = null
+  onRestoreListener = null
 
   if (targetWin && !targetWin.isDestroyed()) {
     onBlurListener = () => ensureWidgetTopmost({ moveTop: true })
@@ -114,11 +129,17 @@ export function rebindWidgetMainWindow(newMain?: BrowserWindow | null): void {
         widgetWindow.showInactive()
       }
     }
+    onFocusListener = () => ensureWidgetTopmost({ moveTop: true })
+    onShowListener = () => ensureWidgetTopmost({ moveTop: true })
+    onRestoreListener = () => ensureWidgetTopmost({ moveTop: true })
 
     if (typeof targetWin.on === 'function') {
       targetWin.on('blur', onBlurListener)
       targetWin.on('minimize', onMinimizeListener)
       targetWin.on('hide', onHideListener)
+      targetWin.on('focus', onFocusListener)
+      targetWin.on('show', onShowListener)
+      targetWin.on('restore', onRestoreListener)
     }
     boundMainWindow = targetWin
   }
@@ -1212,6 +1233,7 @@ function registerWidgetIpcAndListeners(): void {
       }
       mainWin.show()
       mainWin.focus()
+      ensureWidgetTopmost({ moveTop: true })
     }
   })
 

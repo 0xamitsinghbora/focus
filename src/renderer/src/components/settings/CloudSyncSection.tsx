@@ -60,7 +60,7 @@ export function CloudSyncSection({
           <div className="text-[12px] text-muted-foreground mt-0.5">
             {driveStatus.isConnected
               ? 'Connected to Google Drive. Automatically syncing in background.'
-              : 'Sync logs and goals with your private Google Drive app storage.'}
+              : 'Sync your data with your Google Drive.'}
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@ export function CloudSyncSection({
             className="text-[12px] cursor-pointer"
             aria-label="Connect Google Drive"
           >
-            Connect
+            Connect to Google Drive
           </Button>
         )}
       </div>

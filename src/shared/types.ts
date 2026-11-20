@@ -34,6 +34,7 @@ export type AppSettings = {
   autoDownloadUpdates?: boolean
   lastUpdateCheck?: number
   lastRunVersion?: string
+  tratakaDurationSeconds?: number
 }
 
 export type LogEntry = {
