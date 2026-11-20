@@ -11,14 +11,11 @@ import {
 import { formatTime } from '../lib/utils'
 import { FocusLogo } from './FocusLogo'
 import { calculateFractionalSortOrders } from './goals/fractionalIndex'
-import {
-  PromptOption,
-  PromptStep,
-  PromptTaskSelector,
-  PromptDetailInput,
-  PromptAfkBreak,
-  usePromptNavigation
-} from './prompt'
+import { PromptOption, PromptStep } from './prompt/types'
+import { PromptTaskSelector } from './prompt/PromptTaskSelector'
+import { PromptDetailInput } from './prompt/PromptDetailInput'
+import { PromptAfkBreak } from './prompt/PromptAfkBreak'
+import { usePromptNavigation } from './prompt/usePromptNavigation'
 
 export function PromptWindow(): React.JSX.Element {
   const [goals, setGoals] = useState<DailyGoal[]>([])

@@ -1,6 +1,6 @@
 import { Readable } from 'stream'
 
-export interface DriveFile {
+interface DriveFile {
   id?: string | null
   name?: string | null
   modifiedTime?: string | null

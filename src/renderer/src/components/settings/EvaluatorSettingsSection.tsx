@@ -155,8 +155,15 @@ export function EvaluatorSettingsSection(): React.JSX.Element {
       {/* Metrics Row */}
       {metrics && metrics.totalEvaluations > 0 && (
         <div className="border-t border-border/40 pt-4 flex items-center justify-between text-xs text-muted-foreground">
-          <span>Integrity Index: <strong className="text-foreground font-mono">{metrics.averageHonestyScore}%</strong></span>
-          <span>Verified Tasks: <strong className="text-foreground font-mono">{metrics.verifiedGoalsCount}</strong> / {metrics.totalEvaluations}</span>
+          <span>
+            Integrity Index:{' '}
+            <strong className="text-foreground font-mono">{metrics.averageHonestyScore}%</strong>
+          </span>
+          <span>
+            Verified Tasks:{' '}
+            <strong className="text-foreground font-mono">{metrics.verifiedGoalsCount}</strong> /{' '}
+            {metrics.totalEvaluations}
+          </span>
         </div>
       )}
     </div>

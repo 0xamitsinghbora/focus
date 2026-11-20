@@ -104,7 +104,7 @@ export function GoalsContextMenu({
       aria-label="Task Actions"
       data-portal="true"
       style={{ left: adjustedPos?.x ?? contextMenu.x, top: adjustedPos?.y ?? contextMenu.y }}
-      className="fixed z-[9999] min-w-[220px] max-w-[260px] max-h-[calc(100vh-16px)] overflow-y-auto custom-scrollbar rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12.5px] apple-popover"
+      className="fixed z-9999 min-w-[220px] max-w-[260px] max-h-[calc(100vh-16px)] overflow-y-auto custom-scrollbar rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12.5px] apple-popover"
       onClick={(e) => e.stopPropagation()}
     >
       {selectedGoalIds.size > 1 && selectedGoalIds.has(contextMenu.goal.id) ? (

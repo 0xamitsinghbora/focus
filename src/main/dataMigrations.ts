@@ -2,7 +2,7 @@ import Database from 'better-sqlite3'
 
 export const CURRENT_SCHEMA_VERSION = 5
 
-export interface Migration {
+interface Migration {
   version: number
   description: string
   up: (db: Database.Database) => void

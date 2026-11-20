@@ -113,7 +113,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }): Reac
         createPortal(
           <div
             aria-live="polite"
-            className="fixed bottom-5 right-6 z-[9999] flex flex-col gap-2 pointer-events-none max-w-sm w-full"
+            className="fixed bottom-5 right-6 z-9999 flex flex-col gap-2 pointer-events-none max-w-sm w-full"
           >
             {toasts.map((t) => (
               <div

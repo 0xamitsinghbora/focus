@@ -47,7 +47,7 @@ export function GoalsDragGhost({
   return (
     <div
       ref={ghostRef}
-      className="fixed z-[9999] pointer-events-none select-none top-0 left-0 will-change-transform"
+      className="fixed z-9999 pointer-events-none select-none top-0 left-0 will-change-transform"
       style={{ transform: `translate3d(${currentX + 12}px, ${currentY - 14}px, 0)` }}
     >
       {drag.type === 'multi' ? (

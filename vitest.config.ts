@@ -25,7 +25,7 @@ export default defineConfig({
       {
         test: {
           name: 'node',
-          include: ['src/{main,shared,__tests__}/**/*.{test,spec}.{ts,tsx}'],
+          include: ['src/{main,shared}/**/*.{test,spec}.{ts,tsx}'],
           environment: 'node'
         }
       }

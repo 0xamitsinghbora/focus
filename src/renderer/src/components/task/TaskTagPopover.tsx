@@ -67,7 +67,7 @@ export function TaskTagPopover({
           groupTriggerRef.current?.focus()
         }
       }}
-      className="fixed z-[9999] w-[300px] rounded-2xl border border-border/80 bg-popover/95 p-3.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[13px] focus:outline-none"
+      className="fixed z-9999 w-[300px] rounded-2xl border border-border/80 bg-popover/95 p-3.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[13px] focus:outline-none"
     >
       <div className="flex items-center justify-between pb-2 border-b border-border/40">
         <div className="flex items-center gap-1.5 font-semibold text-foreground text-[12.5px]">

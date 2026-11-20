@@ -46,7 +46,7 @@ export function GoalsColorPicker({
       />
       <div
         style={{ left: picker.x, top: picker.y }}
-        className="fixed z-[9999] w-[240px] rounded-xl border border-border/80 bg-popover/95 p-2.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12px]"
+        className="fixed z-9999 w-[240px] rounded-xl border border-border/80 bg-popover/95 p-2.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between pb-1.5 mb-1.5 border-b border-border/40">

@@ -63,7 +63,7 @@ export function GoalsGroupMenu({
       />
       <div
         style={{ left: menu.x, top: menu.y }}
-        className="fixed z-[9999] min-w-[225px] w-max max-w-[260px] rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12px]"
+        className="fixed z-9999 min-w-[225px] w-max max-w-[260px] rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 select-none text-[12px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground truncate border-b border-border/40 mb-1 flex items-center justify-between">

@@ -245,7 +245,7 @@ export const GROUP_THEMES: GroupTheme[] = [
   }
 ]
 
-export const LEARNING_RED_THEME: GroupTheme = {
+const LEARNING_RED_THEME: GroupTheme = {
   id: 'learning-red',
   name: 'Day 1 Revision',
   hex: '#ef4444',
@@ -259,7 +259,7 @@ export const LEARNING_RED_THEME: GroupTheme = {
   ringClass: 'ring-rose-500/30 border-rose-500/40'
 }
 
-export const LEARNING_YELLOW_THEME: GroupTheme = {
+const LEARNING_YELLOW_THEME: GroupTheme = {
   id: 'learning-yellow',
   name: 'Day 7 Revision',
   hex: '#f59e0b',
@@ -273,7 +273,7 @@ export const LEARNING_YELLOW_THEME: GroupTheme = {
   ringClass: 'ring-amber-500/30 border-amber-500/40'
 }
 
-export const LEARNING_GREEN_THEME: GroupTheme = {
+const LEARNING_GREEN_THEME: GroupTheme = {
   id: 'learning-green',
   name: 'Day 30 Revision',
   hex: '#10b981',

@@ -15,14 +15,14 @@ export interface KeyboardShortcutsModalProps {
   initialCustomShortcuts?: Record<string, string>
 }
 
-export type ShortcutCategoryKey = 'all' | 'global' | 'app'
+type ShortcutCategoryKey = 'all' | 'global' | 'app'
 
-export interface KeyCombo {
+interface KeyCombo {
   keys: string[]
   separator?: string
 }
 
-export interface ShortcutItem {
+interface ShortcutItem {
   id: string
   label: string
   description: string
@@ -33,7 +33,7 @@ export interface ShortcutItem {
   isConfigurable: boolean
 }
 
-export interface ShortcutCategoryConfig {
+interface ShortcutCategoryConfig {
   key: ShortcutCategoryKey
   title: string
   shortTitle: string
@@ -638,7 +638,7 @@ export function KeyboardShortcutsModal({
                             <div
                               role="status"
                               aria-live="polite"
-                              className="relative flex items-center justify-between min-w-[210px] px-3.5 py-2 rounded-xl border-2 border-primary bg-primary/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] animate-pulse"
+                              className="relative flex items-center justify-between min-w-52.5 px-3.5 py-2 rounded-xl border-2 border-primary bg-primary/10 shadow-[0_0_15px_rgba(59,130,246,0.3)] animate-pulse"
                             >
                               <div className="flex items-center gap-2 select-none">
                                 {heldModifiers.length > 0 ? (
@@ -703,7 +703,7 @@ export function KeyboardShortcutsModal({
                                 setHeldModifiers([])
                                 setConflictInfo(null)
                               }}
-                              className={`group relative flex items-center justify-center min-w-[140px] px-3.5 py-2 rounded-xl border transition-all cursor-pointer ${
+                              className={`group relative flex items-center justify-center min-w-35 px-3.5 py-2 rounded-xl border transition-all cursor-pointer ${
                                 isDisabled
                                   ? 'bg-muted/15 border-dashed border-border/80 hover:border-primary/60 hover:bg-muted/25 text-muted-foreground'
                                   : 'bg-surface/80 hover:bg-secondary/90 border-border/80 hover:border-primary/60 shadow-2xs hover:shadow-apple-subtle hover:scale-[1.02] active:scale-[0.98]'

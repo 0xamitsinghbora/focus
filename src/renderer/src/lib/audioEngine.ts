@@ -30,7 +30,7 @@ const BUF_SEC = 4
 
 const bufferCache = new WeakMap<AudioContext, Map<(d: Float32Array) => void, AudioBuffer>>()
 
-export function fillBrown(d: Float32Array): void {
+function fillBrown(d: Float32Array): void {
   const len = d.length
   const fadeLen = Math.min(2048, Math.floor(len / 4))
   const total = len + fadeLen
@@ -54,7 +54,7 @@ export function fillBrown(d: Float32Array): void {
   }
 }
 
-export function fillPink(d: Float32Array): void {
+function fillPink(d: Float32Array): void {
   const len = d.length
   const fadeLen = Math.min(2048, Math.floor(len / 4))
   const total = len + fadeLen
@@ -143,15 +143,6 @@ function prewarmNoiseGenerators(): void {
       // Audio prewarm ignored in test or constrained environments
     }
   })
-}
-
-function resetPrewarmedBuffersForTesting(): void {
-  prewarmedBrown0 = null
-  prewarmedBrown1 = null
-  prewarmedPink0 = null
-  prewarmedPink1 = null
-  prewarmedWhite0 = null
-  prewarmedWhite1 = null
 }
 
 function noiseBuf(ctx: AudioContext, fill: (d: Float32Array) => void): AudioBuffer {
@@ -1211,7 +1202,7 @@ async function clearAllCustomAudioTracksFromStorage(): Promise<void> {
 
 const STORAGE_KEY_USER_PAUSED = 'focus-audio-user-paused'
 
-export function loadUserPausedPreference(): boolean {
+function loadUserPausedPreference(): boolean {
   if (typeof localStorage !== 'undefined') {
     try {
       const val = localStorage.getItem(STORAGE_KEY_USER_PAUSED)
@@ -1225,7 +1216,7 @@ export function loadUserPausedPreference(): boolean {
   return false
 }
 
-export function saveUserPausedPreference(userPaused: boolean): void {
+function saveUserPausedPreference(userPaused: boolean): void {
   if (typeof localStorage !== 'undefined') {
     try {
       localStorage.setItem(STORAGE_KEY_USER_PAUSED, String(userPaused))
@@ -1235,7 +1226,7 @@ export function saveUserPausedPreference(userPaused: boolean): void {
   }
 }
 
-export interface AudioEngineSnapshot {
+interface AudioEngineSnapshot {
   playing: boolean
   userPaused: boolean
   volume: number
@@ -1253,11 +1244,7 @@ let sharedLimiter: DynamicsCompressorNode | null = null
 let activeChimesCount = 0
 const activeChimeTimers = new Set<ReturnType<typeof setTimeout>>()
 
-export function getActiveChimesCountForTesting(): number {
-  return activeChimesCount
-}
-
-export function getSharedAudioContext(): AudioContext | null {
+function getSharedAudioContext(): AudioContext | null {
   try {
     const AudioCtx =
       typeof window !== 'undefined'
@@ -1281,7 +1268,7 @@ export function getSharedAudioContext(): AudioContext | null {
   }
 }
 
-export function getMasterLimiter(ctx: AudioContext): AudioNode {
+function getMasterLimiter(ctx: AudioContext): AudioNode {
   if (sharedLimiter && sharedLimiter.context === ctx) {
     return sharedLimiter
   }
@@ -2092,56 +2079,6 @@ class AmbientAudioEngine {
 export const audioEngine = new AmbientAudioEngine()
 prewarmNoiseGenerators()
 
-export function resetAudioEngineForTesting(): void {
-  audioEngine.destroy()
-  audioEngine.clearCustomAudio()
-  audioEngine.setUserPaused(false)
-  if (typeof localStorage !== 'undefined') {
-    try {
-      localStorage.removeItem(STORAGE_KEY_USER_PAUSED)
-    } catch {
-      /* ignore */
-    }
-  }
-  sharedAudioCtx = null
-  sharedLimiter = null
-  activeChimesCount = 0
-  activeChimeTimers.forEach((t) => clearTimeout(t))
-  activeChimeTimers.clear()
-  resetPrewarmedBuffersForTesting()
-}
-
-export function formatNoiseType(type: NoiseType): string {
-  switch (type) {
-    case 'waves':
-      return 'Ocean Waves'
-    case 'rain':
-      return 'Rain'
-    case 'wind':
-      return 'Wind'
-    case 'stream':
-      return 'Stream'
-    case 'white-noise':
-      return 'White Noise'
-    case 'brown-noise':
-      return 'Brown Noise'
-    case 'cocoon':
-      return 'Cocoon'
-    case 'deep':
-      return 'Deep'
-    case 'city-tokyo':
-      return 'Tokyo'
-    case 'city-london':
-      return 'London'
-    case 'city-reykjavik':
-      return 'Reykjavik'
-    case 'custom':
-      return audioEngine.customAudioName || 'Custom Sound'
-    default:
-      return type
-  }
-}
-
 export interface UseAudioEngineReturn extends AudioEngineSnapshot {
   play: (options?: { userInitiated?: boolean }) => void
   pause: (options?: { userInitiated?: boolean }) => void
@@ -2224,13 +2161,6 @@ function safeScheduleDisconnect(nodeA: AudioNode, nodeB?: AudioNode, delayMs: nu
     }
   }, delayMs)
   pendingAudioTimeouts.add(timer)
-}
-
-export function clearPendingAudioTimeouts(): void {
-  for (const timer of pendingAudioTimeouts) {
-    clearTimeout(timer)
-  }
-  pendingAudioTimeouts.clear()
 }
 
 export async function playFocusChime(

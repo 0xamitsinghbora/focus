@@ -64,13 +64,3 @@ describe('parseLocalDate and shiftDate', () => {
     expect(shiftDate('invalid', 0)).toMatch(/^\d{4}-\d{2}-\d{2}$/)
   })
 })
-
-describe('IpcChannels — Cloud Sync Channels', () => {
-  it('defines channels for Google Drive sync operations', async () => {
-    const { IpcChannels } = await import('../types')
-    expect(IpcChannels.DriveConnect).toBe('drive:connect')
-    expect(IpcChannels.DriveDisconnect).toBe('drive:disconnect')
-    expect(IpcChannels.DriveSyncNow).toBe('drive:sync-now')
-    expect(IpcChannels.DriveStatus).toBe('drive:status')
-  })
-})

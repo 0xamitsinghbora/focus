@@ -42,13 +42,6 @@ let widgetOptions: {
 
 const visibilityListeners = new Set<(visible: boolean) => void>()
 
-export function onWidgetVisibilityChange(callback: (visible: boolean) => void): () => void {
-  visibilityListeners.add(callback)
-  return () => {
-    visibilityListeners.delete(callback)
-  }
-}
-
 export function _resetVisibilityListenersForTesting(): void {
   visibilityListeners.clear()
 }
@@ -238,7 +231,6 @@ function stopTopmostMonitoring(): void {
 }
 
 const WINDOW_WIDTH = 100
-export const WINDOW_WIDTH_EXPANDED = 100
 export { WINDOW_WIDTH }
 const WINDOW_HEIGHT = 32
 const POS_VERSION = 3
@@ -718,10 +710,6 @@ export function getDefaultWidgetPosition(display?: Electron.Display): { x: numbe
   return clampPosition(x, y, WINDOW_WIDTH, WINDOW_HEIGHT, targetDisplay)
 }
 
-export function isWidgetVisible(): boolean {
-  return !!(widgetWindow && !widgetWindow.isDestroyed() && widgetWindow.isVisible())
-}
-
 export function getWidgetWindow(): BrowserWindow | null {
   if (widgetWindow && !widgetWindow.isDestroyed()) {
     return widgetWindow
@@ -741,14 +729,6 @@ export function getWidgetWindow(): BrowserWindow | null {
     // ignore
   }
   return null
-}
-
-export function toggleWidgetWindow(): void {
-  if (isWidgetVisible()) {
-    hideWidgetWindow()
-  } else {
-    showWidgetWindow()
-  }
 }
 
 export function initWidgetWindow(
@@ -908,48 +888,7 @@ export function initWidgetWindow(
   return widgetWindow
 }
 
-export function showWidgetWindow(): void {
-  isUserInitiatedHide = false
-  notifyVisibilityChange(true)
-  if (!widgetWindow || widgetWindow.isDestroyed()) {
-    const main = getActiveMainWindow()
-    if (main) {
-      initWidgetWindow(main, { ...widgetOptions, getShowWidget: () => true })
-    }
-    if (!widgetWindow || widgetWindow.isDestroyed()) {
-      return
-    }
-  }
-
-  // Ensure current position is clamped strictly within display area and size is locked
-  const [currX, currY] = widgetWindow.getPosition()
-  let targetPos: { x: number; y: number }
-  if (!isPositionInsideAnyDisplay(currX, currY)) {
-    targetPos = getDefaultWidgetPosition(screen.getPrimaryDisplay())
-  } else {
-    targetPos = clampPosition(currX, currY)
-  }
-
-  widgetWindow.setBounds({
-    x: targetPos.x,
-    y: targetPos.y,
-    width: WINDOW_WIDTH,
-    height: WINDOW_HEIGHT
-  })
-  widgetWindow.setAlwaysOnTop(true, WIDGET_WINDOW_LEVEL, 1)
-  try {
-    widgetWindow.setVisibleOnAllWorkspaces(true, {
-      visibleOnFullScreen: WIDGET_VISIBLE_ON_FULLSCREEN
-    })
-  } catch {
-    // ignore
-  }
-  widgetWindow.showInactive()
-  widgetWindow.moveTop()
-  startTopmostMonitoring()
-}
-
-export function resetWidgetPosition(display?: Electron.Display): void {
+function resetWidgetPosition(display?: Electron.Display): void {
   let currentDisplay = display
   if (!currentDisplay && widgetWindow && !widgetWindow.isDestroyed()) {
     try {
@@ -989,7 +928,7 @@ export function resetWidgetPosition(display?: Electron.Display): void {
   savePosition(def.x, def.y)
 }
 
-export function hideWidgetWindow(): void {
+function hideWidgetWindow(): void {
   isUserInitiatedHide = true
   notifyVisibilityChange(false)
   stopTopmostMonitoring()

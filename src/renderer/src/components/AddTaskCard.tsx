@@ -502,7 +502,7 @@ export function AddTaskCard({
               }}
               placeholder="Add note"
               rows={note ? Math.min(5, Math.max(2, note.split('\n').length)) : 1}
-              className="w-full bg-transparent text-[12px] text-foreground/90 placeholder:text-muted-foreground/50 outline-none resize-y min-h-[22px] max-h-[160px] leading-relaxed custom-scrollbar"
+              className="w-full bg-transparent text-[12px] text-foreground/90 placeholder:text-muted-foreground/50 outline-none resize-y min-h-5.5 max-h-40 leading-relaxed custom-scrollbar"
             />
           </div>
         </div>
@@ -732,7 +732,7 @@ export function AddTaskCard({
               WebkitAppRegion: 'no-drag'
             } as React.CSSProperties
           }
-          className="fixed z-[9999]"
+          className="fixed z-9999"
         >
           <DueDateTimePicker
             dueDate={dueDate}

@@ -217,7 +217,11 @@ export class EvaluatorService {
 
     // 4. Strictness Weighting
     if (strictness === 'strict') {
-      if (proof.length < 20 || (targetMins >= 20 && trackedMins < 5) || GENERIC_FILLER_REGEX.test(proof)) {
+      if (
+        proof.length < 20 ||
+        (targetMins >= 20 && trackedMins < 5) ||
+        GENERIC_FILLER_REGEX.test(proof)
+      ) {
         alignmentScore = Math.min(alignmentScore, 10)
       }
     } else if (strictness === 'lenient') {
@@ -225,7 +229,10 @@ export class EvaluatorService {
       proofQualityScore = Math.min(25, proofQualityScore + 5)
     }
 
-    const totalScore = Math.max(0, Math.min(100, timeScore + alignmentScore + proofQualityScore + artifactBonus))
+    const totalScore = Math.max(
+      0,
+      Math.min(100, timeScore + alignmentScore + proofQualityScore + artifactBonus)
+    )
 
     let status: 'verified' | 'rejected' | 'needs_revision'
     let cheatRisk: 'low' | 'medium' | 'high'
@@ -289,7 +296,10 @@ export class EvaluatorService {
           .toLowerCase()
           .replace(/[^a-z0-9\s]/g, ' ')
           .split(/\s+/)
-          .filter((t) => t.length > 3 && !['what', 'with', 'from', 'this', 'that', 'have', 'been'].includes(t))
+          .filter(
+            (t) =>
+              t.length > 3 && !['what', 'with', 'from', 'this', 'that', 'have', 'been'].includes(t)
+          )
       )
 
     const titleTokens = tokenize(title)

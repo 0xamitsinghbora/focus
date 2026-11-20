@@ -181,7 +181,7 @@ export function GoalsBulkActionsBar({
         {bulkRescheduleOpen && (
           <div
             className={cn(
-              'absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 text-[12px] z-[9999]',
+              'absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 text-[12px] z-9999',
               bulkRescheduleCustomOpen ? 'w-[280px]' : 'min-w-[215px]'
             )}
             onClick={(e) => e.stopPropagation()}
@@ -345,7 +345,7 @@ export function GoalsBulkActionsBar({
         {/* Bulk Group Popover */}
         {bulkGroupOpen && (
           <div
-            className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 min-w-[220px] max-w-[260px] rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 text-[12px] z-[9999]"
+            className="absolute bottom-full mb-2.5 left-1/2 -translate-x-1/2 min-w-[220px] max-w-[260px] rounded-xl border border-border/80 bg-popover/95 p-1.5 shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 text-[12px] z-9999"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="px-2 py-1 text-[11px] font-semibold text-muted-foreground border-b border-border/40 mb-1 flex items-center justify-between">

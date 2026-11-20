@@ -188,13 +188,11 @@ export class EvaluationRepository {
     }
   }
 
-  public getAntiCheatSummary(
-    date: string,
-    logs: LogEntry[],
-    goals: DailyGoal[]
-  ): AntiCheatSummary {
+  public getAntiCheatSummary(date: string, logs: LogEntry[], goals: DailyGoal[]): AntiCheatSummary {
     try {
-      const evaluations = this.stmts.getEvaluationsSince.all(`${date}T00:00:00.000Z`) as EvaluationRecord[]
+      const evaluations = this.stmts.getEvaluationsSince.all(
+        `${date}T00:00:00.000Z`
+      ) as EvaluationRecord[]
 
       let verifiedMinutes = 0
       let unverifiedMinutes = 0
@@ -239,7 +237,10 @@ export class EvaluationRepository {
 
       const honestyScore =
         scores.length > 0
-          ? Math.min(100, Math.max(0, Math.round(scores.reduce((a, b) => a + b, 0) / scores.length)))
+          ? Math.min(
+              100,
+              Math.max(0, Math.round(scores.reduce((a, b) => a + b, 0) / scores.length))
+            )
           : verifiedCount > 0 || verifiedMinutes > 0
             ? 90
             : 80

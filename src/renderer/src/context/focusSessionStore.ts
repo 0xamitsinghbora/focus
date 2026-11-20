@@ -182,6 +182,4 @@ export const useSessionIsBreak = (): boolean => useFocusSessionStore((s) => s.is
 export const useSessionIsAfk = (): boolean => useFocusSessionStore((s) => s.isAfk)
 export const useSessionActiveGoal = (): DailyGoal | null =>
   useFocusSessionStore((s) => s.activeGoal)
-export const useSessionRemainingSeconds = (): number =>
-  useFocusSessionStore((s) => s.secondsRemaining)
 export const useSessionTotalSeconds = (): number => useFocusSessionStore((s) => s.totalSeconds)

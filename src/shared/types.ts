@@ -4,8 +4,6 @@ export const DEFAULT_SORT_ORDER = 1000000000
 
 export type CloudSyncProvider = 'none' | 'google-drive'
 
-export type FocusQualityRating = 1 | 2 | 3 | 4 | 5
-
 export type GoalType = 'deep' | 'routine'
 
 export type AudioMode = 'silence' | 'focus_sound' | 'music'
@@ -352,9 +350,7 @@ export enum IpcChannels {
   DeleteAllData = 'app:delete-all-data',
   BreakNudge = 'scheduler:break-nudge',
   LearningGetTracks = 'learning:get-tracks',
-  LearningGetDue = 'learning:get-due',
   LearningResetStage = 'learning:reset-stage',
-  LearningSkipStage = 'learning:skip-stage',
   EvaluatorGetSettings = 'evaluator:get-settings',
   EvaluatorUpdateSettings = 'evaluator:update-settings',
   EvaluatorSubmitForReview = 'evaluator:submit-for-review',

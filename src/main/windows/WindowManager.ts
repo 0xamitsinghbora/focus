@@ -3,7 +3,7 @@ import { join } from 'path'
 import iconPng from '../../../build/icon.png?asset'
 import iconIco from '../../../build/icon.ico?asset'
 
-export function getAppIcon(): Electron.NativeImage | string {
+function getAppIcon(): Electron.NativeImage | string {
   try {
     if (process.platform === 'win32') {
       return iconIco

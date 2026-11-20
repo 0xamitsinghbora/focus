@@ -56,7 +56,8 @@ describe('EvaluatorService (Anti-Cheat & Local Lite LLM Evaluation)', () => {
       title: 'Implement OAuth callback',
       targetMinutes: 45,
       trackedMinutes: 42,
-      proofOfWork: 'Fixed token parsing bug in oauthCallbackHtml.ts and wrote 5 unit tests with commit 3a4f89b.'
+      proofOfWork:
+        'Fixed token parsing bug in oauthCallbackHtml.ts and wrote 5 unit tests with commit 3a4f89b.'
     })
 
     expect(review.status).toBe('verified')
