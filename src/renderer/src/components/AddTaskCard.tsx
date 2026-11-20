@@ -605,7 +605,7 @@ export function AddTaskCard({
                 }
               }}
               className={cn(
-                'flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-1.5 focus:ring-primary cursor-pointer',
+                'flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-[1.5px] focus:ring-primary cursor-pointer',
                 dueDate && 'text-foreground bg-secondary font-semibold ring-1 ring-border',
                 activePopover === 'due' && 'bg-secondary text-foreground ring-1 ring-primary'
               )}
@@ -668,7 +668,7 @@ export function AddTaskCard({
                 }
               }}
               className={cn(
-                'flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-1.5 focus:ring-primary cursor-pointer',
+                'flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground transition-all duration-150 hover:bg-secondary hover:text-foreground focus:outline-none focus:ring-[1.5px] focus:ring-primary cursor-pointer',
                 groupTag && 'text-foreground bg-secondary ring-1 ring-border',
                 activePopover === 'group' && 'bg-secondary text-foreground ring-1 ring-primary'
               )}
@@ -723,7 +723,7 @@ export function AddTaskCard({
                 }
               }}
               className={cn(
-                'h-7 rounded-lg px-2.5 text-[11px] font-medium transition-colors cursor-pointer focus:outline-none focus:ring-1.5 focus:ring-primary',
+                'h-7 rounded-lg px-2.5 text-[11px] font-medium transition-colors cursor-pointer focus:outline-none focus:ring-[1.5px] focus:ring-primary',
                 showDiscardConfirm
                   ? 'bg-destructive/15 text-destructive font-semibold hover:bg-destructive/25 border border-destructive/30'
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground'

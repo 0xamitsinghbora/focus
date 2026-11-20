@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState, useEffect } from 'react'
+import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react'
 import { useDialogA11y } from '../lib/useDialogA11y'
 import { useToast } from '../lib/useToast'
 import {
@@ -180,6 +180,35 @@ export function KeyboardShortcutsModal({
     }
   }, [isOpen])
 
+  // Save updated shortcut to settings & local state
+  const handleSaveShortcut = useCallback(
+    async (id: string, newAccelerator: string): Promise<void> => {
+      const updated = {
+        ...customShortcuts,
+        [id]: newAccelerator
+      }
+      setCustomShortcuts(updated)
+      setEditingId(null)
+      setHeldModifiers([])
+      setConflictInfo(null)
+
+      try {
+        if (typeof window !== 'undefined' && window.api?.settings?.patch) {
+          await window.api.settings.patch({ customShortcuts: updated })
+        }
+        toast.success(
+          newAccelerator === 'none'
+            ? 'Shortcut disabled'
+            : `Bound to ${formatAcceleratorForDisplay(newAccelerator, isMac).join('+')}`
+        )
+      } catch (err) {
+        console.error('Failed to patch shortcut setting:', err)
+        toast.error('Failed to save shortcut')
+      }
+    },
+    [customShortcuts, isMac, toast]
+  )
+
   // Game-style key recording listener when a shortcut is in edit mode
   useEffect(() => {
     if (!editingId) return
@@ -246,7 +275,7 @@ export function KeyboardShortcutsModal({
       window.removeEventListener('keydown', handleKeyDown, true)
       window.removeEventListener('keyup', handleKeyUp, true)
     }
-  }, [editingId, isMac, customShortcuts])
+  }, [editingId, isMac, customShortcuts, handleSaveShortcut])
 
   const dialogRef = useDialogA11y<HTMLDivElement>({
     isOpen,
@@ -265,32 +294,6 @@ export function KeyboardShortcutsModal({
       } else {
         onClose()
       }
-    }
-  }
-
-  // Save updated shortcut to settings & local state
-  const handleSaveShortcut = async (id: string, newAccelerator: string): Promise<void> => {
-    const updated = {
-      ...customShortcuts,
-      [id]: newAccelerator
-    }
-    setCustomShortcuts(updated)
-    setEditingId(null)
-    setHeldModifiers([])
-    setConflictInfo(null)
-
-    try {
-      if (typeof window !== 'undefined' && window.api?.settings?.patch) {
-        await window.api.settings.patch({ customShortcuts: updated })
-      }
-      toast.success(
-        newAccelerator === 'none'
-          ? 'Shortcut disabled'
-          : `Bound to ${formatAcceleratorForDisplay(newAccelerator, isMac).join('+')}`
-      )
-    } catch (err) {
-      console.error('Failed to patch shortcut setting:', err)
-      toast.error('Failed to save shortcut')
     }
   }
 

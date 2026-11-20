@@ -218,7 +218,6 @@ const GoalCardInner: React.FC<GoalCardProps> = ({ goal, col }) => {
           !isSelected &&
           'border-apple-red/70 bg-apple-red/[0.04] dark:bg-apple-red/[0.08] shadow-[0_0_0_1px_rgba(239,68,68,0.25)] hover:border-apple-red',
         isDragging && 'opacity-25 pointer-events-none',
-        theme && cn('hover:border-opacity-60'),
         isHoverTargetCard && 'ring-1 ring-sky-500/70 border-sky-500/70'
       )}
     >

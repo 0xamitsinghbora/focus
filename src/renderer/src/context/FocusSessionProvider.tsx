@@ -1485,7 +1485,18 @@ export function FocusSessionProvider({
     return () => {
       if (typeof cleanup === 'function') cleanup()
     }
-  }, [togglePause, startFocus, addMinutes, startBreak, completeTask, restartSession, toast])
+  }, [
+    togglePause,
+    startFocus,
+    addMinutes,
+    startBreak,
+    completeTask,
+    restartSession,
+    toast,
+    pauseFocus,
+    resumeFocus,
+    startAfkBreak
+  ])
 
   // Auto-manage focus session timer based on in-progress tasks:
   // 1. When tasks are in "in progress": top-most task tracked by default

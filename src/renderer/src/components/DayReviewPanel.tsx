@@ -415,7 +415,7 @@ export function DayReviewPanel({
         )}
 
         {audioInsights && (
-          <div className="rounded-2xl border border-primary/20 bg-primary/[0.03] dark:bg-primary/[0.06] p-4 space-y-3 apple-card-elevated">
+          <div className="rounded-2xl border border-primary/20 bg-primary/3 dark:bg-primary/6 p-4 space-y-3 apple-card-elevated">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <span className="text-[13px] font-semibold text-foreground tracking-[-0.015em] flex items-center gap-1.5">

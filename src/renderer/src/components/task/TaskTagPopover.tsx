@@ -238,7 +238,7 @@ export function TaskTagPopover({
                 }}
                 title={isUsed ? `${theme.name} (Already used by "${usedByGroup}")` : theme.name}
                 className={cn(
-                  'group relative flex h-7 items-center justify-center rounded-lg border transition-all duration-150 focus:outline-none focus:ring-1.5 focus:ring-primary',
+                  'group relative flex h-7 items-center justify-center rounded-lg border transition-all duration-150 focus:outline-none focus:ring-[1.5px] focus:ring-primary',
                   theme.headerBg,
                   theme.headerBorder,
                   isUsed

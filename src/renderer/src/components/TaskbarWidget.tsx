@@ -41,36 +41,39 @@ export function TaskbarWidget(): React.JSX.Element {
   const reminderStatusRef = useRef<ReminderStatus | null>(null)
 
   // Fetch today's productive time
-  const fetchTodayMinutes = async (statusOverride?: ReminderStatus | null): Promise<void> => {
-    if (typeof window !== 'undefined' && window.api?.logs) {
-      try {
-        const cutoff =
-          (statusOverride !== undefined ? statusOverride : reminderStatusRef.current)
-            ?.dayCutoffHour || 0
-        const todayStr = localDateStr(new Date(), cutoff)
-        const review = await window.api.logs.getDayReview(todayStr)
-        if (review && typeof review.totalProductiveMinutes === 'number') {
-          setTodayProductiveMinutes(review.totalProductiveMinutes)
-          return
-        }
-        const logs = await window.api.logs.get(todayStr)
-        if (Array.isArray(logs)) {
-          let mins = 0
-          for (const l of logs) {
-            if (l.productivity === 'break') continue
-            if (typeof l.productiveMinutes === 'number') {
-              mins += Math.max(0, Math.round(l.productiveMinutes))
-            } else if (l.productivity === 'productive') {
-              mins += Math.max(0, Math.round(l.durationMinutes || 0))
-            }
+  const fetchTodayMinutes = useCallback(
+    async (statusOverride?: ReminderStatus | null): Promise<void> => {
+      if (typeof window !== 'undefined' && window.api?.logs) {
+        try {
+          const cutoff =
+            (statusOverride !== undefined ? statusOverride : reminderStatusRef.current)
+              ?.dayCutoffHour || 0
+          const todayStr = localDateStr(new Date(), cutoff)
+          const review = await window.api.logs.getDayReview(todayStr)
+          if (review && typeof review.totalProductiveMinutes === 'number') {
+            setTodayProductiveMinutes(review.totalProductiveMinutes)
+            return
           }
-          setTodayProductiveMinutes(mins)
+          const logs = await window.api.logs.get(todayStr)
+          if (Array.isArray(logs)) {
+            let mins = 0
+            for (const l of logs) {
+              if (l.productivity === 'break') continue
+              if (typeof l.productiveMinutes === 'number') {
+                mins += Math.max(0, Math.round(l.productiveMinutes))
+              } else if (l.productivity === 'productive') {
+                mins += Math.max(0, Math.round(l.durationMinutes || 0))
+              }
+            }
+            setTodayProductiveMinutes(mins)
+          }
+        } catch {
+          // ignore
         }
-      } catch {
-        // ignore
       }
-    }
-  }
+    },
+    []
+  )
 
   // Fetch today's kanban goals
   const fetchGoals = useCallback(async (statusOverride?: ReminderStatus | null): Promise<void> => {
@@ -147,7 +150,7 @@ export function TaskbarWidget(): React.JSX.Element {
       return true
     }
     return false
-  }, [fetchStreak, fetchGoals])
+  }, [fetchStreak, fetchGoals, fetchTodayMinutes])
 
   const fetchStatus = useCallback(async (): Promise<void> => {
     if (typeof window !== 'undefined' && window.api?.scheduler) {
@@ -167,7 +170,7 @@ export function TaskbarWidget(): React.JSX.Element {
         // ignore
       }
     }
-  }, [fetchGoals, fetchSession, fetchDailyTarget, checkDayRollover])
+  }, [fetchGoals, fetchSession, fetchDailyTarget, checkDayRollover, fetchTodayMinutes])
 
   useEffect(() => {
     fetchStatus()
@@ -191,47 +194,6 @@ export function TaskbarWidget(): React.JSX.Element {
       }
     }
   }, [fetchStatus, fetchSession, fetchStreak, checkDayRollover])
-
-  // Listen to data update events to refresh daily total, goals, and scheduler status
-  useEffect(() => {
-    if (typeof window === 'undefined' || !window.api?.events) return
-    const cleanup = window.api.events.onDataUpdated((target?: SyncTarget) => {
-      if (typeof target?.todayMinutes === 'number') {
-        setTodayProductiveMinutes(target.todayMinutes)
-      } else if (!target?.syncSettings) {
-        fetchTodayMinutes()
-      }
-
-      if (target?.syncSettings) {
-        fetchStatus()
-        fetchDailyTarget()
-      } else {
-        fetchGoals()
-          .then(() => updateCountdown())
-          .catch(() => {})
-        fetchSession()
-          .then(() => updateCountdown())
-          .catch(() => {})
-      }
-    })
-    return () => {
-      if (typeof cleanup === 'function') cleanup()
-    }
-  }, [fetchStatus, fetchGoals, fetchSession])
-
-  // Listen to session timer broadcasts from main/renderer
-  useEffect(() => {
-    fetchSession()
-    if (typeof window === 'undefined' || !window.api?.session) return
-
-    const cleanup = window.api.session.onSessionUpdate((payload) => {
-      setSession(payload)
-    })
-
-    return () => {
-      if (typeof cleanup === 'function') cleanup()
-    }
-  }, [fetchSession])
 
   const sessionRef = useRef<SessionTimerPayload | null>(session)
   sessionRef.current = session
@@ -303,6 +265,47 @@ export function TaskbarWidget(): React.JSX.Element {
       }
     }
   }, [])
+
+  // Listen to data update events to refresh daily total, goals, and scheduler status
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.api?.events) return
+    const cleanup = window.api.events.onDataUpdated((target?: SyncTarget) => {
+      if (typeof target?.todayMinutes === 'number') {
+        setTodayProductiveMinutes(target.todayMinutes)
+      } else if (!target?.syncSettings) {
+        fetchTodayMinutes()
+      }
+
+      if (target?.syncSettings) {
+        fetchStatus()
+        fetchDailyTarget()
+      } else {
+        fetchGoals()
+          .then(() => updateCountdown())
+          .catch(() => {})
+        fetchSession()
+          .then(() => updateCountdown())
+          .catch(() => {})
+      }
+    })
+    return () => {
+      if (typeof cleanup === 'function') cleanup()
+    }
+  }, [fetchStatus, fetchGoals, fetchSession, fetchDailyTarget, fetchTodayMinutes, updateCountdown])
+
+  // Listen to session timer broadcasts from main/renderer
+  useEffect(() => {
+    fetchSession()
+    if (typeof window === 'undefined' || !window.api?.session) return
+
+    const cleanup = window.api.session.onSessionUpdate((payload) => {
+      setSession(payload)
+    })
+
+    return () => {
+      if (typeof cleanup === 'function') cleanup()
+    }
+  }, [fetchSession])
 
   // Immediately refresh countdown whenever session, status, or dailyGoals changes
   useEffect(() => {

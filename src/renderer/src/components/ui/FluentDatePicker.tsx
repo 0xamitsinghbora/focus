@@ -431,7 +431,7 @@ export function FluentDatePicker({
       aria-label="Date Picker Calendar"
       onKeyDown={handleKeyDown}
       className={cn(
-        'w-[264px] select-none rounded-2xl border border-border/80 bg-popover/95 p-3 text-foreground shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 focus:outline-none focus-visible:ring-1.5 focus-visible:ring-apple-blue/50',
+        'w-[264px] select-none rounded-2xl border border-border/80 bg-popover/95 p-3 text-foreground shadow-apple-popover backdrop-blur-md animate-in fade-in zoom-in-95 duration-100 focus:outline-none focus-visible:ring-[1.5px] focus-visible:ring-apple-blue/50',
         className
       )}
     >
@@ -441,7 +441,7 @@ export function FluentDatePicker({
           type="button"
           tabIndex={-1}
           onClick={handleHeaderClick}
-          className="group flex items-center gap-1 rounded-lg px-2 py-1 -ml-1 text-[13.5px] font-semibold tracking-tight text-foreground hover:bg-secondary transition-colors focus:outline-none focus-visible:ring-1.5 focus-visible:ring-apple-blue"
+          className="group flex items-center gap-1 rounded-lg px-2 py-1 -ml-1 text-[13.5px] font-semibold tracking-tight text-foreground hover:bg-secondary transition-colors focus:outline-none focus-visible:ring-[1.5px] focus-visible:ring-apple-blue"
           title="Click to change month or year (or press V)"
         >
           <span>
@@ -471,7 +471,7 @@ export function FluentDatePicker({
             tabIndex={-1}
             onClick={handlePrev}
             aria-label="Previous"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer focus:outline-none focus-visible:ring-1.5 focus-visible:ring-apple-blue"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer focus:outline-none focus-visible:ring-[1.5px] focus-visible:ring-apple-blue"
           >
             <svg
               width="14"
@@ -491,7 +491,7 @@ export function FluentDatePicker({
             tabIndex={-1}
             onClick={handleNext}
             aria-label="Next"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer focus:outline-none focus-visible:ring-1.5 focus-visible:ring-apple-blue"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer focus:outline-none focus-visible:ring-[1.5px] focus-visible:ring-apple-blue"
           >
             <svg
               width="14"
@@ -552,7 +552,7 @@ export function FluentDatePicker({
                     // Today (when NOT selected): outline ring only, never solid blue fill
                     !isSelected &&
                       today &&
-                      'text-apple-blue font-bold ring-1.5 ring-apple-blue/60 hover:bg-apple-blue/15',
+                      'text-apple-blue font-bold ring-[1.5px] ring-apple-blue/60 hover:bg-apple-blue/15',
                     // Normal Current Month Day
                     !isSelected && !today && isCurrentMonth && 'text-foreground hover:bg-secondary',
                     // Non-Current Month Day (adjacent month)
@@ -600,7 +600,7 @@ export function FluentDatePicker({
                   isSelected && 'bg-apple-blue font-semibold text-white shadow-2xs scale-105',
                   !isSelected &&
                     isViewing &&
-                    'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
+                    'bg-secondary ring-[1.5px] ring-primary font-semibold text-foreground',
                   !isSelected && !isViewing && 'text-foreground hover:bg-secondary'
                 )}
               >
@@ -634,7 +634,7 @@ export function FluentDatePicker({
                   isSelected && 'bg-apple-blue font-semibold text-white shadow-2xs scale-105',
                   !isSelected &&
                     isViewing &&
-                    'bg-secondary ring-1.5 ring-primary font-semibold text-foreground',
+                    'bg-secondary ring-[1.5px] ring-primary font-semibold text-foreground',
                   !isSelected &&
                     !isViewing &&
                     isCurrentDecade &&

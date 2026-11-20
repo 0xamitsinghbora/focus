@@ -162,6 +162,7 @@ export function usePromptNavigation({
       setStep,
       onSubmit,
       onReturnAfk,
+      onSetFocusQuality,
       promptAppearedAtRef
     ]
   )
@@ -207,7 +208,7 @@ export function usePromptNavigation({
     return () => {
       window.removeEventListener('keydown', listener)
     }
-  }, [step, goalsCount, handleKeyDown, detailInputRef])
+  }, [step, goalsCount, handleKeyDown, detailInputRef, onReturnAfk])
 
   return {
     safeSelectedIndex,

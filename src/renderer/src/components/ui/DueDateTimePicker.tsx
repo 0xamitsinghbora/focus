@@ -708,7 +708,7 @@ export function DueDateTimePicker({
           onTabPrev={() => periodRef.current?.focus()}
           hideFooter={true}
           tabIndex={0}
-          className="w-full border-0 shadow-none p-0 bg-transparent animate-none backdrop-blur-none rounded-xl focus-visible:ring-1.5 focus-visible:ring-primary/60"
+          className="w-full border-0 shadow-none p-0 bg-transparent animate-none backdrop-blur-none rounded-xl focus-visible:ring-[1.5px] focus-visible:ring-primary/60"
         />
       </div>
 
@@ -740,7 +740,7 @@ export function DueDateTimePicker({
             type="button"
             onClick={() => onClose()}
             onKeyDown={handleDoneKeyDown}
-            className="h-6 px-2.5 rounded-lg bg-secondary text-foreground text-[11px] font-semibold hover:bg-secondary/80 border border-border/70 shadow-2xs active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-1.5 focus:ring-primary"
+            className="h-6 px-2.5 rounded-lg bg-secondary text-foreground text-[11px] font-semibold hover:bg-secondary/80 border border-border/70 shadow-2xs active:scale-95 transition-all cursor-pointer focus:outline-none focus:ring-[1.5px] focus:ring-primary"
           >
             Done
           </button>

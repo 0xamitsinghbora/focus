@@ -37,12 +37,15 @@
   --color-apple-amber: hsl(var(--apple-amber));
   --color-apple-red: hsl(var(--apple-red));
   --color-apple-indigo: hsl(var(--apple-indigo));
+  --color-apple-purple: hsl(var(--apple-purple));
 
   --radius-2xl: 1rem;
   --radius-xl: calc(var(--radius) + 2px);
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+
+  --spacing-0\.2: 0.05rem;
 
   --font-sans:
     -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'SF Pro', 'Inter',
@@ -96,6 +99,7 @@
     --apple-amber: 35 100% 50%;
     --apple-red: 3 100% 60%;
     --apple-indigo: 241 62% 59%;
+    --apple-purple: 280 68% 60%;
   }
 
   .dark {
@@ -137,6 +141,7 @@
     --apple-amber: 37 100% 52%;
     --apple-red: 4 100% 62%;
     --apple-indigo: 241 75% 63%;
+    --apple-purple: 280 87% 65%;
   }
 
   body {
@@ -311,6 +316,9 @@
 }
 
 /* Glowing Indicator Jewels */
+.apple-glow-red {
+  box-shadow: 0 0 12px -1px rgba(255, 69, 58, 0.5);
+}
 .apple-glow-green {
   box-shadow: 0 0 12px -1px rgba(52, 199, 89, 0.5);
 }

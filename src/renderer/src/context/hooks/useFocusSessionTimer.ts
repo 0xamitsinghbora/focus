@@ -209,6 +209,7 @@ export function useFocusSessionTimerEngine({
     broadcastTaskbarTimer,
     setIsOvertime,
     sessionStartEpochRef,
+    afkBreakStartEpochRef,
     pauseStartEpochRef,
     accumulatedPausedMsRef,
     targetSecondsRef,
