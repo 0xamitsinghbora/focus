@@ -47,12 +47,12 @@ export class LogsRepository {
         'SELECT DISTINCT date FROM logs ORDER BY date ASC'
       ),
       insertLog: db.prepare(`
-        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, updatedAt, deletedAt)
-        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @updatedAt, @deletedAt)
+        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, proofOfWork, evaluationStatus, antiCheatScore, updatedAt, deletedAt)
+        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @proofOfWork, @evaluationStatus, @antiCheatScore, @updatedAt, @deletedAt)
       `),
       upsertLog: db.prepare(`
-        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, updatedAt, deletedAt)
-        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @updatedAt, @deletedAt)
+        INSERT INTO logs (id, timestamp, text, startedAt, endedAt, goalId, goalTitle, note, productivity, durationMinutes, productiveMinutes, date, focusQuality, goalType, audioMode, didDotReset, proofOfWork, evaluationStatus, antiCheatScore, updatedAt, deletedAt)
+        VALUES (@id, @timestamp, @text, @startedAt, @endedAt, @goalId, @goalTitle, @note, @productivity, @durationMinutes, @productiveMinutes, @date, @focusQuality, @goalType, @audioMode, @didDotReset, @proofOfWork, @evaluationStatus, @antiCheatScore, @updatedAt, @deletedAt)
         ON CONFLICT(id) DO UPDATE SET
           timestamp=excluded.timestamp, text=excluded.text, startedAt=excluded.startedAt,
           endedAt=excluded.endedAt, goalId=excluded.goalId, goalTitle=excluded.goalTitle,
@@ -60,6 +60,7 @@ export class LogsRepository {
           durationMinutes=excluded.durationMinutes, productiveMinutes=excluded.productiveMinutes,
           date=excluded.date, focusQuality=excluded.focusQuality,
           goalType=excluded.goalType, audioMode=excluded.audioMode, didDotReset=excluded.didDotReset,
+          proofOfWork=excluded.proofOfWork, evaluationStatus=excluded.evaluationStatus, antiCheatScore=excluded.antiCheatScore,
           updatedAt=excluded.updatedAt, deletedAt=excluded.deletedAt
       `),
       deleteLog: db.prepare('UPDATE logs SET deletedAt = ?, updatedAt = ? WHERE id = ?'),
@@ -109,6 +110,9 @@ export class LogsRepository {
       goalType: entry.goalType ?? 'deep',
       audioMode: entry.audioMode ?? null,
       didDotReset: entry.didDotReset ? 1 : 0,
+      proofOfWork: entry.proofOfWork ?? null,
+      evaluationStatus: entry.evaluationStatus ?? 'none',
+      antiCheatScore: typeof entry.antiCheatScore === 'number' ? entry.antiCheatScore : null,
       updatedAt: entry.updatedAt ?? now,
       deletedAt: entry.deletedAt && entry.deletedAt.trim() !== '' ? entry.deletedAt : null,
       date

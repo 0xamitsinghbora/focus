@@ -115,6 +115,7 @@ function GoalsPanelComponent({
   const moveGoal = useCallback(
     async (goal: DailyGoal, newStatus: DailyGoal['status']) => {
       if (goal.status === newStatus) return
+
       const now = new Date().toISOString()
       const destGoals = dailyGoals.filter((g) => g.status === newStatus && g.id !== goal.id)
       destGoals.sort((a, b) => {

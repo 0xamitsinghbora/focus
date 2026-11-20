@@ -123,14 +123,16 @@ export class DailyGoalsRepository {
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
           note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
-          learningTrackId, learningStage, goalType
+          learningTrackId, learningStage, goalType,
+          evaluationStatus, proofOfWork, evaluatorNote, antiCheatScore
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
           @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
-          @learningTrackId, @learningStage, @goalType
+          @learningTrackId, @learningStage, @goalType,
+          @evaluationStatus, @proofOfWork, @evaluatorNote, @antiCheatScore
         )
       `),
       upsertDailyGoal: this.db.prepare(`
@@ -139,14 +141,16 @@ export class DailyGoalsRepository {
           sourceInboxGoalId, sourceRecurringGoalId, createdAt,
           completedAt, carriedFromDate, carriedToDate, carriedFromGoalId,
           note, remindAt, repeat, groupTag, groupColor, sortOrder, restoredAt, updatedAt, deletedAt,
-          learningTrackId, learningStage, goalType
+          learningTrackId, learningStage, goalType,
+          evaluationStatus, proofOfWork, evaluatorNote, antiCheatScore
         )
         VALUES (
           @id, @date, @effectiveDate, @title, @status, @targetMinutes, @deadline,
           @sourceInboxGoalId, @sourceRecurringGoalId, @createdAt,
           @completedAt, @carriedFromDate, @carriedToDate, @carriedFromGoalId,
           @note, @remindAt, @repeat, @groupTag, @groupColor, @sortOrder, @restoredAt, @updatedAt, @deletedAt,
-          @learningTrackId, @learningStage, @goalType
+          @learningTrackId, @learningStage, @goalType,
+          @evaluationStatus, @proofOfWork, @evaluatorNote, @antiCheatScore
         )
         ON CONFLICT(id) DO UPDATE SET
           date = excluded.date,
@@ -172,7 +176,11 @@ export class DailyGoalsRepository {
           deletedAt = excluded.deletedAt,
           learningTrackId = excluded.learningTrackId,
           learningStage = excluded.learningStage,
-          goalType = excluded.goalType
+          goalType = excluded.goalType,
+          evaluationStatus = excluded.evaluationStatus,
+          proofOfWork = excluded.proofOfWork,
+          evaluatorNote = excluded.evaluatorNote,
+          antiCheatScore = excluded.antiCheatScore
       `),
       updateDailyGoal: this.db.prepare(`
         UPDATE daily_goals SET
@@ -199,7 +207,11 @@ export class DailyGoalsRepository {
           deletedAt = @deletedAt,
           learningTrackId = @learningTrackId,
           learningStage = @learningStage,
-          goalType = @goalType
+          goalType = @goalType,
+          evaluationStatus = @evaluationStatus,
+          proofOfWork = @proofOfWork,
+          evaluatorNote = @evaluatorNote,
+          antiCheatScore = @antiCheatScore
         WHERE id = @id
       `),
       deleteDailyGoal: this.db.prepare(`
@@ -294,7 +306,11 @@ export class DailyGoalsRepository {
       restoredAt: r.restoredAt ?? undefined,
       learningTrackId: r.learningTrackId ?? undefined,
       learningStage: (r.learningStage as 1 | 2 | 3) ?? undefined,
-      goalType: (r.goalType as GoalType) || 'deep'
+      goalType: (r.goalType as GoalType) || 'deep',
+      evaluationStatus: r.evaluationStatus ?? 'none',
+      proofOfWork: r.proofOfWork ?? undefined,
+      evaluatorNote: r.evaluatorNote ?? undefined,
+      antiCheatScore: typeof r.antiCheatScore === 'number' ? r.antiCheatScore : undefined
     }
   }
 
@@ -338,7 +354,11 @@ export class DailyGoalsRepository {
       restoredAt: goal.restoredAt ?? null,
       learningTrackId: goal.learningTrackId ?? null,
       learningStage: goal.learningStage ?? null,
-      goalType: goal.goalType ?? 'deep'
+      goalType: goal.goalType ?? 'deep',
+      evaluationStatus: goal.evaluationStatus ?? 'none',
+      proofOfWork: goal.proofOfWork ?? null,
+      evaluatorNote: goal.evaluatorNote ?? null,
+      antiCheatScore: typeof goal.antiCheatScore === 'number' ? goal.antiCheatScore : null
     }
   }
 

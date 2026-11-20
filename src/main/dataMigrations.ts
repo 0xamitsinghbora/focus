@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3'
 
-export const CURRENT_SCHEMA_VERSION = 4
+export const CURRENT_SCHEMA_VERSION = 5
 
 export interface Migration {
   version: number
@@ -241,6 +241,65 @@ const MIGRATIONS: Migration[] = [
       }
       if (!logCols.some((col) => col.name === 'didDotReset')) {
         db.exec('ALTER TABLE logs ADD COLUMN didDotReset INTEGER DEFAULT 0;')
+      }
+    }
+  },
+  {
+    version: 5,
+    description:
+      'Add 3rd-party local lite LLM evaluator: evaluations table and anti-cheat tracking columns on daily_goals & logs',
+    up: (db: Database.Database): void => {
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS evaluations (
+          id TEXT PRIMARY KEY NOT NULL,
+          entityType TEXT NOT NULL CHECK(entityType IN ('goal', 'day_review', 'session')),
+          entityId TEXT NOT NULL,
+          evaluatorType TEXT NOT NULL CHECK(evaluatorType IN ('embedded_lite', 'local_llm', 'ai', 'self')),
+          evaluatorId TEXT,
+          evaluatorName TEXT NOT NULL DEFAULT '',
+          status TEXT NOT NULL CHECK(status IN ('pending', 'verified', 'rejected', 'needs_revision')),
+          score INTEGER NOT NULL DEFAULT 0,
+          verdict TEXT NOT NULL DEFAULT '',
+          feedback TEXT NOT NULL DEFAULT '',
+          cheatRisk TEXT CHECK(cheatRisk IN ('low', 'medium', 'high') OR cheatRisk IS NULL),
+          proofOfWork TEXT,
+          trackedMinutes REAL NOT NULL DEFAULT 0,
+          createdAt TEXT NOT NULL DEFAULT '',
+          updatedAt TEXT
+        );
+
+        CREATE INDEX IF NOT EXISTS idx_evaluations_entity ON evaluations(entityType, entityId);
+        CREATE INDEX IF NOT EXISTS idx_evaluations_status ON evaluations(status);
+        CREATE INDEX IF NOT EXISTS idx_evaluations_created ON evaluations(createdAt);
+      `)
+
+      const goalCols = db.prepare("PRAGMA table_info('daily_goals')").all() as { name: string }[]
+      if (!goalCols.some((col) => col.name === 'evaluationStatus')) {
+        db.exec(
+          "ALTER TABLE daily_goals ADD COLUMN evaluationStatus TEXT DEFAULT 'none' CHECK(evaluationStatus IN ('none', 'pending', 'verified', 'rejected') OR evaluationStatus IS NULL);"
+        )
+      }
+      if (!goalCols.some((col) => col.name === 'proofOfWork')) {
+        db.exec('ALTER TABLE daily_goals ADD COLUMN proofOfWork TEXT;')
+      }
+      if (!goalCols.some((col) => col.name === 'evaluatorNote')) {
+        db.exec('ALTER TABLE daily_goals ADD COLUMN evaluatorNote TEXT;')
+      }
+      if (!goalCols.some((col) => col.name === 'antiCheatScore')) {
+        db.exec('ALTER TABLE daily_goals ADD COLUMN antiCheatScore INTEGER;')
+      }
+
+      const logCols = db.prepare("PRAGMA table_info('logs')").all() as { name: string }[]
+      if (!logCols.some((col) => col.name === 'proofOfWork')) {
+        db.exec('ALTER TABLE logs ADD COLUMN proofOfWork TEXT;')
+      }
+      if (!logCols.some((col) => col.name === 'evaluationStatus')) {
+        db.exec(
+          "ALTER TABLE logs ADD COLUMN evaluationStatus TEXT DEFAULT 'none' CHECK(evaluationStatus IN ('none', 'pending', 'verified', 'rejected') OR evaluationStatus IS NULL);"
+        )
+      }
+      if (!logCols.some((col) => col.name === 'antiCheatScore')) {
+        db.exec('ALTER TABLE logs ADD COLUMN antiCheatScore INTEGER;')
       }
     }
   }

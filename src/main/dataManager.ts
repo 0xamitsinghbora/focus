@@ -36,10 +36,12 @@ import {
   InboxRepository,
   RecurringGoalsRepository,
   TrashArchiveRepository,
-  LearningRepository
+  LearningRepository,
+  EvaluationRepository
 } from './repositories'
 import { AnalyticsService } from './services/AnalyticsService'
 import { LearningService } from './services/LearningService'
+import { EvaluatorService } from './services/EvaluatorService'
 
 export interface PurgedRecord {
   id: string
@@ -59,6 +61,8 @@ export class DataManager {
   public analyticsService!: AnalyticsService
   public learningRepo!: LearningRepository
   public learningService!: LearningService
+  public evaluationRepo!: EvaluationRepository
+  public evaluatorService!: EvaluatorService
 
   public get dailyGoalsRepo(): DailyGoalsRepository {
     return this.goalsRepo.daily
@@ -259,15 +263,25 @@ export class DataManager {
       invalidateMinutesCache: () => this.analyticsService?.invalidateGoalMinutesCache()
     })
 
+    this.evaluationRepo = new EvaluationRepository(this.db)
+
     this.analyticsService = new AnalyticsService(
       this.db,
       this.goalsRepo,
       this.logsRepo,
-      this.settingsRepo
+      this.settingsRepo,
+      this.evaluationRepo
     )
 
     this.learningRepo = new LearningRepository(this.db)
     this.learningService = new LearningService(this.db, this.learningRepo, this.goalsRepo)
+
+    this.evaluatorService = new EvaluatorService({
+      evaluationRepo: this.evaluationRepo,
+      goalsRepo: this.goalsRepo,
+      logsRepo: this.logsRepo,
+      settingsRepo: this.settingsRepo
+    })
   }
 
   // --- Settings & Preferences Delegation ---

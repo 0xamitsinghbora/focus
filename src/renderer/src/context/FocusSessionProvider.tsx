@@ -1130,6 +1130,58 @@ export function FocusSessionProvider({
 
       if (onUpdateDailyGoalRef.current) {
         try {
+          if (typeof window !== 'undefined' && window.api?.evaluator?.submitForReview) {
+            const evalSettings = await window.api.evaluator.getSettings().catch(() => null)
+            const evalMode = evalSettings?.mode || 'self'
+            if (evalMode !== 'self') {
+              const submission = {
+                entityType: 'goal' as const,
+                entityId: activeGoal.id,
+                title: activeGoal.title,
+                proofOfWork: finalNote || activeGoal.title,
+                trackedMinutes: taskMinutes,
+                targetMinutes: activeGoal.targetMinutes
+              }
+              const evaluation = await window.api.evaluator.submitForReview(submission)
+              if (evaluation) {
+                if (evaluation.status === 'verified') {
+                  await onUpdateDailyGoalRef.current({
+                    ...activeGoal,
+                    status: 'done',
+                    completedAt: endIso,
+                    evaluationStatus: 'verified',
+                    antiCheatScore: evaluation.score,
+                    proofOfWork: finalNote || activeGoal.title,
+                    evaluatorNote: evaluation.verdict
+                  })
+                  playChime('complete')
+                  toast.success(
+                    `"${activeGoal.title}" verified by Local Lite LLM (${evaluation.score}/100)!`,
+                    'Task Verified & Completed'
+                  )
+                } else {
+                  await onUpdateDailyGoalRef.current({
+                    ...activeGoal,
+                    status: 'in_progress',
+                    evaluationStatus: evaluation.status,
+                    antiCheatScore: evaluation.score,
+                    proofOfWork: finalNote || activeGoal.title,
+                    evaluatorNote: evaluation.verdict
+                  })
+                  toast.error(
+                    `Task flagged by Local Lite LLM: ${evaluation.verdict}. More proof required.`,
+                    'Evaluation Flagged'
+                  )
+                }
+                resetSession()
+                if (onDataRefreshRef.current) {
+                  await onDataRefreshRef.current()
+                }
+                return
+              }
+            }
+          }
+
           await onUpdateDailyGoalRef.current({
             ...activeGoal,
             status: 'done',

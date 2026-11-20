@@ -24,6 +24,7 @@ import {
   SessionIpcController,
   SettingsIpcController,
   LearningIpcController,
+  EvaluationIpcController,
   UpdateIpcController
 } from './ipc'
 import { UpdateService } from './services/UpdateService'
@@ -366,6 +367,12 @@ if (!gotTheLock) {
       security
     })
     learningController.register()
+
+    const evaluationController = new EvaluationIpcController({
+      evaluatorService: dataManager.evaluatorService,
+      security
+    })
+    evaluationController.register()
 
     const updateService = new UpdateService({
       settingsRepo: dataManager.settingsRepo,

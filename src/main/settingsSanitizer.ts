@@ -24,7 +24,10 @@ const KNOWN_SETTING_KEYS = new Set<string>([
   'autoDownloadUpdates',
   'lastUpdateCheck',
   'lastRunVersion',
-  'tratakaDurationSeconds'
+  'tratakaDurationSeconds',
+  'evaluatorMode',
+  'antiCheatStrictness',
+  'requireProofOfWork'
 ])
 
 export function sanitizeSettings(settings: Partial<AppSettings>): Record<string, unknown> {

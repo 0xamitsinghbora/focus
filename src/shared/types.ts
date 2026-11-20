@@ -10,6 +10,62 @@ export type GoalType = 'deep' | 'routine'
 
 export type AudioMode = 'silence' | 'focus_sound' | 'music'
 
+export type EvaluatorMode = 'embedded_lite' | 'self' | 'ai' | 'local_llm'
+
+export type EvaluationStatus = 'none' | 'pending' | 'verified' | 'rejected' | 'needs_revision'
+
+export type CheatRiskLevel = 'low' | 'medium' | 'high'
+
+export interface EvaluationRecord {
+  id: string
+  entityType: 'goal' | 'day_review' | 'session'
+  entityId: string
+  evaluatorType: 'embedded_lite' | 'local_llm' | 'ai' | 'self'
+  evaluatorId?: string
+  evaluatorName: string
+  status: 'pending' | 'verified' | 'rejected' | 'needs_revision'
+  score: number
+  verdict: string
+  feedback: string
+  cheatRisk: CheatRiskLevel
+  proofOfWork?: string
+  trackedMinutes: number
+  createdAt: string
+  updatedAt?: string
+}
+
+export interface EvaluationSubmission {
+  entityType: 'goal' | 'day_review' | 'session'
+  entityId: string
+  proofOfWork: string
+  title?: string
+  targetMinutes?: number
+  trackedMinutes?: number
+  note?: string
+  date?: string
+  evidenceUrl?: string
+}
+
+export interface AntiCheatSummary {
+  verifiedMinutes: number
+  unverifiedMinutes: number
+  honestyScore: number
+  cheatRisk: CheatRiskLevel
+  pendingCount: number
+  totalAudits: number
+  verifiedCount: number
+  rejectedCount: number
+}
+
+export interface EvaluatorMetrics {
+  mode: EvaluatorMode
+  totalEvaluations: number
+  verifiedGoalsCount: number
+  rejectedCount: number
+  averageHonestyScore: number
+  lastEvaluatedAt?: string
+}
+
 export type AppSettings = {
   reminderIntervalMinutes: number
   openAtLogin: boolean
@@ -35,6 +91,9 @@ export type AppSettings = {
   lastUpdateCheck?: number
   lastRunVersion?: string
   tratakaDurationSeconds?: number
+  evaluatorMode?: EvaluatorMode
+  antiCheatStrictness?: 'strict' | 'moderate' | 'lenient'
+  requireProofOfWork?: boolean
 }
 
 export type LogEntry = {
@@ -53,6 +112,9 @@ export type LogEntry = {
   goalType?: GoalType
   audioMode?: AudioMode | null
   didDotReset?: boolean
+  proofOfWork?: string
+  evaluationStatus?: EvaluationStatus
+  antiCheatScore?: number
   updatedAt?: string
   deletedAt?: string
 }
@@ -81,6 +143,10 @@ export type DailyGoal = {
   groupColor?: string
   sortOrder?: number
   goalType?: GoalType
+  evaluationStatus?: EvaluationStatus
+  proofOfWork?: string
+  evaluatorNote?: string
+  antiCheatScore?: number
   updatedAt?: string
   deletedAt?: string
   restoredAt?: string
@@ -170,6 +236,8 @@ export type DayReviewData = {
   otherProductiveMinutes: number
   unclassifiedLogs: LogEntry[]
   averageFocusQuality?: number
+  evaluations?: EvaluationRecord[]
+  antiCheatSummary?: AntiCheatSummary
 }
 
 export type ReminderStatus = {
@@ -287,6 +355,12 @@ export enum IpcChannels {
   LearningGetDue = 'learning:get-due',
   LearningResetStage = 'learning:reset-stage',
   LearningSkipStage = 'learning:skip-stage',
+  EvaluatorGetSettings = 'evaluator:get-settings',
+  EvaluatorUpdateSettings = 'evaluator:update-settings',
+  EvaluatorSubmitForReview = 'evaluator:submit-for-review',
+  EvaluatorRunAiReview = 'evaluator:run-ai-review',
+  EvaluatorGetEvaluations = 'evaluator:get-evaluations',
+  EvaluatorGetMetrics = 'evaluator:get-metrics',
   UpdateCheck = 'update:check',
   UpdateDownload = 'update:download',
   UpdateCancelDownload = 'update:cancel-download',

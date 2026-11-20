@@ -69,6 +69,16 @@ export const api: FocusAPI = {
       ipcRenderer.invoke(IpcChannels.LearningResetStage, { trackId, stage, newDate })
   },
 
+  evaluator: {
+    getSettings: () => ipcRenderer.invoke(IpcChannels.EvaluatorGetSettings),
+    updateSettings: (settings) => ipcRenderer.invoke(IpcChannels.EvaluatorUpdateSettings, settings),
+    submitForReview: (submission) =>
+      ipcRenderer.invoke(IpcChannels.EvaluatorSubmitForReview, submission),
+    runAiReview: (submission) => ipcRenderer.invoke(IpcChannels.EvaluatorRunAiReview, submission),
+    getEvaluations: (filter) => ipcRenderer.invoke(IpcChannels.EvaluatorGetEvaluations, filter),
+    getMetrics: () => ipcRenderer.invoke(IpcChannels.EvaluatorGetMetrics)
+  },
+
   session: {
     updateTimer: (payload) => ipcRenderer.send(IpcChannels.UpdateSessionTimer, payload),
     getState: () => ipcRenderer.invoke(IpcChannels.GetSessionState),

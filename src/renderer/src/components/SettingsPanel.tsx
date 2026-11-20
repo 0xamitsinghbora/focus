@@ -5,6 +5,7 @@ import { useToast } from '../lib/useToast'
 import { logger } from '../lib/logger'
 import { GeneralSettingsSection } from './settings/GeneralSettingsSection'
 import { CloudSyncSection } from './settings/CloudSyncSection'
+import { EvaluatorSettingsSection } from './settings/EvaluatorSettingsSection'
 import { UpdateSettingsSection } from './settings/UpdateSettingsSection'
 import { DiagnosticsSection } from './settings/DiagnosticsSection'
 import { DeleteDataSection } from './settings/DeleteDataSection'
@@ -572,6 +573,10 @@ export function SettingsPanel({
             onDriveSyncNow={handleDriveSyncNow}
             onDriveDisconnect={handleDriveDisconnect}
           />
+        </div>
+
+        <div className="rounded-2xl border border-border/70 bg-card overflow-hidden shadow-apple-subtle mt-4">
+          <EvaluatorSettingsSection />
         </div>
 
         <UpdateSettingsSection lastUpdateCheck={lastUpdateCheck} />

@@ -9,6 +9,7 @@ import {
 import { GoalsRepository } from '../repositories/GoalsRepository'
 import { LogsRepository } from '../repositories/LogsRepository'
 import { SettingsRepository } from '../repositories/SettingsRepository'
+import type { EvaluationRepository } from '../repositories/EvaluationRepository'
 import { logger } from '../logger'
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/
@@ -24,6 +25,7 @@ export class AnalyticsService {
   private goalsRepo: GoalsRepository
   private logsRepo: LogsRepository
   private settingsRepo: SettingsRepository
+  private evaluationRepo?: EvaluationRepository
   private cachedGoalMinutesMap: Record<string, number> | null = null
 
   public stmts: {
@@ -37,12 +39,14 @@ export class AnalyticsService {
     db: Database.Database,
     goalsRepo: GoalsRepository,
     logsRepo: LogsRepository,
-    settingsRepo: SettingsRepository
+    settingsRepo: SettingsRepository,
+    evaluationRepo?: EvaluationRepository
   ) {
     this.db = db
     this.goalsRepo = goalsRepo
     this.logsRepo = logsRepo
     this.settingsRepo = settingsRepo
+    this.evaluationRepo = evaluationRepo
 
     this.stmts = {
       getGoalCumulativeMinutesAll: db.prepare(`
@@ -283,15 +287,25 @@ export class AnalyticsService {
           ) / 10
         : undefined
 
+    const dayGoalsList = Array.from(relevantGoalsMap.values())
+    const evaluations = this.evaluationRepo
+      ? this.evaluationRepo.getEvaluationsForEntity('day_review', date)
+      : []
+    const antiCheatSummary = this.evaluationRepo
+      ? this.evaluationRepo.getAntiCheatSummary(date, logs, dayGoalsList)
+      : undefined
+
     return {
       date,
-      goals: Array.from(relevantGoalsMap.values()),
+      goals: dayGoalsList,
       logs,
       totalProductiveMinutes,
       goalBreakdown,
       otherProductiveMinutes,
       unclassifiedLogs,
-      averageFocusQuality
+      averageFocusQuality,
+      evaluations,
+      antiCheatSummary
     }
   }
 

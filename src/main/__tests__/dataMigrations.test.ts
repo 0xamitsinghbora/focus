@@ -51,6 +51,7 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(tables).toContain('purged_records')
     expect(tables).toContain('sync_state')
     expect(tables).toContain('learning_tracks')
+    expect(tables).toContain('evaluations')
 
     // Check key indexes exist
     const indexes = db
@@ -65,6 +66,7 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(indexes).toContain('idx_daily_goals_active_board')
     expect(indexes).toContain('idx_daily_goals_done_board')
     expect(indexes).toContain('idx_daily_goals_effectiveDate')
+    expect(indexes).toContain('idx_evaluations_entity')
 
     // Check effectiveDate column exists on daily_goals
     const cols = db.pragma('table_info(daily_goals)') as { name: string }[]
@@ -72,11 +74,18 @@ describe('dataMigrations / Database Schema Initialization', () => {
     expect(cols.some((c) => c.name === 'learningTrackId')).toBe(true)
     expect(cols.some((c) => c.name === 'learningStage')).toBe(true)
     expect(cols.some((c) => c.name === 'goalType')).toBe(true)
+    expect(cols.some((c) => c.name === 'evaluationStatus')).toBe(true)
+    expect(cols.some((c) => c.name === 'proofOfWork')).toBe(true)
+    expect(cols.some((c) => c.name === 'evaluatorNote')).toBe(true)
+    expect(cols.some((c) => c.name === 'antiCheatScore')).toBe(true)
 
     const logCols = db.pragma('table_info(logs)') as { name: string }[]
     expect(logCols.some((c) => c.name === 'goalType')).toBe(true)
     expect(logCols.some((c) => c.name === 'audioMode')).toBe(true)
     expect(logCols.some((c) => c.name === 'didDotReset')).toBe(true)
+    expect(logCols.some((c) => c.name === 'proofOfWork')).toBe(true)
+    expect(logCols.some((c) => c.name === 'evaluationStatus')).toBe(true)
+    expect(logCols.some((c) => c.name === 'antiCheatScore')).toBe(true)
   })
 
   it('is idempotent when run multiple times', () => {
@@ -110,14 +119,16 @@ describe('dataMigrations / Database Schema Initialization', () => {
     // Run migrations from v3
     runSchemaMigrations(db)
 
-    expect(getSchemaVersion(db)).toBe(4)
+    expect(getSchemaVersion(db)).toBe(CURRENT_SCHEMA_VERSION)
     const goalCols = db.pragma('table_info(daily_goals)') as { name: string }[]
     expect(goalCols.some((c) => c.name === 'goalType')).toBe(true)
+    expect(goalCols.some((c) => c.name === 'evaluationStatus')).toBe(true)
 
     const logCols = db.pragma('table_info(logs)') as { name: string }[]
     expect(logCols.some((c) => c.name === 'goalType')).toBe(true)
     expect(logCols.some((c) => c.name === 'audioMode')).toBe(true)
     expect(logCols.some((c) => c.name === 'didDotReset')).toBe(true)
+    expect(logCols.some((c) => c.name === 'proofOfWork')).toBe(true)
   })
 
   it('forward migrates older schema versions sequentially inside transactions', () => {

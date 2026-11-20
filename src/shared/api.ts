@@ -20,7 +20,11 @@ import {
   UpdateState,
   UpdateDownloadProgress,
   CleanCacheResult,
-  InstallUpdateOptions
+  InstallUpdateOptions,
+  EvaluatorMode,
+  EvaluationRecord,
+  EvaluationSubmission,
+  EvaluatorMetrics
 } from './types'
 
 export interface FocusAPI {
@@ -98,6 +102,28 @@ export interface FocusAPI {
       stage: LearningStage,
       newDate: string
     ) => Promise<{ success: boolean }>
+  }
+
+  // --- 3rd-Party Evaluator & Anti-Cheat ---
+  evaluator: {
+    getSettings: () => Promise<{
+      mode: EvaluatorMode
+      strictness: 'strict' | 'moderate' | 'lenient'
+      requireProofOfWork: boolean
+    }>
+    updateSettings: (settings: {
+      mode?: EvaluatorMode
+      strictness?: 'strict' | 'moderate' | 'lenient'
+      requireProofOfWork?: boolean
+    }) => Promise<{ success: boolean }>
+    submitForReview: (submission: EvaluationSubmission) => Promise<EvaluationRecord>
+    runAiReview: (submission: EvaluationSubmission) => Promise<EvaluationRecord>
+    getEvaluations: (filter?: {
+      entityType?: 'goal' | 'day_review' | 'session'
+      entityId?: string
+      date?: string
+    }) => Promise<EvaluationRecord[]>
+    getMetrics: () => Promise<EvaluatorMetrics>
   }
 
   // --- Timer & Session ---

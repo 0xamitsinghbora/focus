@@ -672,6 +672,62 @@ describe('FocusSessionContext', () => {
     expect(appendSpy).toHaveBeenCalled()
   })
 
+  it('routes completeTask through 3rd-party evaluator submitForReview when evaluatorMode is active', async () => {
+    const updateDailyGoalSpy = vi.fn().mockResolvedValue(undefined)
+    const submitForReviewSpy = vi.fn().mockResolvedValue({
+      id: 'eval-focus-1',
+      entityType: 'goal',
+      entityId: 'g-focus-1',
+      evaluatorType: 'ai',
+      status: 'verified',
+      score: 95,
+      verdict: 'Verified authentic work.',
+      feedback: 'Great focus',
+      cheatRisk: 'low'
+    })
+
+    ;(window as any).api = {
+      logs: { append: vi.fn().mockResolvedValue({}) },
+      scheduler: { submit: vi.fn() },
+      evaluator: {
+        getSettings: vi.fn().mockResolvedValue({ mode: 'ai', strictness: 'strict' }),
+        submitForReview: submitForReviewSpy
+      }
+    }
+
+    const { result } = renderHook(() => useFocusSession(), {
+      wrapper: ({ children }: { children: ReactNode }) => (
+        <FocusSessionProvider onUpdateDailyGoal={updateDailyGoalSpy}>
+          {children}
+        </FocusSessionProvider>
+      )
+    })
+
+    await act(async () => {
+      await result.current.startFocus(mockGoal, 25)
+    })
+
+    await act(async () => {
+      await result.current.completeTask('Shipped complete test suite for evaluator')
+    })
+
+    expect(submitForReviewSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        entityType: 'goal',
+        entityId: 'g-focus-1',
+        proofOfWork: 'Shipped complete test suite for evaluator'
+      })
+    )
+
+    expect(updateDailyGoalSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        status: 'done',
+        evaluationStatus: 'verified',
+        antiCheatScore: 95
+      })
+    )
+  })
+
   it('restores in-flight focus session from main process and initializes timer and goal', async () => {
     ;(window as any).api = {
       session: {
